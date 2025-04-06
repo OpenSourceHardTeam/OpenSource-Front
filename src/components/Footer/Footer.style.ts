@@ -16,7 +16,6 @@ export const footerGroup = css`
   flex-direction: column;
   height: 166px;
   align-items: flex-start;
-  gap: 20px;
   position: relative;
   align-self: stretch;
   width: 100%;
@@ -25,10 +24,8 @@ export const footerGroup = css`
 export const footerFrame = css`
   display: flex;
   flex-direction: column;
-  gap: 15px;
   align-self: stretch;
   width: 100%;
-  margin-bottom: -10px;
   align-items: flex-start;
   position: relative;
   flex: 0 0 auto;
@@ -45,7 +42,7 @@ export const footerTextWrapper = css`
   font-size: 48px;
   text-align: center;
   letter-spacing: 0;
-  line-height: 29.9px;
+  line-height: 30px;
 `;
 
 export const footerFrame2 = css`
@@ -54,6 +51,8 @@ export const footerFrame2 = css`
   align-items: flex-start;
   position: relative;
   flex: 0 0 auto;
+  margin-bottom: 20px;
+  margin-top: 15px;
 `;
 
 export const footerTextWrapper2 = css`
