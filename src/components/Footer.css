@@ -8,6 +8,17 @@
     position: relative;
 }
 
+.footer .footer-group {
+    display: flex;
+    flex-direction: column;
+    height: 166px;
+    align-items: flex-start;
+    gap: 20px;
+    position: relative;
+    align-self: stretch;
+    width: 100%
+}
+
 .footer .footer-frame {
     display: flex;
     flex-direction: column;
@@ -28,6 +39,7 @@
     font-family: "Stencil-Regular", Helvetica;
     font-weight: 400;
     color: #7b9acc;
+    font-size: 48px;
     text-align: center;
     letter-spacing: 0;
     line-height: 29.9px;
@@ -47,7 +59,7 @@
     margin-top: -1.00px;
     font-family: var(--caption-caption-3-font-family);
     font-weight: var(--caption-caption-3-font-weight);
-    color: var(--object-inactive);
+    color: #989ba2;
     font-size: var(--caption-caption-3-font-size);
     letter-spacing: var(--caption-caption-3-letter-spacing);
     line-height: var(--caption-caption-3-line-height);
@@ -71,6 +83,7 @@
     align-items:  flex-start;
     position: relative;
     flex: 0 0 auto;
+    color:#989ba2;
 }
 
 .footer .footer-p {
@@ -78,7 +91,7 @@
     width: fit-content;
     font-family: var(--caption-caption-3-font-family);
     font-weight: var(--caption-caption-3-font-weight);
-    color: var(--object-inactive);
+    color: #989ba2;
     font-size: var(--caption-caption-3-font-size);
     letter-spacing: var(--caption-caption-3-letter-spacing);
     line-height: var(--caption-caption-3-line-height);

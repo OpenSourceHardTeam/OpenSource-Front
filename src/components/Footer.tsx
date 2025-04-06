@@ -3,6 +3,7 @@ import "./Footer.css"
 
 const Footer: React.FC = () => {
     return <div className="footer">
+        <div className="footer-group">
         <div className="footer-frame">
             <div className="footertext-wrapper">BOOKING</div>
             <div className="footer-frame2">
@@ -20,6 +21,7 @@ const Footer: React.FC = () => {
             </div>
         </div>
         <p className="footer-p">© 2025 booking. All rights reserved. </p>
+        </div>
     </div>
 }
 
