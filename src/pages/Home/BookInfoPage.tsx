@@ -1,5 +1,5 @@
-import Bar from "../../components/Bar"
-import Button from "../../components/Button"
+import Bar from "../../components/Bar/Bar.tsx"
+import Button from "../../components/Button/Button.tsx"
 import "./BookInfoPage.css"
 import image5 from "../../assets/img/image 5.png"
 import Line from "../../assets/img/Vector.png"
@@ -55,7 +55,7 @@ const BookInfoPage = () => {
                     <div className="bookinfotext-wrapper12">책 소개</div>
                     <img className="bookinfo-line" src={Line}/>
                     <div className="bookinfo-description-text">
-                        <p className="bookinfotext-wrapper13~15">
+                        <p className="bookinfotext-wrapper13-15">
                         이 책은 현대 문학의 흐름과 소설의 힘에 대한 깊이 있는 탐구를 담고 있습니다. <br/>
                         저자 김선향은 20년간의 연구를 바탕으로 소설이 우리 사회와 개인의 삶에 <br/>
                         미치는 영향을 다양한 사례와 함께 설득력 있게 전달합니다. <br />
@@ -86,29 +86,33 @@ const BookInfoPage = () => {
                 </div>
             </div>
             <div className="bookinfo-view2">
+                <div className="bookinfo-div14">
                 <div className="bookinfotext-wrapper12">투표</div>
                 <img className="bookinfo-line" src={Line}/>
-            </div>
-            <div className="bookinfo-div15">
-                <div className="bookinfo-element">
-                    <div className="bookinfo-div16">
-                        <div className="bookinfo-div17">
-                            <p className="bookinfotext-wrapper18">소설은 현대 사회에서 어떤 역할을 하는가</p>
-                            <Bar />
-                        </div>
-                        <div className="bookinfo-div18">
-                            <div className="bookinfooverlap-group-wrapper">
-                                <div className="bookinfooverlap-group"><div className="bookinfotext-wrapper19">찬성</div></div>
+                </div>
+                <div className="bookinfo-div15">
+                    <div className="bookinfo-element">
+                        <div className="bookinfo-div16">
+                            <div className="bookinfo-div17">
+                                <p className="bookinfotext-wrapper18">소설은 현대 사회에서 어떤 역할을 하는가</p>
+                                <Bar />
                             </div>
-                            <div className="bookinfooverlap-group-wrapper">
-                                <div className="bookinfooverlap-group"><div className="bookinfotext-wrapper19">반대</div></div>
+                            <div className="bookinfo-div18">
+                                <div className="bookinfooverlap-group-wrapper">
+                                    <div className="bookinfooverlap-group"><Button text={"찬성"} /></div>
+                                </div>
+                                <div className="bookinfooverlap-group-wrapper">
+                                    <div className="bookinfooverlap-group"><Button text={"반대"} /></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-         </div>
+        </div>
     </div>
 }
 
 export default BookInfoPage;
+
+
