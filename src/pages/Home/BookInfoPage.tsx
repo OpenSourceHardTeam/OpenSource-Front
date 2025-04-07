@@ -1,8 +1,8 @@
-import Bar from "../../components/Bar";
 import Button from "../../components/Button";
 import "./BookInfoPage.css";
 import image5 from "../../assets/img/book.png";
 import Line from "../../assets/img/Vector.png";
+import VoteBar from "../../components/VoteBar/VoteBar";
 
 const BookInfoPage = () => {
   return (
@@ -157,7 +157,7 @@ const BookInfoPage = () => {
                 <p className="bookinfotext-wrapper18">
                   소설은 현대 사회에서 어떤 역할을 하는가
                 </p>
-                <Bar />
+                <VoteBar leftPercent={36} rightPercent={64} />
               </div>
               <div className="bookinfo-div18">
                 <div className="bookinfooverlap-group-wrapper">
