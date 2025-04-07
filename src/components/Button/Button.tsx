@@ -67,3 +67,4 @@ export default Button;
 // 찬성, 반대 버튼 -> 250 38 border-radius: 20px in 책 페이지
 // 회원가입/로그인 버튼 -> 152 40 border-radius: 32px, border 2px solid #FCF6F5
 // 채팅방 나가기 버튼 -> 288 56 border-radius: 10px
+// 수정사항 반영 
