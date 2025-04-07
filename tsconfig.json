@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@components/*": ["src/components/*"],
-      "@assets/*": ["assets/*"]
-    }
+    "baseUrl": "."
   },
   "files": [],
   "references": [
