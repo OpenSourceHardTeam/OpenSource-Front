@@ -47,8 +47,6 @@ export const loginBorder = css`
   padding: 10px 23px;
   position: absolute;
   left: 70px;
-  border-radius: 30px;
-  border: 2px solid #fcf6f5;
 `;
 
 export const loginText = css`
