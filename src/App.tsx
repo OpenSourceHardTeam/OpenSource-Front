@@ -11,9 +11,7 @@ function App() {
     <>
       <Global styles={globalStyles} />
       <Header />
-
       <Outlet />
-
       <Footer />
     </>
   );

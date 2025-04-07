@@ -1,11 +1,19 @@
 import {
+  BookAuthor,
   BookContainer,
+  BookImage,
+  BookInfoWrapper,
+  BookListContainer,
+  BookTitle,
+  BottomWrapper,
   Container,
   MainContainer,
-  PopularVoteContainer,
-  WeeklyBestContainer,
+  ParticipantText,
+  TitleAuthorWrapper,
+  TrendContainer,
 } from "./Home.style";
-import book from "../../assets/img/book.png";
+import { Button, PopularVoteCard } from "components";
+import { border, book } from "@assets/img";
 
 const Home: React.FC = () => {
   const books = [
@@ -16,20 +24,48 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div css={MainContainer}>
-      <div css={WeeklyBestContainer}>
-        <p>WEEKLY BEST</p>
+    <>
+      <img
+        src={border}
+        alt={border}
+        style={{ width: "100%", marginTop: "64px" }}
+      />
+      <div css={MainContainer}>
         <div css={Container}>
-          {books.map((bookItem) => (
-            <div css={BookContainer} key={bookItem.id}>
-              <img src={bookItem.img} alt={bookItem.title} />
-              <p>{bookItem.title}</p>
+          <p>WEEKLY BEST</p>
+          <div css={BookListContainer}>
+            {books.map((bookItem) => (
+              <div css={BookContainer} key={bookItem.id}>
+                <img src={bookItem.img} alt={bookItem.title} />
+                <p>{bookItem.title}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div css={Container}>
+          <p>POPULAR VOTE</p>
+          <PopularVoteCard />
+          <PopularVoteCard />
+          <PopularVoteCard />
+        </div>
+        <div css={Container}>
+          <p>TRENDING NOW</p>
+          <div css={TrendContainer}>
+            <img src={book} css={BookImage} />
+            <div css={BookInfoWrapper}>
+              <div css={TitleAuthorWrapper}>
+                <div css={BookTitle}>소년이 온다</div>
+                <div css={BookAuthor}>한강</div>
+              </div>
+              <div css={BottomWrapper}>
+                <p css={ParticipantText}>현재 256명이 채팅방에 참여했어요</p>
+                <Button text={"채팅방 입장하기"} />
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
-      <div css={PopularVoteContainer}></div>
-    </div>
+    </>
   );
 };
 
