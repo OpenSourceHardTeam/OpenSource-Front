@@ -21,10 +21,4 @@ export const globalStyles = css`
   select {
     font-family: inherit;
   }
-
-  main {
-    min-height: calc(100vh - 65px);
-    width: 1040px;
-    margin: 80px 200px 100px 200px;
-  }
 `;

@@ -1,11 +1,11 @@
 import {
   BookContainer,
   Container,
+  MainContainer,
   PopularVoteContainer,
   WeeklyBestContainer,
 } from "./Home.style";
 import book from "../../assets/img/book.png";
-import { css } from "@emotion/react";
 
 const Home: React.FC = () => {
   const books = [
@@ -16,28 +16,20 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <main>
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          gap: 80px;
-        `}
-      >
-        <div css={WeeklyBestContainer}>
-          <p>WEEKLY BEST</p>
-          <div css={Container}>
-            {books.map((bookItem) => (
-              <div css={BookContainer} key={bookItem.id}>
-                <img src={bookItem.img} alt={bookItem.title} />
-                <p>{bookItem.title}</p>
-              </div>
-            ))}
-          </div>
+    <div css={MainContainer}>
+      <div css={WeeklyBestContainer}>
+        <p>WEEKLY BEST</p>
+        <div css={Container}>
+          {books.map((bookItem) => (
+            <div css={BookContainer} key={bookItem.id}>
+              <img src={bookItem.img} alt={bookItem.title} />
+              <p>{bookItem.title}</p>
+            </div>
+          ))}
         </div>
-        <div css={PopularVoteContainer}></div>
       </div>
-    </main>
+      <div css={PopularVoteContainer}></div>
+    </div>
   );
 };
 
