@@ -1,7 +1,0 @@
-.button > button {
-    background-color: transparent;
-    border: none;
-    color: #f8f6f2; /* 글자 색, 원하는 색으로 바꿔도 돼 */
-    font-size: 16px; /* 폰트 크기 */
-    cursor: pointer;
-}

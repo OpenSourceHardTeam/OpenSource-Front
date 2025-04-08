@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import Home from "../pages/Home/Home";
 import routes from "@constants/routes";
-import BookInfoPage from "pages/Home/BookInfoPage";
+import BookInfoPage from "pages/Home/BookInfoPage/BookInfoPage";
 
 const router = createBrowserRouter([
   {

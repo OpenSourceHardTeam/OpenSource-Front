@@ -1,6 +1,6 @@
 // import React from 'react';
 import { css } from '@emotion/react';
-import Bar from "../../../components/Bar/Bar.tsx";
+import VoteBar from "../../../components/VoteBar/VoteBar.tsx";
 import Button from "../../../components/Button/Button.tsx";
 import * as layoutStyles from "./BookInfoPage.style.ts";
 import * as textStyles from "./BookInfoPageText.style.ts";
@@ -117,7 +117,8 @@ const BookInfoPage = () => {
                                     <div css={textStyles.BookInfoTextWrapper18}>
                                         소설은 현대 사회에서 어떤 역할을 하는가
                                     </div>
-                                    <Bar />
+                                    {/*이쪽부분 수정 필요함*/ }
+                                    < VoteBar leftPercent={36} rightPercent={64}/>
                                 </div>
                                 <div css={layoutStyles.BookInfoDiv18}>
                                     <div css={layoutStyles.BookInfoOverlapGroupWrapper}>
@@ -141,3 +142,5 @@ const BookInfoPage = () => {
 }
 
 export default BookInfoPage;
+
+// 118~120 줄 수정 필요 votecard로 만들기
