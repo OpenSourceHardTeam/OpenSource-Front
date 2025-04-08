@@ -22,9 +22,15 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
+    "jsxImportSource": "@emotion/react",
+    "types": ["@emotion/react/types/css-prop"],
+
     "baseUrl": "src",
     "paths": {
-      "@constants/*": ["constants/*"]
+      "@constants/*": ["constants/*"],
+      "@assets/*": ["assets/*"],
+      "@api/*": ["api/*"],
+      "@components/*": ["components/*"]
     }
   },
 

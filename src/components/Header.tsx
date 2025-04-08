@@ -1,17 +1,15 @@
 import React from "react";
-import "./Header.css";
+import * as styles from "./Header.style.ts";
 import fe_search from "../assets/fe_search.svg";
 
 const Header: React.FC = () => {
   return (
-    <div className="header">
-      <div className="text-title">BOOKING</div> 
-      <div className="search-login">
-        <img className="fe-search" src={fe_search} alt="검색 아이콘" />
-        <div className="login-border">
-          <div className="div">
-            회원가입/로그인
-          </div>
+    <div css={styles.header}>
+      <div css={styles.textTitle}>BOOKING</div>
+      <div css={styles.searchLogin}>
+        <img css={styles.feSearch} src={fe_search} alt="검색 아이콘" />
+        <div css={styles.loginBorder}>
+          <div css={styles.loginText}>회원가입/로그인</div>
         </div>
       </div>
     </div>
