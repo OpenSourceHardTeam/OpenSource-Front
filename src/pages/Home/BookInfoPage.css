@@ -5,7 +5,7 @@
     height: 2815px;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 80px 200px 100px;
+    padding: 80px 0px 100px;
     position: relative;
 }
 
@@ -562,5 +562,13 @@
 }
 
 
+/* =======
+    width: 990.34px;
+    height: 2.5px;
+    margin-bottom: -1.00px;
+}
+
+.bookinfo-frame .bookinfo-description-wrapper
+>>>>>>> main */
 
 
