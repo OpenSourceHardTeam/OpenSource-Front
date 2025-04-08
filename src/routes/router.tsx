@@ -3,6 +3,7 @@ import App from "../App";
 import Home from "../pages/Home/Home";
 import routes from "@constants/routes";
 import BookInfoPage from "pages/Home/BookInfoPage";
+import ChatList from "pages/ChatList/ChatList";
 
 const router = createBrowserRouter([
   {
@@ -16,7 +17,11 @@ const router = createBrowserRouter([
       {
         path: routes.bookinfo,
         element: <BookInfoPage />,
-      }
+      },
+      {
+        path: routes.chatlist,
+        element: <ChatList />,
+      },
     ],
   },
 ]);
