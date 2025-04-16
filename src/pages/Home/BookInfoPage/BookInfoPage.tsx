@@ -1,7 +1,7 @@
 // import React from 'react';
 import { css } from '@emotion/react';
-import VoteBar from "../../../components/VoteBar/VoteBar.tsx";
 import Button from "../../../components/Button/Button.tsx";
+import BookPageVoteCard from '@components/BookPageVoteCard/BookPageVoteCard.tsx';
 import * as layoutStyles from "./BookInfoPage.style.ts";
 import * as textStyles from "./BookInfoPageText.style.ts";
 import image5 from "../../../assets/img/image 5.png";
@@ -111,28 +111,8 @@ const BookInfoPage = () => {
                     </div>
 
                     <div css={layoutStyles.BookInfoDiv15}>
-                        <div css={layoutStyles.BookInfoElement}>
-                            <div css={layoutStyles.BookInfoDiv16}>
-                                <div css={layoutStyles.BookInfoDiv17}>
-                                    <div css={textStyles.BookInfoTextWrapper18}>
-                                        소설은 현대 사회에서 어떤 역할을 하는가
-                                    </div>
-                                    {/*이쪽부분 수정 필요함*/ }
-                                    < VoteBar leftPercent={36} rightPercent={64}/>
-                                </div>
-                                <div css={layoutStyles.BookInfoDiv18}>
-                                    <div css={layoutStyles.BookInfoOverlapGroupWrapper}>
-                                        <div css={layoutStyles.BookInfoOverlapGroup}>
-                                            <Button text={"찬성"} type={"voteOption"}/>
-                                        </div>
-                                    </div>
-                                    <div css={layoutStyles.BookInfoOverlapGroupWrapper}>
-                                        <div css={layoutStyles.BookInfoOverlapGroup}>
-                                            <Button text={"반대"} type={"voteOption"}/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                         <div css={layoutStyles.BookInfoElement}>
+                            <BookPageVoteCard />
                         </div>
                     </div>
                 </div>
