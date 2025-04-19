@@ -223,19 +223,6 @@ export const BookInfoTextWrapper17 = css`
   line-height: 20px;
 `;
 
-export const BookInfoTextWrapper18 = css`
-  position: relative;
-  align-self: stretch;
-  height: 22px;
-  margin-top: -1px;
-  ${FontStyles.pretendardBold};
-  color: ${Colors.normalText};
-  font-size: 20px;
-  letter-spacing: 0;
-  line-height: normal;
-  white-space: nowrap;
-`;
-
 // 버튼 텍스트 스타일
 export const ButtonText = css`
   ${FontStyles.pretendardSemiBold};
