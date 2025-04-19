@@ -6,7 +6,6 @@ import {
 } from "./PopularVoteCard.style";
 import book from "../../assets/img/book.png";
 import Button from "@components/Button/Button";
-
 import VoteBar from "@components/VoteBar/VoteBar";
 
 const PopularVoteCard: React.FC = () => {
@@ -16,9 +15,7 @@ const PopularVoteCard: React.FC = () => {
       <div css={ContentContainer}>
         <div css={ContentHeader}>
           <p>소설은 현대 사회에서 어떤 역할을 하는가?</p>
-
           <Button text={"투표하러 가기"} type={"smallChatRoomJoin"}/>
-
         </div>
         <VoteBar leftPercent={36} rightPercent={64} />
       </div>

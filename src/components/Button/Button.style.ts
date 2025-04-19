@@ -81,3 +81,37 @@ export const leaveButton = css`
   color: #f8f6f2;
   font-size: 20px;
 `;
+
+// 7. 중복 확인 버튼
+export const duplicateButton = css`
+  ${baseButton}
+  width: 120px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: #7b9acc;
+  color: #f8f6f2;
+  font-size: 14px;
+`;
+
+export const loginButton = css`
+  ${baseButton}
+  width: 500px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: #7b9acc;
+  color: #f8f6f2;
+  font-size: 18px;
+`;
+
+export const signupButton = css`
+  ${baseButton}
+  width: 500px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #7b9acc;
+  font-size: 18px;
+  border: 1px solid;
+  border-color: #7b9acc;
+  border-radius: 10px;
+`;

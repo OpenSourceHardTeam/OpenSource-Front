@@ -15,7 +15,7 @@ export const percentText = css`
 
 export const barWrapper = css`
   position: relative;
-  width: 540px;
+  width: 500px;
   height: 20px;
   background: #385b88;
   border-radius: 32px;

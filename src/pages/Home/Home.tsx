@@ -29,7 +29,6 @@ const Home: React.FC = () => {
         src={border}
         alt={border}
         style={{ width: "100%", /*marginTop: "64px"*/ }}
-
       />
       <div css={MainContainer}>
         <div css={Container}>
@@ -61,7 +60,6 @@ const Home: React.FC = () => {
               <div css={BottomWrapper}>
                 <p css={ParticipantText}>현재 256명이 채팅방에 참여했어요</p>
                 <Button text={"채팅방 입장하기"} type={"bigChatRoomJoin"} />
-
               </div>
             </div>
           </div>
