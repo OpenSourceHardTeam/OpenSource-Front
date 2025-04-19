@@ -15,9 +15,15 @@ export const BookImage = css`
   height: 170px;
 `;
 
-export const InfoContainer = css`
+export const ContentContainer = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 783px;
   height: 158px;
+`;
+
+export const InfoContainer = css`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -30,6 +36,12 @@ export const BookInfo = css`
   display: flex;
   flex-direction: column;
   gap: 9px;
+`;
+
+export const ButtonWrapper = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const textStyle = (

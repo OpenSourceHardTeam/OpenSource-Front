@@ -29,4 +29,31 @@ export const ChatListContainer = css`
   flex-direction: column;
   gap: 65px;
   width: 1040px;
+  margin-top: 50px;
+`;
+
+export const PaginationContainer = css`
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+`;
+
+export const PageButton = css`
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 12px;
+`;
+
+export const ActivePageButton = css`
+  background: #7b9acc;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 6px 12px;
+  cursor: pointer;
 `;
