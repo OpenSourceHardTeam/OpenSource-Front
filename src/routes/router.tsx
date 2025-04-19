@@ -2,10 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import Home from "../pages/Home/Home";
 import routes from "@constants/routes";
-import BookInfoPage from "pages/Home/BookInfoPage/BookInfoPage";
-import ChatPage from "pages/Home/ChatPage/ChatPage";
-import LoginPage from "pages/Home/LoginPage/LoginPage";
-
+import BookInfoPage from "pages/BookDetail/BookInfoPage";
+import ChatList from "pages/ChatList/ChatList";
+import ChatPage from "pages/Chat/ChatPage";
+import LoginPage from "pages/LoginPage/LoginPage";
 
 const router = createBrowserRouter([
   {
@@ -27,7 +27,11 @@ const router = createBrowserRouter([
       {
         path: routes.login,
         element: <LoginPage />,
-      }
+      },
+      {
+        path: routes.chatlist,
+        element: <ChatList />,
+      },
     ],
   },
 ]);

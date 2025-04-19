@@ -1,9 +1,10 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
 // 기본 버튼 스타일
 export const baseButton = css`
   cursor: pointer;
-  font-weight: 500;
+  font-family: "Pretendard";
+  font-weight: 600;
   display: flex;
   padding: 11px 32px;
   align-items: center;
@@ -21,7 +22,7 @@ export const bigJoinButton = css`
   width: 345px;
   height: 56px;
   border-radius: 10px;
-  background-color: #7B9ACC; 
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 20px;
 `;
@@ -32,7 +33,7 @@ export const voteButton = css`
   width: 118px;
   height: 36px;
   border-radius: 32px;
-  background-color: #7B9ACC; 
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 16px;
 `;
@@ -43,7 +44,7 @@ export const smallJoinButton = css`
   width: 197px;
   height: 56px;
   border-radius: 10px;
-  background-color: #7B9ACC; 
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 20px;
 `;
@@ -54,7 +55,7 @@ export const voteOptionButton = css`
   width: 250px;
   height: 38px;
   border-radius: 20px;
-  background-color: #7B9ACC;
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 14px;
 `;
@@ -65,7 +66,7 @@ export const logButton = css`
   width: 152px;
   height: 40px;
   border-radius: 32px;
-  border: 2px solid #FCF6F5;
+  border: 2px solid #fcf6f5;
   color: #f8f6f2;
   font-size: 16px;
 `;
@@ -76,7 +77,7 @@ export const leaveButton = css`
   width: 288px;
   height: 56px;
   border-radius: 10px;
-  background-color: #7B9ACC; 
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 20px;
 `;
@@ -87,7 +88,7 @@ export const duplicateButton = css`
   width: 120px;
   height: 60px;
   border-radius: 10px;
-  background-color: #7B9ACC;
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 14px;
 `;
@@ -97,13 +98,13 @@ export const loginButton = css`
   width: 500px;
   height: 60px;
   border-radius: 10px;
-  background-color: #7B9ACC;
+  background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 18px;
 `;
 
-export const signupButton = css `
-   ${baseButton}
+export const signupButton = css`
+  ${baseButton}
   width: 500px;
   height: 60px;
   border-radius: 10px;

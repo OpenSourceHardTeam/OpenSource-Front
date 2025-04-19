@@ -3,7 +3,8 @@ const routes = {
   home: "/home",
   bookinfo: "/bookinfo",
   chat: "/chat",
-  login: '/login'
+  login: "/login",
+  chatlist: "/chatlist",
 } as const;
 
 export default routes;

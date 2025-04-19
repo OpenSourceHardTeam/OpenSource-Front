@@ -1,5 +1,5 @@
-import { Colors } from './BookInfoPageText.style';
-import { css } from '@emotion/react';
+import { Colors } from "./BookInfoPageText.style";
+import { css } from "@emotion/react";
 
 // 레이아웃 관련 스타일 컴포넌트
 export const BookInfoFrame = css`

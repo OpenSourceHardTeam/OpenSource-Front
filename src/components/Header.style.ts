@@ -1,7 +1,10 @@
 import { css } from "@emotion/react";
 
 export const header = css`
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
   display: flex;
   width: 100%;
   padding: 11px 13px;
@@ -14,7 +17,6 @@ export const header = css`
 export const textTitle = css`
   position: relative;
   width: 200px;
-  font-family: "Stencil-Regular", Helvetica, sans-serif;
   font-weight: 700;
   font-size: 40px;
   color: #fcf6f5;
@@ -54,7 +56,6 @@ export const loginBorder = css`
 export const loginText = css`
   position: relative;
   width: fit-content;
-  font-family: "Pretendard-semiBold", Helvetica, sans-serif;
   font-weight: 600;
   font-size: 16px;
   color: #f8f6f2;

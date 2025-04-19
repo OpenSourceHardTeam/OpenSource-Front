@@ -1,8 +1,9 @@
 import { css } from "@emotion/react";
+import "pretendard/dist/web/static/pretendard.css";
 
 export const globalStyles = css`
   html {
-    font-family: "Pretendard";
+    font-family: "Pretendard", sans-serif;
   }
 
   * {

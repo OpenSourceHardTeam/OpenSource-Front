@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-
+import { css } from "@emotion/react";
 
 // 공통 텍스트 스타일 정의
 export const FontStyles = {
@@ -35,11 +34,11 @@ export const FontStyles = {
 
 // 색상 정의
 export const Colors = {
-  primary: '#7b9acc',
-  darkText: '#0e2624',
-  normalText: '#3f4756',
-  lightText: '#666666',
-  borderColor: '#d4d4d4',
+  primary: "#7b9acc",
+  darkText: "#0e2624",
+  normalText: "#3f4756",
+  lightText: "#666666",
+  borderColor: "#d4d4d4",
 };
 
 // 텍스트 관련 스타일 컴포넌트
@@ -62,7 +61,7 @@ export const BookInfoTextWrapper2 = css`
   align-self: stretch;
   height: 56px;
   margin-top: -1px;
-  ${FontStyles.pretendardSemiBold};
+  font-family: "Pretendard";
   color: ${Colors.darkText};
   font-size: 30px;
   letter-spacing: 0;
