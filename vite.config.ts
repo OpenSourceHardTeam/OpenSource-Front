@@ -15,7 +15,10 @@ export default defineConfig({
       projects: ["tsconfig.app.json"],
     }),
     svgr({
-      include: "**/*.svg?react",
+      svgrOptions: {
+        icon: true,
+      },
+      include: "**/*.svg",
     }),
   ],
 });
