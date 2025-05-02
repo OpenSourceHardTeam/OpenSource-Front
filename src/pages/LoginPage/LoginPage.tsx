@@ -1,5 +1,5 @@
 import * as styles from "./LoginPage.style";
-import { line } from "@assets/img";
+import { line } from "@assets/index";
 import Button from "@components/Button/Button";
 
 const LoginPage = () => {

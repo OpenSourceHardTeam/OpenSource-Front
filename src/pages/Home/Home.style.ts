@@ -18,11 +18,53 @@ export const Container = css`
   gap: 65px;
 `;
 
+export const ArrowButton = (
+  position: "left" | "right",
+  disabled: boolean
+) => css`
+  position: absolute;
+  top: 50%;
+  ${position}: 0px;
+  transform: translateY(-70%);
+  background: #7b9acc;
+  border-radius: 50%;
+  border: none;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: ${disabled ? "default" : "pointer"};
+  opacity: ${disabled ? 0.3 : 1};
+  pointer-events: ${disabled ? "none" : "auto"};
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+  }
+`;
+
+export const BookListWrapper = css`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
 export const BookListContainer = css`
   display: flex;
-  flex-direction: row;
   gap: 110px;
   padding: 0px 25px;
+  justify-content: center;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+
+  & > div {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const BookContainer = css`
