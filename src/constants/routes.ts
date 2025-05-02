@@ -4,6 +4,7 @@ const routes = {
   bookinfo: "/bookinfo",
   chat: "/chat",
   login: "/login",
+  signup: "/signup",
   chatlist: "/chatlist",
 } as const;
 
