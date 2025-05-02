@@ -7,7 +7,7 @@ import {
   InfoContainer,
   textStyle,
 } from "./ChatingCard.style";
-import { book } from "@assets/img";
+import { book } from "@assets/index";
 import Button from "@components/Button/Button";
 
 const ChatingCard: React.FC = () => {
