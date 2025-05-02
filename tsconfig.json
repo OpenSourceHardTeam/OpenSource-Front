@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
   },
   "files": [],
   "references": [
