@@ -2,7 +2,7 @@ import Button from "../../components/Button/Button.tsx";
 import BookPageVoteCard from "@components/BookPageVoteCard/BookPageVoteCard.tsx";
 import * as layoutStyles from "./BookInfoPage.style.ts";
 import * as textStyles from "./BookInfoPageText.style.ts";
-import { line } from "@assets/img/index.ts";
+import { line } from "@assets/index.ts";
 import image5 from "../../assets/img/image 5.png";
 
 const BD = {
