@@ -6,7 +6,7 @@ import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTime
 
 import Arrow from "../../assets/img/book-info-link.svg"
 import Line from "../../assets/img/Line.png"
-import messageClickButton from "../../assets/img/messageClickButton.svg"
+import messageClickButton from "../../assets/svg/messageClickButton.svg"
 
 // 타입 정의
 interface Message {

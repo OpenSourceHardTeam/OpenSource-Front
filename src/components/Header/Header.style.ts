@@ -9,6 +9,7 @@ export const header = css`
   align-items: flex-end;
   background-color: #7b9acc;
   height: 65px;
+  cursor: pointer;
 `;
 
 export const textTitle = css`
@@ -27,14 +28,6 @@ export const searchLogin = css`
   position: relative;
   width: 225px;
   height: 43px;
-`;
-
-export const feSearch = css`
-  position: absolute;
-  width: 43px;
-  height: 43px;
-  top: 0;
-  left: 0;
 `;
 
 export const loginBorder = css`

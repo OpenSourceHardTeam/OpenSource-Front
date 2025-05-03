@@ -18,8 +18,8 @@ const SignUpPage = () => {
         <Button text={"중복확인"} type={"duplicate"} />
       </div>
       <div css={styles.signupcheck}>
-        <input css={styles.signupid} placeholder="아이디" />
-        <Button text={"중복확인"} type={"duplicate"} />
+        <input css={styles.signupid} placeholder="이메일" />
+        <Button text={"인증하기"} type={"duplicate"} />
       </div>
       <input css={styles.signuppw} placeholder="비밀번호" />
       <input css={styles.signuppw} placeholder="비밀번호 확인" />

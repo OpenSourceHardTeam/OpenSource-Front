@@ -7,6 +7,7 @@ import ChatList from "pages/ChatList/ChatList";
 import ChatPage from "pages/Chat/ChatPage";
 import LoginPage from "pages/LoginPage/LoginPage";
 import SignUpPage from "pages/SignUpPage/SignUpPage"
+import BookListPage from "pages/BookListPage/BookListPage"
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
         path: routes.signup,
         element: <SignUpPage />,
       },
+      {
+        path: routes.booklist,
+        element: <BookListPage />
+      }
     ],
   },
 ]);
