@@ -1,5 +1,5 @@
-import "./BookListPage.style"
-import BookCard from "../../components/BookCard/BookCard"
+import "./BookListPage.style";
+import BookCard from "../../components/BookCard/BookCard";
 import {
   ActivePageButton,
   ChatListContainer,
@@ -13,7 +13,7 @@ import { useState } from "react";
 
 const BOOK_LIST = new Array(50).fill(null);
 
-const CARDS_PER_PAGE = 7;
+const CARDS_PER_PAGE = 9;
 
 const BookListPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,13 +30,11 @@ const BookListPage: React.FC = () => {
   return (
     <div css={MainContainer}>
       <div css={Container}>
-        {/* 페이지 상단 */}
         <p>도서 목록</p>
         <div css={TitleContainer}>
           <p>책에 대한 상세정보를 확인하세요.</p>
         </div>
         <div css={ChatListContainer}>
-          
           {currentChats.map((_, index) => (
             <BookCard key={startIndex + index} />
           ))}

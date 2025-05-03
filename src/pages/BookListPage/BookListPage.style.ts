@@ -1,9 +1,9 @@
 import { css } from "@emotion/react";
 
 export const MainContainer = css`
-  display: flex;
-  flex-direction: column;
-  gap: 80px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px 30px;
   min-height: calc(100vh - 65px);
   width: 1040px;
   margin: 80px 200px 100px 200px;
@@ -25,9 +25,9 @@ export const TitleContainer = css`
 `;
 
 export const ChatListContainer = css`
-  display: flex;
-  flex-direction: column;
-  gap: 65px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px 30px;
   width: 1040px;
   margin-top: 50px;
 `;
