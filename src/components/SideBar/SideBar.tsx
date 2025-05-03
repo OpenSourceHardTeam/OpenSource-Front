@@ -15,7 +15,7 @@ const menuItems = [
     icon: <ChatIcon css={iconStyle} />,
   },
   {
-    to: routes.bookinfo,
+    to: routes.booklist,
     icon: <BookIcon css={iconStyle} />,
   },
 ];
