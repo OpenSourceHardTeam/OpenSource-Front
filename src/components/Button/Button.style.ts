@@ -69,6 +69,11 @@ export const logButton = css`
   border: 2px solid #fcf6f5;
   color: #f8f6f2;
   font-size: 16px;
+
+  &.disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+  }
 `;
 
 // 6. "채팅방 나가기" 버튼
@@ -101,6 +106,11 @@ export const loginButton = css`
   background-color: #7b9acc;
   color: #f8f6f2;
   font-size: 18px;
+
+  &.disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+  }
 `;
 
 export const signupButton = css`
@@ -114,4 +124,9 @@ export const signupButton = css`
   border: 1px solid;
   border-color: #7b9acc;
   border-radius: 10px;
+
+  &.disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+  }
 `;

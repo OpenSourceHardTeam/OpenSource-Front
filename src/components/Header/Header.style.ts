@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
 export const header = css`
   display: flex;
-  width: 1440px;
+  width: 100%;
   padding: 11px 13px;
   justify-content: space-between;
   align-items: flex-end;
