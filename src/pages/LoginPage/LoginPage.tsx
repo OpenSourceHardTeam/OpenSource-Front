@@ -1,5 +1,4 @@
 import * as styles from "./LoginPage.style";
-import { line } from "@assets/index";
 import Button from "@components/Button/Button";
 import { useNavigate } from "react-router-dom";
 import routes from "@constants/routes";
@@ -50,7 +49,14 @@ const LoginPage = () => {
                 password,
               },
               {
-                onSuccess: () => {
+                onSuccess: (res) => {
+                  localStorage.setItem(
+                    "accessToken",
+                    res.data?.accessToken || ""
+                  );
+
+                  window.dispatchEvent(new Event("storage"));
+
                   navigate("/");
                 },
                 onError: (error) => {
@@ -63,9 +69,7 @@ const LoginPage = () => {
         }}
       />
       <div>
-        <img src={line} />
         <div css={styles.text}>또는</div>
-        <img src={line} />
       </div>
 
       <Button text={"회원가입"} type={"signup"} onClick={handleSignUp} />

@@ -7,7 +7,7 @@ export const globalStyles = css`
   }
 
   * {
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     box-sizing: border-box;
   }

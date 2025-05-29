@@ -38,6 +38,12 @@ export const signupnickname = css`
   }
 `;
 
+export const signupContainer = css`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 export const signupid = css`
   position: relative;
   width: 370px;
