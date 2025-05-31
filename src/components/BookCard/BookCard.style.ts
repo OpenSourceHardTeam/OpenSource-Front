@@ -73,7 +73,6 @@ export const joinButton = css`
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
-  
   &:hover {
     background-color: #4565e6;
   }
@@ -83,3 +82,4 @@ export const arrowIcon = css`
   margin-left: 8px;
   font-size: 14px;
 `;
+

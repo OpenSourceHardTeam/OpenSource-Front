@@ -9,13 +9,13 @@ const getNavLinkStyle = (isActive: boolean) => ({
 });
 
 const menuItems = [
-  { to: routes.home, icon: <HomeIcon css={iconStyle} /> },
+  { to: routes.main, icon: <HomeIcon css={iconStyle} /> },
   {
     to: routes.chatlist,
     icon: <ChatIcon css={iconStyle} />,
   },
   {
-    to: routes.bookinfo,
+    to: routes.booklist,
     icon: <BookIcon css={iconStyle} />,
   },
 ];

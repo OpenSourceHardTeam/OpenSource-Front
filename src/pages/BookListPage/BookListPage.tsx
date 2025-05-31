@@ -1,3 +1,4 @@
+
 import "./BookListPage.style"
 import BookCard from "../../components/BookCard/BookCard"
 import {
@@ -14,6 +15,7 @@ import { useState } from "react";
 const BOOK_LIST = new Array(50).fill(null);
 
 const CARDS_PER_PAGE = 7;
+
 
 const BookListPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
