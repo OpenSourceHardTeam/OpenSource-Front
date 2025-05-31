@@ -24,19 +24,11 @@ const Header: React.FC = () => {
       <div css={styles.textTitle} onClick={handleHomeClick}>
         BOOKING
       </div>
-      <div css={styles.searchLogin}>
-        <div css={styles.searchLogin}>
-          {isLoggedIn ? (
-            <div onClick={handleProfileClick}>
-              <ProfileIcon />
-            </div>
-          ) : (
-            <div css={styles.loginBorder}>
-              <div css={styles.loginText} onClick={handleLoginClick}>
-                <Button text={"회원가입/로그인"} type={"log"} />
-              </div>
-            </div>
-          )}
+      <div css={styles.searchLogin}>        
+        <div css={styles.loginBorder}>
+          <div css={styles.loginText}>
+            <Button text={"회원가입/로그인"} type={"log"} />
+          </div>
         </div>
       </div>
     </div>
