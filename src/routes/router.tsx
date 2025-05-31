@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import Home from "../pages/Home/Home";
 import routes from "@constants/routes";
-import BookInfoPage from "pages/BookDetail/BookInfoPage";
+import BookInfoPage from "../pages/BookDetail/BookInfoPage";
 import ChatList from "pages/ChatList/ChatList";
 import ChatPage from "pages/Chat/ChatPage";
 import LoginPage from "pages/LoginPage/LoginPage";

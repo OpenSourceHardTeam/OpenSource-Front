@@ -1,27 +1,175 @@
 import React, { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import * as styles from "./ChatPage.style";
 import Button from "../../components/Button/Button";
-import ChatRoomList, {
-  ChatRoom,
-} from "../../components/ChatRoomList/ChatRoomList";
+import ChatRoomList from "../../components/ChatRoomList/ChatRoomList";
 import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
 
-import Arrow from "../../assets/img/book-info-link.svg";
+import Arrow from "../../assets/svg/book-info-link.svg";
 import Line from "../../assets/img/Line.png";
 import messageClickButton from "../../assets/svg/messageClickButton.svg";
 
-// 타입 정의
-interface Message {
-  id: number;
-  sender: string;
-  message: string;
-  time: string;
-  isMine: boolean;
-  senderId?: string;
-}
+// API 함수들과 타입 임포트
+import {
+  getUserChatRooms,
+  getUserChatRoom,
+  getChatRoomUsers,
+  leaveChatRoom,
+  JoinChatRoom,
+  ChatRoom,
+  Message,
+  User
+} from "../../apis/hooks/chat/useChatApi";
 
-// 예제용 현재 사용자 ID (실제로는 인증 시스템에서 가져와야 함)
-const currentUserId = "current-user-id";
+// 더미 데이터 사용 플래그
+const USE_DUMMY_DATA = true; // true: 더미 데이터 사용, false: 실제 API 데이터 사용
+
+// 토큰에서 추출한 userId
+const currentUserId = 6; // JWT 토큰에 포함된 userId
+
+// 대체 데이터 (API 호출 실패 시 사용)
+const dummyChatRooms: ChatRoom[] = [
+  {
+    id: 1,
+    externalRoomId: "room-1",
+    topic: "소설의 힘 : 디지털 시대에서 역할?",
+    book: {
+      bookId: 101,
+      bookRank: 1,
+      bookImageUrl: "",
+      bookTitle: "논픽션",
+      bookAuthor: "작가명",
+      bookDescription: "설명",
+      publisherName: "출판사",
+      publishDate: "2023-01-01",
+      publisherReview: "리뷰"
+    },
+    totalParticipants: 15,
+    messageSequence: 1,
+    currentParticipants: 10,
+    messageCount: 25,
+    isArchived: false
+  },
+  {
+    id: 2,
+    externalRoomId: "room-2",
+    topic: "현대 문학의 트렌드와 미래",
+    book: {
+      bookId: 102,
+      bookRank: 2,
+      bookImageUrl: "",
+      bookTitle: "소설",
+      bookAuthor: "작가명2",
+      bookDescription: "설명2",
+      publisherName: "출판사2",
+      publishDate: "2023-02-01",
+      publisherReview: "리뷰2"
+    },
+    totalParticipants: 12,
+    messageSequence: 1,
+    currentParticipants: 8,
+    messageCount: 15,
+    isArchived: false
+  },
+  {
+    id: 3,
+    externalRoomId: "room-3",
+    topic: "작가와의 대화: 창작 과정 공유",
+    book: {
+      bookId: 103,
+      bookRank: 3,
+      bookImageUrl: "",
+      bookTitle: "에세이",
+      bookAuthor: "작가명3",
+      bookDescription: "설명3",
+      publisherName: "출판사3",
+      publishDate: "2023-03-01",
+      publisherReview: "리뷰3"
+    },
+    totalParticipants: 8,
+    messageSequence: 1,
+    currentParticipants: 6,
+    messageCount: 10,
+    isArchived: false
+  }
+];
+
+// 방별 더미 메시지 설정
+const dummyRoomMessages = {
+  1: [
+    {
+      id: 1,
+      sender: "북서랑",
+      message: "안녕하세요! 소설의 사회적 역할에 대해 이야기해봤으면 합니다. 여러분은 소설이 현대 사회에 어떤 영향을 미친다고 생각하시나요?",
+      time: "10:15",
+      isMine: false,
+      senderId: "user-1"
+    },
+    {
+      id: 2,
+      sender: "문학연구자",
+      message: "저는 소설이 우리 사회의 거울 역할을 한다고 생각합니다. 시대의 문제와 고민을 반영하고, 때로는 비판적인 시각을 제시함으로써 사회적 담론을 형성하는 중요한 매체라고 봅니다.",
+      time: "10:18",
+      isMine: false,
+      senderId: "user-2"
+    },
+    {
+      id: 3,
+      sender: "작가",
+      message: "저는 소설이 우리가 다른 사람의 삶과 경험을 간접적으로 체험할 수 있게 해준다는 점에서 공감 능력을 향상시키는 역할을 한다고 생각합니다.",
+      time: "10:20",
+      isMine: false,
+      senderId: "user-3"
+    }
+  ],
+  2: [
+    {
+      id: 201,
+      sender: "문학평론가",
+      message: "최근 디지털 플랫폼의 발전으로 문학 소비 형태가 많이 바뀌었습니다. 여러분은 이러한 변화가 문학의 본질에 어떤 영향을 미친다고 보시나요?",
+      time: "14:05",
+      isMine: false,
+      senderId: "user-5"
+    },
+    {
+      id: 202,
+      sender: "독자",
+      message: "저는 오히려 더 다양한 문학에 접근할 수 있게 되어서 좋다고 생각합니다. 종이책만으로는 만나기 어려웠던 작품들을 쉽게 읽을 수 있게 되었으니까요.",
+      time: "14:07",
+      isMine: false,
+      senderId: "user-6"
+    }
+  ],
+  3: [
+    {
+      id: 301,
+      sender: "소설가",
+      message: "안녕하세요! 오늘은 제가 소설을 쓰는 과정에 대해 이야기해보려고 합니다. 혹시 창작 과정에 대해 궁금한 점이 있으신가요?",
+      time: "16:30",
+      isMine: false,
+      senderId: "user-7"
+    }
+  ]
+};
+
+// 방별 더미 사용자 설정
+const dummyRoomUsers = {
+  1: [
+    { id: currentUserId, email: "me@example.com", name: "나" },
+    { id: 1, email: "bookmaster@example.com", name: "북서랑" },
+    { id: 2, email: "researcher@example.com", name: "문학연구자" },
+    { id: 3, email: "writer@example.com", name: "작가" },
+    { id: 4, email: "teacher@example.com", name: "문학교사" }
+  ],
+  2: [
+    { id: currentUserId, email: "me@example.com", name: "나" },
+    { id: 5, email: "critic@example.com", name: "문학평론가" },
+    { id: 6, email: "reader@example.com", name: "독자" }
+  ],
+  3: [
+    { id: currentUserId, email: "me@example.com", name: "나" },
+    { id: 7, email: "author@example.com", name: "소설가" }
+  ]
+};
 
 const ChatPage: React.FC = () => {
   // 메시지 상태 관리
@@ -34,144 +182,98 @@ const ChatPage: React.FC = () => {
   const [roomMessages, setRoomMessages] = useState<{
     [key: number]: Message[];
   }>({});
+  
+  // 사용자 목록 상태
+  const [roomUsers, setRoomUsers] = useState<User[]>([]);
 
   // 로딩 상태
   const [isLoadingRooms, setIsLoadingRooms] = useState<boolean>(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
+  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(false);
 
-  // 소켓 연결 상태
-  const [socketConnected, setSocketConnected] = useState<boolean>(false);
+  // 환경 변수에서 가져온 액세스 토큰을 localStorage에 저장
+  useEffect(() => {
+    const token = import.meta.env.VITE_AUTH_TOKEN;
+    if (token) {
+      localStorage.setItem("accessToken", token);
+      console.log("토큰이 로컬 스토리지에 저장되었습니다.");
+    }
+  }, []);
 
   // 채팅방 목록 가져오기
   useEffect(() => {
     const fetchChatRooms = async () => {
       setIsLoadingRooms(true);
+      
+      // 더미 데이터 사용 모드
+      if (USE_DUMMY_DATA) {
+        // 로딩 효과를 위한 지연
+        setTimeout(() => {
+          setChatRooms(dummyChatRooms);
+          setActiveRoomId(dummyChatRooms[0].id);
+          setMessages(dummyRoomMessages[1]);
+          setRoomMessages(dummyRoomMessages);
+          setRoomUsers(dummyRoomUsers[1]);
+          setIsLoadingRooms(false);
+        }, 500);
+        return;
+      }
+      
+      // 실제 API 사용 모드
       try {
-        // API 호출로 사용자가 참여한 채팅방 목록 가져오기
-        // 실제 구현에서는 아래 주석 해제
-        // const response = await fetch('/api/chat-rooms');
-        // const data = await response.json();
-
-        // 임시 데이터 (백엔드 연동 전까지 사용)
-        const data: ChatRoom[] = [
-          {
-            id: 1,
-            title: "소설의 힘 : 디지털 시대에서 역할?",
-            category: "논픽션",
-            participants: 15,
-            isActive: true,
-          },
-          {
-            id: 2,
-            title: "현대 문학의 트렌드와 미래",
-            category: "소설",
-            participants: 12,
-          },
-          {
-            id: 3,
-            title: "작가와의 대화: 창작 과정 공유",
-            category: "에세이",
-            participants: 8,
-          },
-        ];
-
-        setChatRooms(data);
-
-        // 첫 번째 방을 기본으로 선택
-        if (data.length > 0) {
-          setActiveRoomId(data[0].id);
-          // 첫 번째 방의 메시지도 바로 가져오기
-          fetchRoomMessages(data[0].id);
+        // 실제 API 호출
+        const response = await getUserChatRooms(currentUserId);
+        
+        // 응답 데이터가 있는지 확인
+        if (response && Array.isArray(response) && response.length > 0) {
+          setChatRooms(response);
+          
+          // 첫 번째 방을 기본으로 선택
+          setActiveRoomId(response[0].id);
+          fetchRoomMessages(response[0].id);
+          fetchRoomUsers(response[0].id);
+        } else {
+          // 응답이 없거나 빈 경우 더미 데이터 사용
+          console.log("유효한 채팅방 데이터가 없습니다. 더미 데이터를 사용합니다.");
+          setChatRooms(dummyChatRooms);
+          setActiveRoomId(dummyChatRooms[0].id);
+          setMessages(dummyRoomMessages[1]);
+          setRoomMessages(dummyRoomMessages);
+          setRoomUsers(dummyRoomUsers[1]);
         }
       } catch (error) {
         console.error("채팅방 목록을 가져오는데 실패했습니다:", error);
+        
+        // 에러 발생 시 대체 데이터 사용
+        setChatRooms(dummyChatRooms);
+        setActiveRoomId(dummyChatRooms[0].id);
+        setMessages(dummyRoomMessages[1]);
+        setRoomMessages(dummyRoomMessages);
+        setRoomUsers(dummyRoomUsers[1]);
       } finally {
         setIsLoadingRooms(false);
       }
     };
 
     fetchChatRooms();
-
-    // 소켓 연결 설정 (예시)
-    const setupSocket = () => {
-      // 실제 구현에서는 아래 주석 해제 및 socket.io-client 설치 필요
-      // const socket = io('http://your-backend-url');
-      // socket.on('connect', () => {
-      //   setSocketConnected(true);
-      //   console.log('소켓 연결됨');
-      // });
-
-      // socket.on('disconnect', () => {
-      //   setSocketConnected(false);
-      //   console.log('소켓 연결 끊김');
-      // });
-
-      // return socket;
-
-      // 예시용 소켓 연결 설정 (실제로는 구현 필요)
-      setSocketConnected(true);
-      return null;
-    };
-
-    // const socket = setupSocket();
-
-    // 컴포넌트 언마운트 시 정리
-    return () => {
-      // 소켓 연결 해제
-      // if (socket) {
-      //   socket.disconnect();
-      // }
-    };
   }, []);
-
-  // 소켓을 통한 실시간 메시지 수신 설정
-  useEffect(() => {
-    if (!activeRoomId || !socketConnected) return;
-
-    // 소켓을 통한 채팅방 참여 및 메시지 수신 (예시)
-    const setupRoomSocket = () => {
-      // 실제 구현에서는 아래 주석 해제
-      // const socket = io('http://your-backend-url');
-
-      // // 채팅방 참여
-      // socket.emit('join-room', activeRoomId);
-
-      // // 새 메시지 수신
-      // socket.on('new-message', (receivedMessage) => {
-      //   const formattedMessage = {
-      //     ...receivedMessage,
-      //     isMine: receivedMessage.senderId === currentUserId
-      //   };
-
-      //   setMessages(prev => [...prev, formattedMessage]);
-      //   setRoomMessages(prev => ({
-      //     ...prev,
-      //     [activeRoomId]: [...(prev[activeRoomId] || []), formattedMessage]
-      //   }));
-      // });
-
-      // return socket;
-
-      // 예시용 (실제로는 구현 필요)
-      return null;
-    };
-
-    // const roomSocket = setupRoomSocket();
-
-    // 컴포넌트 언마운트 또는 채팅방 변경 시 정리
-    return () => {
-      // if (roomSocket) {
-      //   roomSocket.emit('leave-room', activeRoomId);
-      //   roomSocket.disconnect();
-      // }
-    };
-  }, [activeRoomId, socketConnected]);
 
   // 특정 채팅방의 메시지 가져오기
   const fetchRoomMessages = async (roomId: number) => {
     if (!roomId) return;
 
     setIsLoadingMessages(true);
+    
+    // 더미 데이터 사용 모드
+    if (USE_DUMMY_DATA) {
+      setTimeout(() => {
+        const roomDummyMessages = dummyRoomMessages[roomId] || [];
+        setMessages(roomDummyMessages);
+        setIsLoadingMessages(false);
+      }, 300);
+      return;
+    }
+    
     try {
       // 이미 가져온 메시지가 있다면 그것을 사용
       if (roomMessages[roomId] && roomMessages[roomId].length > 0) {
@@ -180,106 +282,139 @@ const ChatPage: React.FC = () => {
         return;
       }
 
-      // API 호출로 특정 채팅방의 메시지 내역 가져오기
-      // 실제 구현에서는 아래 주석 해제
-      // const response = await fetch(`/api/chat-rooms/${roomId}/messages`);
-      // const data = await response.json();
-
-      // 예제 데이터 (방 ID에 따라 다른 메시지 제공)
-      let data: Message[];
-      if (roomId === 1) {
-        data = [
-          {
-            id: 1,
-            sender: "북서랑",
-            message:
-              "안녕하세요! 소설의 사회적 역할에 대해 이야기해봤으면 합니다. 여러분은 소설이 현대 사회에 어떤 영향을 미친다고 생각하시나요?",
-            time: "10:15",
-            isMine: false,
-            senderId: "user-1",
-          },
-          {
-            id: 2,
-            sender: "문학연구자",
-            message:
-              "저는 소설이 우리 사회의 거울 역할을 한다고 생각합니다. 시대의 문제와 고민을 반영하고, 때로는 비판적인 시각을 제시함으로써 사회적 담론을 형성하는 중요한 매체라고 봅니다.",
-            time: "10:18",
-            isMine: false,
-            senderId: "user-2",
-          },
-          {
-            id: 3,
-            sender: "작가",
-            message:
-              "저는 소설이 우리가 다른 사람의 삶과 경험을 간접적으로 체험할 수 있게 해준다는 점에서 공감 능력을 향상시키는 역할을 한다고 생각합니다.",
-            time: "10:20",
-            isMine: false,
-            senderId: "user-3",
-          },
-          {
-            id: 4,
-            sender: "작별레",
-            message:
-              '두 분 모두 좋은 관점이에요! 저는 조금 다른 측면에서, 소설이 복잡한 현실에서 살아남기 위해 다른 세계를 경험할 수 있게 해주는 "도피처" 역할도 한다고 생각합니다. 어떤 역할도 중요하지 않을까요?',
-            time: "10:23",
-            isMine: false,
-            senderId: "user-4",
-          },
-        ];
-      } else if (roomId === 2) {
-        data = [
-          {
-            id: 1,
-            sender: "문학평론가",
-            message:
-              "최근 디지털 플랫폼의 발전으로 문학 소비 형태가 많이 바뀌었습니다. 여러분은 이러한 변화가 문학의 본질에 어떤 영향을 미친다고 보시나요?",
-            time: "14:05",
-            isMine: false,
-            senderId: "user-5",
-          },
-          {
-            id: 2,
-            sender: "독자",
-            message:
-              "저는 오히려 더 다양한 문학에 접근할 수 있게 되어서 좋다고 생각합니다. 종이책만으로는 만나기 어려웠던 작품들을 쉽게 읽을 수 있게 되었으니까요.",
-            time: "14:07",
-            isMine: false,
-            senderId: "user-6",
-          },
-        ];
-      } else {
-        data = [
-          {
-            id: 1,
-            sender: "소설가",
-            message:
-              "안녕하세요! 오늘은 제가 소설을 쓰는 과정에 대해 이야기해보려고 합니다. 혹시 창작 과정에 대해 궁금한 점이 있으신가요?",
-            time: "16:30",
-            isMine: false,
-            senderId: "user-7",
-          },
-        ];
+      // API 호출로 메시지 가져오기
+      try {
+        // 실제 API 구현이 준비되면 이 부분을 활성화
+        // const response = await getUserChatRoom(currentUserId, roomId);
+        
+        // 임시로 더미 메시지 사용
+        const roomDummyMessages = dummyRoomMessages[roomId] || [];
+        setMessages(roomDummyMessages);
+        setRoomMessages(prev => ({
+          ...prev,
+          [roomId]: roomDummyMessages
+        }));
+      } catch (error) {
+        console.error(`메시지를 가져오는데 실패했습니다:`, error);
+        setMessages([]);
       }
-
-      // 메시지 상태 업데이트
-      setMessages(data);
-
-      // 방별 메시지 저장소에도 저장
-      setRoomMessages((prev) => ({
-        ...prev,
-        [roomId]: data,
-      }));
-    } catch (error) {
-      console.error(`방 ${roomId}의 메시지를 가져오는데 실패했습니다:`, error);
     } finally {
       setIsLoadingMessages(false);
+    }
+  };
+  
+  // 채팅방 사용자 목록 가져오기
+  const fetchRoomUsers = async (roomId: number) => {
+    if (!roomId) return;
+    
+    setIsLoadingUsers(true);
+    
+    // 더미 데이터 사용 모드
+    if (USE_DUMMY_DATA) {
+      setTimeout(() => {
+        const users = dummyRoomUsers[roomId] || [];
+        setRoomUsers(users);
+        setIsLoadingUsers(false);
+      }, 300);
+      return;
+    }
+    
+    try {
+      const response = await getChatRoomUsers(roomId);
+      
+      const users = Array.isArray(response) 
+        ? response 
+        : Object.values(response);
+      
+      if (users && users.length > 0) {
+        setRoomUsers(users);
+      } else {
+        // 기본 사용자 목록
+        setRoomUsers(dummyRoomUsers[roomId] || [
+          { id: currentUserId, email: "me@example.com", name: "나" }
+        ]);
+      }
+    } catch (error) {
+      console.error("사용자 목록을 가져오는데 실패했습니다:", error);
+      // 기본 사용자 목록
+      setRoomUsers(dummyRoomUsers[roomId] || [
+        { id: currentUserId, email: "me@example.com", name: "나" }
+      ]);
+    } finally {
+      setIsLoadingUsers(false);
     }
   };
 
   // 방 선택 핸들러
   const handleSelectRoom = (roomId: number) => {
+    if (roomId === activeRoomId) return;
+    
     setActiveRoomId(roomId);
     fetchRoomMessages(roomId);
+    fetchRoomUsers(roomId);
+  };
+
+  // 채팅방 참여 처리 함수
+  const handleJoinChatRoom = async (chatroomId: number) => {
+    try {
+      if (!USE_DUMMY_DATA) {
+        await JoinChatRoom({
+          userId: currentUserId,
+          chatroomId: chatroomId
+        });
+        
+        // 채팅방 목록 다시 불러오기
+        const response = await getUserChatRooms(currentUserId);
+        if (response && Array.isArray(response) && response.length > 0) {
+          setChatRooms(response);
+        }
+      }
+      
+      // 참여한 방으로 이동
+      setActiveRoomId(chatroomId);
+      fetchRoomMessages(chatroomId);
+      fetchRoomUsers(chatroomId);
+      
+      alert("채팅방에 참여했습니다.");
+    } catch (error) {
+      console.error("채팅방 참여에 실패했습니다:", error);
+      alert("채팅방 참여에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  // 채팅방 나가기 처리
+  const handleLeaveRoom = async () => {
+    if (!activeRoomId) return;
+    
+    if (!window.confirm("정말 채팅방을 나가시겠습니까?")) {
+      return;
+    }
+    
+    try {
+      if (!USE_DUMMY_DATA) {
+        await leaveChatRoom(currentUserId, activeRoomId);
+      }
+      
+      // 채팅방 목록에서 해당 방 제거
+      setChatRooms(prev => prev.filter(room => room.id !== activeRoomId));
+      
+      // 다른 방 선택
+      const newRooms = chatRooms.filter(room => room.id !== activeRoomId);
+      if (newRooms.length > 0) {
+        setActiveRoomId(newRooms[0].id);
+        fetchRoomMessages(newRooms[0].id);
+        fetchRoomUsers(newRooms[0].id);
+      } else {
+        setActiveRoomId(null);
+        setMessages([]);
+        setRoomUsers([]);
+      }
+      
+      alert("채팅방에서 나갔습니다.");
+    } catch (error) {
+      console.error("채팅방 나가기에 실패했습니다:", error);
+      alert("채팅방 나가기에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   // 메시지 전송 처리 (사용자)
@@ -287,15 +422,15 @@ const ChatPage: React.FC = () => {
     if (message.trim() === "" || !activeRoomId) return;
 
     const newMessage: Message = {
-      id: Date.now(), // 임시 ID (백엔드에서 실제 ID 부여)
-      sender: "",
+      id: Date.now(),
+      sender: "나",
       message: message,
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
       isMine: true,
-      senderId: currentUserId,
+      senderId: currentUserId.toString(),
     };
 
     // 로컬 상태 먼저 업데이트 (즉각적인 UI 반응)
@@ -311,32 +446,8 @@ const ChatPage: React.FC = () => {
     // 메시지 입력창 초기화
     setMessage("");
 
-    try {
-      // 백엔드에 메시지 저장 (실제 구현에서는 주석 해제)
-      // await fetch(`/api/chat-rooms/${activeRoomId}/messages`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     content: message,
-      //     roomId: activeRoomId,
-      //     senderId: currentUserId
-      //   }),
-      // });
-
-      // 소켓을 통한 메시지 전송 (실제 구현에서는 주석 해제)
-      // socket.emit('send-message', {
-      //   content: message,
-      //   roomId: activeRoomId,
-      //   senderId: currentUserId
-      // });
-
-      console.log("메시지 전송됨:", message, "방 ID:", activeRoomId);
-    } catch (error) {
-      console.error("메시지 전송에 실패했습니다:", error);
-      // 오류 처리 (필요시 사용자에게 알림)
-    }
+    // 소켓 구현이 완료되면 이 부분에 실제 메시지 전송 로직 추가
+    console.log('메시지 전송:', message);
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>): void => {
@@ -362,7 +473,13 @@ const ChatPage: React.FC = () => {
           </div>
 
           <ChatRoomList
-            rooms={chatRooms}
+            rooms={chatRooms.map(room => ({
+              id: room.id,
+              title: room.topic,
+              category: room.book?.bookTitle || "분류 없음",
+              participants: room.currentParticipants,
+              isActive: !room.isArchived
+            }))}
             onSelectRoom={handleSelectRoom}
             activeRoomId={activeRoomId || undefined}
             isLoading={isLoadingRooms}
@@ -371,10 +488,7 @@ const ChatPage: React.FC = () => {
 
         <div css={styles.ChatContainer}>
           <div css={styles.ChatHeader}>
-            <span>{activeRoom?.title || "채팅방을 선택해주세요"}</span>
-            {!socketConnected && (
-              <span css={styles.ConnectionStatus}>연결 중...</span>
-            )}
+            <span>{activeRoom?.topic || "채팅방을 선택해주세요"}</span>
           </div>
 
           <div css={styles.ChatAnnouncement}>
@@ -426,14 +540,14 @@ const ChatPage: React.FC = () => {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               placeholder="메시지를 입력하세요..."
-              // disabled={!activeRoomId || !socketConnected} //나중에 소켓 연결 시 주석 해제
+              disabled={!activeRoomId}
             />
             <button
               css={styles.SendButton}
               onClick={handleSendMessage}
-              // disabled={!activeRoomId || !socketConnected}
+              disabled={!activeRoomId}
             >
-              <img src={messageClickButton} />
+              <img src={messageClickButton} alt="전송" />
             </button>
           </div>
         </div>
@@ -443,105 +557,38 @@ const ChatPage: React.FC = () => {
             css={styles.LeaveButton}
             text={"채팅방 나가기"}
             type={"leave"}
+            onClick={handleLeaveRoom}
           />
 
           <div css={styles.ParticipantList}>
             <h3 css={styles.HeaderText}>
-              <img css={styles.arrowStyle} src={Arrow} />
-              참여자 ({activeRoom?.participants || 0})
+              <img css={styles.arrowStyle} src="/assets/img/book-info-link.svg" alt="화살표" />
+              참여자 ({activeRoom?.currentParticipants || 0})
             </h3>
-            <img css={styles.lineStyle} src={Line} />
-            {activeRoomId === 1 && (
-              <>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 독서광
+            <img css={styles.lineStyle} src={Line} alt="구분선" />
+            
+            {isLoadingUsers ? (
+              <div>참여자 목록을 불러오는 중...</div>
+            ) : activeRoomId && roomUsers.length > 0 ? (
+              roomUsers.map(user => (
+                <div key={user.id} css={styles.ParticipantItem}>
+                  <div css={styles.ParticipantDot}></div> 
+                  {user.id === currentUserId ? `${user.name} (나)` : user.name}
                 </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 문학연구자
+              ))
+            ) : (
+              !activeRoomId && (
+                <div css={styles.EmptyParticipants}>
+                  채팅방을 선택하면 참여자 목록이 표시됩니다.
                 </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 작별레
-                </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 문학교사
-                </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 나 +7명
-                </div>
-              </>
-            )}
-            {activeRoomId === 2 && (
-              <>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 문학평론가
-                </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 독자
-                </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 나 +9명
-                </div>
-              </>
-            )}
-            {activeRoomId === 3 && (
-              <>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 소설가
-                </div>
-                <div css={styles.ParticipantItem}>
-                  <div css={styles.ParticipantDot}></div> 나 +6명
-                </div>
-              </>
-            )}
-            {!activeRoomId && (
-              <div css={styles.EmptyParticipants}>
-                채팅방을 선택하면 참여자 목록이 표시됩니다.
-              </div>
+              )
             )}
           </div>
 
-          {activeRoomId === 1 && (
-            <>
-              <InfoBoxWithTimers
-                title="현재 토론"
-                discussionTitle="소설은 현대 사회에서 어떤 역할을 하는가?"
-                initialMinutes={15}
-                initialSeconds={0}
-                lineImage={Line}
-              />
-
-              <div css={styles.InfoBox}>
-                <h3 css={styles.HeaderText}>다른 토론 주제</h3>
-                <div css={styles.InfoQuestion}>
-                  <p css={styles.QuestionText}>
-                    디지털 시대에 종이책의 가치는?
-                  </p>
-                  <p css={styles.QuestionDetail}>참여: 10명</p>
-                </div>
-                <div css={styles.InfoQuestion}>
-                  <p css={styles.QuestionText}>
-                    작가의 의도는 얼마나 중요한가?
-                  </p>
-                  <p css={styles.QuestionDetail}>참여: 8명</p>
-                </div>
-              </div>
-            </>
-          )}
-
-          {activeRoomId === 2 && (
+          {activeRoomId && activeRoom && (
             <InfoBoxWithTimers
               title="현재 토론"
-              discussionTitle="디지털 시대의 문학 소비 형태"
-              initialMinutes={15}
-              initialSeconds={0}
-              lineImage={Line}
-            />
-          )}
-
-          {activeRoomId === 3 && (
-            <InfoBoxWithTimers
-              title="현재 세션"
-              discussionTitle="소설가와 함께하는 창작 과정 탐구"
+              discussionTitle={activeRoom.topic}
               initialMinutes={15}
               initialSeconds={0}
               lineImage={Line}
