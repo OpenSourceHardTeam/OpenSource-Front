@@ -57,3 +57,23 @@ export const ActivePageButton = css`
   padding: 6px 12px;
   cursor: pointer;
 `;
+
+export const ChatListContainerLoadingError = css `
+ display: 'flex', 
+  justifyContent: 'center', 
+  alignItems: 'center', 
+  minHeight: '200px',
+  fontSize: '18px',
+  color: '#666'
+`
+
+export const ChatListContainerError = css`
+display: 'flex', 
+flexDirection: 'column',
+justifyContent: 'center', 
+alignItems: 'center', 
+minHeight: '200px',
+gap: '16px'
+fontSize: '18px' 
+color: '#e74c3c'
+` 
