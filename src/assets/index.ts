@@ -1,4 +1,4 @@
-export { default as border } from "./img/BORDER.png";
+export { default as border } from "./img/Border.png";
 export { default as book } from "./img/book.png";
 export { default as line } from "./img/Line.png";
 export { default as BookIcon } from "./svg/bookIcon.svg";
