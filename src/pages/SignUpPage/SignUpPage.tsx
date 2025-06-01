@@ -57,32 +57,8 @@ const SignUpPage = () => {
         />
       </div>
       <div css={styles.signupcheck}>
-        <input
-          css={styles.signupid}
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setIsEmailVerified(false);
-          }}
-        />
-        <Button
-          text={"인증하기"}
-          type={"duplicate"}
-          onClick={onClickEmailVerify}
-        />
-      </div>
-      <div css={styles.passwordBox}>
-        <input
-          css={styles.signuppw}
-          placeholder="비밀번호"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div css={styles.instruction}>
-          비밀번호는 영문 대소문자, 숫자, 특수기호를 포함해야 합니다.
-        </div>
+        <input css={styles.signupid} placeholder="이메일" />
+        <Button text={"인증하기"} type={"duplicate"} />
       </div>
       <input
         css={styles.signuppw}

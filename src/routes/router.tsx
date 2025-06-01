@@ -6,8 +6,9 @@ import BookInfoPage from "pages/BookDetail/BookInfoPage";
 import ChatList from "pages/ChatList/ChatList";
 // import ChatPage from "pages/Chat/ChatPage";
 import LoginPage from "pages/LoginPage/LoginPage";
-import SignUpPage from "pages/SignUpPage/SignUpPage";
-import BookListPage from "pages/BookListPage/BookListPage";
+import SignUpPage from "pages/SignUpPage/SignUpPage"
+import BookListPage from "pages/BookListPage/BookListPage"
+
 
 const router = createBrowserRouter([
   {
@@ -38,8 +39,8 @@ const router = createBrowserRouter([
       },
       {
         path: routes.booklist,
-        element: <BookListPage />,
-      },
+        element: <BookListPage />
+      }
     ],
   },
 ]);
