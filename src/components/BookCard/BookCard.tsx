@@ -16,10 +16,10 @@ const BookCard: React.FC = () => {
     <div css={styles.bookCardContainer} onClick={handleDetail}>
       <div css={styles.contentContainer}>
         <img src={image} alt={title} css={styles.bookImage} />
-        <div css={styles.titleContainer}>
-          <h2 css={styles.bookTitle}>{title}</h2>
-          <p css={styles.bookAuthor}>{author}</p>
-        </div>
+      </div>
+      <div css={styles.contentContainer}>
+        <h2 css={styles.bookTitle}>{title}</h2>
+        <p css={styles.bookAuthor}>{author}</p>
       </div>
     </div>
   );

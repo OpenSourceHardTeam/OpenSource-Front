@@ -41,189 +41,118 @@ export const Colors = {
   borderColor: "#d4d4d4",
 };
 
-// 텍스트 관련 스타일 컴포넌트
-export const BookInfoTextWrapper = css`
-  position: absolute;
-  width: 586px;
-  height: 37px;
-  top: 0;
-  left: 0;
+// 페이지 타이틀
+export const pageTitle = css`
   ${FontStyles.pretendardBold};
   color: ${Colors.primary};
   font-size: 40px;
   letter-spacing: 0;
   line-height: normal;
-  white-space: nowrap;
 `;
 
-export const BookInfoTextWrapper2 = css`
-  position: relative;
-  align-self: stretch;
-  height: 56px;
-  margin-top: -1px;
-  font-family: "Pretendard";
+// 책 제목
+export const bookTitle = css`
+  ${FontStyles.pretendardRegular};
   color: ${Colors.darkText};
   font-size: 30px;
-  letter-spacing: 0;
   line-height: 29.9px;
 `;
 
-export const BookInfoTextWrapper3 = css`
-  position: relative;
-  align-self: stretch;
-  height: 28px;
+// 책 저자
+export const bookAuthor = css`
   ${FontStyles.pretendardBold};
   color: ${Colors.normalText};
   font-size: 24px;
-  letter-spacing: 0;
   line-height: 29.9px;
-  white-space: nowrap;
 `;
 
-export const BookInfoP = css`
-  position: relative;
-  align-self: stretch;
+// 출판사 정보
+export const bookPublisher = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.lightText};
   font-size: 24px;
-  letter-spacing: 0;
   line-height: normal;
 `;
 
-export const BookInfoTextWrapper4 = css`
-  position: relative;
-  width: 287px;
-  height: 29px;
-  margin-top: -1px;
+// 채팅방 타이틀
+export const chatRoomTitle = css`
   ${FontStyles.pretendardExtraBold};
   color: ${Colors.normalText};
   font-size: 25px;
-  white-space: nowrap;
-  letter-spacing: 0;
   line-height: normal;
 `;
 
-export const BookInfoTextWrapper5 = css`
-  position: relative;
-  align-self: stretch;
-  height: 19px;
+// 채팅방 설명
+export const chatRoomDesc = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.normalText};
   font-size: 16px;
-  white-space: nowrap;
-  letter-spacing: 0;
   line-height: normal;
 `;
 
-export const BookInfoTextWrapper6 = css`
-  position: relative;
-  align-self: stretch;
-  height: 87.36px;
-  margin-top: -1px;
+// 규칙 타이틀
+export const rulesTitle = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.normalText};
   font-size: 16px;
-  letter-spacing: 0;
   line-height: normal;
+  margin-bottom: 5px;
 `;
 
-export const BookInfoTextWrapper7 = css`
-  position: relative;
-  align-self: stretch;
-  height: 51px;
-  margin-top: -60px;
+// 규칙 설명
+export const rulesDesc = css`
   ${FontStyles.pretendardLight};
   color: ${Colors.normalText};
   font-size: 14px;
-  letter-spacing: 0;
   line-height: normal;
 `;
 
-export const BookInfoTextWrapper9 = css`
-  position: relative;
-  width: 76px;
-  height: 29px;
-  margin-top: -1px;
+// 활성화된 탭
+export const activeTab = css`
   ${FontStyles.pretendardMedium};
   color: ${Colors.normalText};
   font-size: 22px;
-  letter-spacing: 0;
   line-height: normal;
+  cursor: pointer;
 `;
 
-export const BookInfoTextWrapper10 = css`
-  position: relative;
-  width: 49px;
-  height: 29px;
-  margin-top: -1px;
+// 비활성화된 탭
+export const inactiveTab = css`
   ${FontStyles.pretendardMedium};
   color: ${Colors.lightText};
   font-size: 22px;
-  letter-spacing: 0;
   line-height: normal;
+  cursor: pointer;
 `;
 
-export const BookInfoTextWrapper11 = css`
-  position: relative;
-  width: 117px;
-  height: 29px;
-  margin-top: -1px;
-  ${FontStyles.pretendardMedium};
-  color: ${Colors.lightText};
-  font-size: 22px;
-  letter-spacing: 0;
-  line-height: normal;
-`;
-
-export const BookInfoTextWrapper12 = css`
-  position: relative;
-  align-self: stretch;
-  height: 27px;
-  margin-top: -1px;
+// 섹션 타이틀
+export const sectionTitle = css`
   ${FontStyles.pretendardBlack};
   color: ${Colors.darkText};
   font-size: 25px;
-  white-space: nowrap;
-  letter-spacing: 0;
   line-height: normal;
 `;
 
-export const BookInfoTextWrapper13_15 = css`
-  position: absolute;
-  width: 515px;
-  top: 0;
-  left: 0;
+// 책 설명 텍스트
+export const descriptionText = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.normalText};
   font-size: 16px;
-  letter-spacing: 0;
   line-height: 20px;
+  max-width: 515px;
 `;
 
-export const BookInfoTextWrapper16 = css`
-  position: relative;
-  align-self: stretch;
-  margin-top: -1px;
-  ${FontStyles.pretendardBlack};
-  color: ${Colors.darkText};
-  font-size: 25px;
-  letter-spacing: 0;
-  line-height: normal;
-`;
-
-export const BookInfoTextWrapper17 = css`
-  position: relative;
-  width: 981px;
-  height: 610px;
+// 출판사 서평 텍스트
+export const reviewText = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.normalText};
   font-size: 14px;
-  letter-spacing: 0;
   line-height: 20px;
+  max-width: 981px;
 `;
 
-// 버튼 텍스트 스타일
-export const ButtonText = css`
+// 버튼 텍스트
+export const buttonText = css`
   ${FontStyles.pretendardSemiBold};
   color: #ffffff;
   font-size: 18px;
