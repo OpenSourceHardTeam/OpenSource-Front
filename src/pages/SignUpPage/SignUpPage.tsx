@@ -60,9 +60,7 @@ const SignUpPage = () => {
             setIsNicknameChecked(false);
           }
         },
-        onError: () => {
-          alert("닉네임 중복 확인 중 오류가 발생했습니다.");
-        },
+        onError: () => {},
       }
     );
   };

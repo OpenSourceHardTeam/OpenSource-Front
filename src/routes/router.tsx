@@ -8,6 +8,7 @@ import ChatList from "pages/ChatList/ChatList";
 import LoginPage from "pages/LoginPage/LoginPage";
 import SignUpPage from "pages/SignUpPage/SignUpPage";
 import BookListPage from "pages/BookListPage/BookListPage";
+import Setting from "pages/Setting/Setting";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
         path: routes.booklist,
         element: <BookListPage />,
       },
+      { path: routes.setting, element: <Setting /> },
     ],
   },
 ]);
