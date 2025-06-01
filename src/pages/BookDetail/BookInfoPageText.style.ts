@@ -113,6 +113,7 @@ export const activeTab = css`
   color: ${Colors.normalText};
   font-size: 22px;
   font-weight: 700;
+
   line-height: normal;
   cursor: pointer;
 `;

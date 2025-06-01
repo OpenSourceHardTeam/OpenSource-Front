@@ -1,27 +1,24 @@
-/** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 
 export const header = css`
   display: flex;
+  position: relative;
   width: 100%;
   padding: 11px 13px;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-end;
   background-color: #7b9acc;
   height: 65px;
   cursor: pointer;
 `;
 
 export const textTitle = css`
-  position: relative;
   width: 200px;
   font-family: "Stencil-Regular", Helvetica, sans-serif;
   font-weight: 700;
   font-size: 40px;
   color: #fcf6f5;
   text-align: center;
-  letter-spacing: 0;
-  line-height: 50px;
 `;
 
 export const searchLogin = css`
@@ -52,4 +49,17 @@ export const loginText = css`
   letter-spacing: 0;
   line-height: normal;
   white-space: nowrap;
+`;
+
+export const iconStyle = css`
+  width: 50px;
+  height: 50px;
+`;
+
+export const iconContainer = css`
+  padding-right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;

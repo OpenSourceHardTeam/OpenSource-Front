@@ -23,3 +23,21 @@ export interface logInResponse {
   userId: number;
   accessToken: string;
 }
+
+export interface postValidationEmailParams {
+  email: string;
+  authCode: string;
+}
+
+export interface validationEmailResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface postSendEmailParams {
+  email: string;
+}
+
+export interface postEmailExistParams {
+  email: string;
+}

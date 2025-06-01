@@ -28,6 +28,10 @@ const BookCard: React.FC<BookCardProps> = ({ bookData, onClick }) => {
     }
   };
 
+  const handleDetail = () => {
+    navigate("/bookinfo");
+  };
+
   return (
     <div css={styles.bookCardContainer} onClick={handleCardClick}>
       <div css={styles.contentContainer}>
@@ -46,6 +50,7 @@ const BookCard: React.FC<BookCardProps> = ({ bookData, onClick }) => {
           <p css={styles.bookAuthor}>{bookAuthor}</p>
         </div>
       </div>
+
       
       <div css={styles.actionContainer}>
         <div 
