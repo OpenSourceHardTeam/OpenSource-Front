@@ -1,6 +1,6 @@
 const routes = {
   main: "/",
-  bookinfo: "/bookinfo",
+  bookinfo: "/bookinfo/:bookId",
   chat: "/chat",
   login: "/login",
   signup: "/signup",

@@ -57,3 +57,23 @@ export const ActivePageButton = css`
   padding: 6px 12px;
   cursor: pointer;
 `;
+
+export const ChatListContainerLoadingError = css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 18px;
+  color: #666;
+`;
+
+export const ChatListContainerError = css`
+  display: flex;
+  flex-direction: columns;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  gap: 16px;
+  font-size: 18px;
+  color: #e74c3c;
+`;
