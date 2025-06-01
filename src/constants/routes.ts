@@ -5,7 +5,8 @@ const routes = {
   login: "/login",
   signup: "/signup",
   chatlist: "/chatlist",
-  booklist: "/booklist"
+  booklist: "/booklist",
+  setting: "/setting",
 } as const;
 
 export default routes;
