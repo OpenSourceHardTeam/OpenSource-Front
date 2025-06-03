@@ -21,7 +21,6 @@ export const bookInfoSection = css`
   display: flex;
   flex-wrap: nowrap;
   gap: 82px;
-  margin-bottom: 72px;
 `;
 
 // 책 커버
@@ -74,6 +73,7 @@ export const chatRoomSection = css`
 export const chatRoomInfo = css`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   width: 393px;
   gap: 14px;
 `;
@@ -82,9 +82,8 @@ export const chatRoomRules = css`
   display: flex;
   flex-direction: column;
   width: 400px;
-  gap: 21px;
+  gap: 10px;
 `;
-
 
 // 콘텐츠 컨테이너
 export const contentContainer = css`
@@ -117,7 +116,7 @@ export const dividerLine = css`
 export const contentSection = css`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 1000px;
   gap: 20px;
   margin-bottom: 50px;
 `;
@@ -131,4 +130,20 @@ export const voteContainer = css`
   border: 2px solid ${Colors.borderColor};
   padding: 22px 30px;
   margin-top: 20px;
+`;
+
+export const buttonStyle = css`
+  margin-top: 5px;
+`;
+
+export const titleContainer = css`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const iconStyle = css`
+  width: 30px;
+  height: 30px;
 `;

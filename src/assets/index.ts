@@ -7,3 +7,5 @@ export { default as ChatIcon } from "./svg/Chat Bubble.svg?react";
 export { default as SearchIcon } from "./svg/fe_search.svg?react";
 export { default as ProfileIcon } from "./svg/profile.svg?react";
 export { default as ProfileImage } from "./img/profile.png";
+export { default as PlusBtn } from "./svg/plusBtn.svg?react";
+export { default as CloseBtn } from "./svg/closeBtn.svg?react";

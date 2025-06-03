@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "../../components/Button/Button";
 import * as styles from "./BookCard.style";
 import { BookData } from "../../apis/hooks/Books/useBooks";
 import { useNavigate } from "react-router-dom";
@@ -53,13 +52,7 @@ const BookCard: React.FC<BookCardProps> = ({ bookData, onClick }) => {
             e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
             handleDetailClick(); // 상세 페이지로 이동만 실행
           }}
-        >
-          <Button
-            text={"책 상세보기"}
-            type={"smallChatRoomJoin"}
-            css={styles.joinButton}
-          />
-        </div>
+        ></div>
       </div>
     </div>
   );

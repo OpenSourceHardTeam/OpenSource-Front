@@ -1,7 +1,8 @@
-import { apiPost } from "./apiUtils";
+import { apiPost, authApiPatch } from "./apiUtils";
 import { ApiResponse } from "./types/response";
 import {
   logInResponse,
+  patchPasswordParams,
   postEmailExistParams,
   postLogInParams,
   postNameExistParams,
@@ -50,5 +51,13 @@ export const postNameExist = async (data: postNameExistParams) => {
   return apiPost<ApiResponse<null>, null>(
     `/api/v1/user/name-exist${query}`,
     undefined
+  );
+};
+
+export const patchPassword = async (data: patchPasswordParams) => {
+  return await authApiPatch<null, undefined, patchPasswordParams>(
+    "/api/v1/user/change-password",
+    undefined,
+    data
   );
 };

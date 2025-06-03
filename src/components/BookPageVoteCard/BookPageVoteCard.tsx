@@ -17,7 +17,7 @@ const BookPageVoteCard: React.FC = () => {
           <Button text={"찬성"} type={"voteOption"} />
         </div>
         <div className="voteoverlap-group-wrapper">
-          <Button text={"찬성"} type={"voteOption"} />
+          <Button text={"반대"} type={"voteOption"} />
         </div>
       </div>
     </div>

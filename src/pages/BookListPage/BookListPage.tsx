@@ -58,7 +58,6 @@ const BookListPage: React.FC = () => {
     </div>
   );
 
-  // 책 목록 렌더링
   const renderBookList = () => (
     <>
       <div css={ChatListContainer}>

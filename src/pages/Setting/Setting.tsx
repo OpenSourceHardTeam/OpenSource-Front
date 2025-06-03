@@ -18,10 +18,12 @@ import {
 } from "pages/SignUpPage/SignUpPage.style";
 import usePostNameExist from "apis/hooks/users/userPostNameExist";
 import { useNavigate } from "react-router-dom";
+import usePatchChangePassword from "apis/hooks/users/usePatchPassword";
 
 const Setting: React.FC = () => {
   const navigate = useNavigate();
   const { mutate: checkNameExist } = usePostNameExist();
+  const { mutate: patchPassword } = usePatchChangePassword();
 
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");

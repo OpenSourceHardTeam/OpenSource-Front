@@ -55,6 +55,7 @@ export const bookTitle = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.darkText};
   font-size: 30px;
+  font-weight: 500;
   line-height: 29.9px;
 `;
 
@@ -62,7 +63,8 @@ export const bookTitle = css`
 export const bookAuthor = css`
   ${FontStyles.pretendardBold};
   color: ${Colors.normalText};
-  font-size: 24px;
+  font-size: 20px;
+  font-weight: 500;
   line-height: 29.9px;
 `;
 
@@ -70,15 +72,15 @@ export const bookAuthor = css`
 export const bookPublisher = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.lightText};
-  font-size: 24px;
-  line-height: normal;
+  font-size: 20px;
+  line-height: 29.9px;
 `;
 
 // 채팅방 타이틀
 export const chatRoomTitle = css`
   ${FontStyles.pretendardExtraBold};
   color: ${Colors.normalText};
-  font-size: 25px;
+  font-size: 22px;
   line-height: normal;
 `;
 
@@ -86,7 +88,7 @@ export const chatRoomTitle = css`
 export const chatRoomDesc = css`
   ${FontStyles.pretendardRegular};
   color: ${Colors.normalText};
-  font-size: 16px;
+  font-size: 14px;
   line-height: normal;
 `;
 
@@ -141,7 +143,7 @@ export const descriptionText = css`
   color: ${Colors.normalText};
   font-size: 16px;
   line-height: 20px;
-  max-width: 515px;
+  width: 1000px;
 `;
 
 // 출판사 서평 텍스트
