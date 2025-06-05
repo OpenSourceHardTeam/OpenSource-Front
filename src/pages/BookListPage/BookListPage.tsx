@@ -15,8 +15,6 @@ import {
 import { useState } from "react";
 import { useBooks } from "../../apis/hooks/Books/useBooks";
 
-const BOOK_LIST = new Array(50).fill(null);
-
 const CARDS_PER_PAGE = 9;
 
 const BookListPage: React.FC = () => {

@@ -6,7 +6,8 @@ export const MainContainer = css`
   gap: 80px;
   min-height: calc(100vh - 65px);
   width: 1040px;
-  margin: 80px 200px 100px 200px;
+  padding: 80px 0px 100px 0px;
+  margin: 0 auto;
 `;
 
 export const Container = css`

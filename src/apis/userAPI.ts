@@ -2,7 +2,7 @@ import { apiPost, authApiPatch } from "./apiUtils";
 import { ApiResponse } from "./types/response";
 import {
   logInResponse,
-  patchPasswordParams,
+  patchProfileParams,
   postEmailExistParams,
   postLogInParams,
   postNameExistParams,
@@ -54,9 +54,9 @@ export const postNameExist = async (data: postNameExistParams) => {
   );
 };
 
-export const patchPassword = async (data: patchPasswordParams) => {
-  return await authApiPatch<null, undefined, patchPasswordParams>(
-    "/api/v1/user/change-password",
+export const patchProfile = async (data: patchProfileParams) => {
+  return await authApiPatch<null, undefined, patchProfileParams>(
+    "/api/v1/user/change-userinfo",
     undefined,
     data
   );

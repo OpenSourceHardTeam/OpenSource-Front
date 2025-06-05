@@ -115,32 +115,34 @@ const BookInfoPage = () => {
   }
 
   return (
-    <main css={styles.container}>
-      <header css={styles.pageHeader}>
-        <h2 css={textStyles.pageTitle}>Book Information</h2>
-      </header>
-      <section css={styles.bookInfoSection}>
-        <BookCover
-          imageUrl={bookDetail.bookImageUrl}
-          title={bookDetail.bookTitle}
-        />
-        <div css={styles.bookDetails}>
-          <BookHeader
+    <div css={styles.MainContainer}>
+      <main css={styles.container}>
+        <header css={styles.pageHeader}>
+          <h2 css={textStyles.pageTitle}>Book Information</h2>
+        </header>
+        <section css={styles.bookInfoSection}>
+          <BookCover
+            imageUrl={bookDetail.bookImageUrl}
             title={bookDetail.bookTitle}
-            author={bookDetail.bookAuthor}
-            publisher={bookDetail.publisherName}
-            publishDate={bookDetail.publishDate}
           />
-        </div>
-      </section>
-      <ChatRoomSection bookTitle={bookDetail.bookTitle} />
-      <section css={styles.contentContainer}>
-        <TabNavigation activeTab={activeTab} onTabClick={handleTabClick} />
-        <BookDescription description={bookDetail.bookDescription} />
-        <PublisherReview review={bookDetail.publisherReview} />
-        <VoteSection />
-      </section>
-    </main>
+          <div css={styles.bookDetails}>
+            <BookHeader
+              title={bookDetail.bookTitle}
+              author={bookDetail.bookAuthor}
+              publisher={bookDetail.publisherName}
+              publishDate={bookDetail.publishDate}
+            />
+          </div>
+        </section>
+        <ChatRoomSection bookTitle={bookDetail.bookTitle} />
+        <section css={styles.contentContainer}>
+          <TabNavigation activeTab={activeTab} onTabClick={handleTabClick} />
+          <BookDescription description={bookDetail.bookDescription} />
+          <PublisherReview review={bookDetail.publisherReview} />
+          <VoteSection />
+        </section>
+      </main>
+    </div>
   );
 };
 

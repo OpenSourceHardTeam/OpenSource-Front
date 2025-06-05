@@ -18,12 +18,12 @@ import {
 } from "pages/SignUpPage/SignUpPage.style";
 import usePostNameExist from "apis/hooks/users/userPostNameExist";
 import { useNavigate } from "react-router-dom";
-import usePatchChangePassword from "apis/hooks/users/usePatchPassword";
+import usePatchProfile from "apis/hooks/users/usePatchProfile";
 
 const Setting: React.FC = () => {
   const navigate = useNavigate();
   const { mutate: checkNameExist } = usePostNameExist();
-  const { mutate: patchPassword } = usePatchChangePassword();
+  const { mutate: patchProfile } = usePatchProfile();
 
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
@@ -32,6 +32,35 @@ const Setting: React.FC = () => {
 
   const isFormValid =
     nickname && password && passwordCheck && isNicknameChecked;
+
+  const handleProfileUpdate = () => {
+    if (!isFormValid) {
+      alert("모든 항목을 입력해주세요.");
+      return;
+    }
+
+    if (password !== passwordCheck) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    patchProfile(
+      {
+        newName: nickname.trim() || null,
+        newPassword: password || null,
+      },
+      {
+        onSuccess: () => {
+          alert("수정이 완료되었습니다.");
+          navigate("/");
+        },
+        onError: (error) => {
+          console.error(error);
+          alert("수정 중 오류가 발생했습니다.");
+        },
+      }
+    );
+  };
 
   const onClickNicknameCheck = () => {
     if (!nickname.trim()) {
@@ -105,26 +134,7 @@ const Setting: React.FC = () => {
                 text={"가입하기"}
                 type={"login"}
                 className={!isFormValid ? "disabled" : ""}
-                // onClick={() => {
-                //   if (isFormValid) {
-                //     postSignUp(
-                //       {
-                //         name: nickname,
-                //         password,
-                //       },
-                //       {
-                //         onSuccess: () => {
-                //           alert("수정 완료");
-                //           navigate("/");
-                //         },
-                //         onError: (error) => {
-                //           alert("회원가입에 실패했습니다. 다시 시도해주세요.");
-                //           console.error(error);
-                //         },
-                //       }
-                //     );
-                //   }
-                // }}
+                onClick={handleProfileUpdate}
               />
             </div>
           </div>

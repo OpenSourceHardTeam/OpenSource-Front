@@ -1,10 +1,25 @@
+// components/TextField/TextField.tsx
 import { StyledTextarea } from "./TextField.style";
 
-const TextField = () => {
+interface TextFieldProps {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  maxLength?: number;
+}
+
+const TextField: React.FC<TextFieldProps> = ({
+  value,
+  onChange,
+  placeholder,
+  maxLength = 30,
+}) => {
   return (
     <StyledTextarea
-      maxLength={30}
-      placeholder="책에 대한 찬반 토론 주제를 작성해 주세요."
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      maxLength={maxLength}
     />
   );
 };

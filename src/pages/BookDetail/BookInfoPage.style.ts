@@ -1,12 +1,20 @@
 import { css } from "@emotion/react";
 import { Colors } from "./BookInfoPageText.style";
 
+export const MainContainer = css`
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 65px);
+  width: 1040px;
+  margin: 0 auto;
+  padding: 80px 0px 100px 0px;
+`;
+
 // 전체 컨테이너
 export const container = css`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 80px 200px 100px;
   gap: 72px;
 `;
 
@@ -66,6 +74,7 @@ export const chatRoomSection = css`
   padding: 25px 40px;
   border-radius: 5px;
   border: 1px solid ${Colors.borderColor};
+  background-color: white;
   justify-content: space-between;
   gap: 110px;
 `;
@@ -122,15 +131,7 @@ export const contentSection = css`
 `;
 
 // 투표 컨테이너
-export const voteContainer = css`
-  display: flex;
-  width: 100%;
-  background-color: #fcf6f5;
-  border-radius: 20px;
-  border: 2px solid ${Colors.borderColor};
-  padding: 22px 30px;
-  margin-top: 20px;
-`;
+export const voteContainer = css``;
 
 export const buttonStyle = css`
   margin-top: 5px;
