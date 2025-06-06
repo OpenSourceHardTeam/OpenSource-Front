@@ -1,4 +1,5 @@
 import { getVoteListResponse } from "apis/types/vote";
+import { getVoteListResponse } from "apis/types/vote";
 import Button from "../../components/Button/Button";
 import VoteBar from "../../components/VoteBar/VoteBar";
 import {
