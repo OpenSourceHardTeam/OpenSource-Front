@@ -1,7 +1,8 @@
-import { apiPost } from "./apiUtils";
+import { apiPost, authApiPatch } from "./apiUtils";
 import { ApiResponse } from "./types/response";
 import {
   logInResponse,
+  patchProfileParams,
   postEmailExistParams,
   postLogInParams,
   postNameExistParams,
@@ -50,5 +51,13 @@ export const postNameExist = async (data: postNameExistParams) => {
   return apiPost<ApiResponse<null>, null>(
     `/api/v1/user/name-exist${query}`,
     undefined
+  );
+};
+
+export const patchProfile = async (data: patchProfileParams) => {
+  return await authApiPatch<null, undefined, patchProfileParams>(
+    "/api/v1/user/change-userinfo",
+    undefined,
+    data
   );
 };

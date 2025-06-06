@@ -29,40 +29,34 @@ export const useBooks = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // 환경변수에서 BASE_URL과 토큰 가져오기
+
       const baseUrl = import.meta.env.VITE_BASE_URL;
-      const authToken = import.meta.env.VITE_AUTH_TOKEN;
-      
-      console.log('API 요청 URL:', `${baseUrl}api/v1/book/get-all-book`);
-      
+      const authToken = localStorage.getItem("accessToken");
+
       const response = await fetch(`${baseUrl}api/v1/book/get-all-book`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          // Authorization 헤더 추가 (필요한 경우)
-          ...(authToken && { 'Authorization': `Bearer ${authToken}` })
-        }
+          "Content-Type": "application/json",
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
+        },
       });
-      
-      console.log('응답 상태:', response.status);
-      console.log('응답 헤더:', response.headers.get('content-type'));
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data: ApiResponse = await response.json();
-      console.log('API 응답 데이터:', data);
-      
+
       if (data.code === 0) {
         setBookList(data.data);
       } else {
-        throw new Error(data.message || 'API 응답 오류');
+        throw new Error(data.message || "API 응답 오류");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
-      console.error('책 목록을 가져오는데 실패했습니다:', err);
+      setError(
+        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다."
+      );
+      console.error("책 목록을 가져오는데 실패했습니다:", err);
     } finally {
       setLoading(false);
     }
@@ -77,6 +71,6 @@ export const useBooks = () => {
     bookList,
     loading,
     error,
-    refetch: fetchBooks
+    refetch: fetchBooks,
   };
 };

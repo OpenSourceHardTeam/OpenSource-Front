@@ -8,7 +8,6 @@ export const bookCardContainer = css`
   background-color: #ffffff;
   border-radius: 16px;
   padding: 25px 30px;
-  gap: 40px;
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);

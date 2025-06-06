@@ -26,8 +26,8 @@ export const useBookDetail = (bookId: string | null | undefined) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchBookDetail = async () => {
-    if (!bookId || bookId === null || bookId === undefined) {
-      setError('책 ID가 필요합니다.');
+    if (!bookId) {
+      setError("책 ID가 필요합니다.");
       setLoading(false);
       return;
     }
@@ -35,37 +35,37 @@ export const useBookDetail = (bookId: string | null | undefined) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const baseUrl = import.meta.env.VITE_BASE_URL;
-      const authToken = import.meta.env.VITE_AUTH_TOKEN;
-      
-      console.log('책 상세 API 요청 URL:', `${baseUrl}api/v1/book/get-book?bookId=${bookId}`);
-      
-      const response = await fetch(`${baseUrl}api/v1/book/get-book?bookId=${bookId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+      const authToken = localStorage.getItem("accessToken"); // ✅ 변경됨
+
+      const response = await fetch(
+        `${baseUrl}api/v1/book/get-book?bookId=${bookId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(authToken && { Authorization: `Bearer ${authToken}` }),
+          },
         }
-      });
-      
-      console.log('책 상세 응답 상태:', response.status);
-      
+      );
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data: BookDetailApiResponse = await response.json();
-      console.log('책 상세 API 응답 데이터:', data);
-      
+
       if (data.code === 0) {
         setBookDetail(data.data);
       } else {
-        throw new Error(data.message || '책 정보를 가져올 수 없습니다.');
+        throw new Error(data.message || "책 정보를 가져올 수 없습니다.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
-      console.error('책 상세 정보를 가져오는데 실패했습니다:', err);
+      setError(
+        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다."
+      );
+      console.error("책 상세 정보를 가져오는데 실패했습니다:", err);
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export const useBookDetail = (bookId: string | null | undefined) => {
       fetchBookDetail();
     } else {
       setLoading(false);
-      setError('책 ID가 제공되지 않았습니다.');
+      setError("책 ID가 제공되지 않았습니다.");
     }
   }, [bookId]);
 
@@ -84,6 +84,6 @@ export const useBookDetail = (bookId: string | null | undefined) => {
     bookDetail,
     loading,
     error,
-    refetch: fetchBookDetail
+    refetch: fetchBookDetail,
   };
 };

@@ -47,15 +47,14 @@ export const authApiDelete = async <T, P>(
   return response.data;
 };
 
-export const authApiPatch = async <T, D, P>(
+export const authApiPatch = async <T, P, D>(
   url: string,
-  data?: D,
-  params?: P
-): Promise<ApiResponse<T>> => {
-  const response = await tokenInstance.patch<ApiResponse<T>>(url, data, {
+  params?: P,
+  data?: D
+): Promise<T> => {
+  return await axiosInstance.patch(url, data, {
     params,
   });
-  return response.data;
 };
 
 export const authApiPut = async <T, D, P>(

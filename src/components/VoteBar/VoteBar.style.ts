@@ -1,4 +1,3 @@
-/** VoteBar.style.ts */
 import { css } from "@emotion/react";
 
 export const container = css`
@@ -17,17 +16,35 @@ export const barWrapper = css`
   position: relative;
   width: 500px;
   height: 20px;
-  background: #385b88;
+  background: white;
   border-radius: 32px;
   overflow: hidden;
+`;
+
+export const barWrapperEmpty = css`
+  width: 500px;
+  height: 20px;
+  background: none;
+  border: 1px solid #dfe3e8;
+  border-radius: 32px;
+`;
+
+export const blueBar = (percent: number) => css`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: ${percent}%;
+  height: 100%;
+  background: #385b88;
+  border-radius: 32px 0 0 32px;
 `;
 
 export const redBar = (percent: number) => css`
   position: absolute;
   top: 0;
-  left: 0;
-  height: 100%;
+  right: 0;
   width: ${percent}%;
+  height: 100%;
   background: #ff6767;
-  border-radius: 32px 0 0 32px;
+  border-radius: 0 32px 32px 0;
 `;

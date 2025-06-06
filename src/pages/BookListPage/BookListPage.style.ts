@@ -6,7 +6,8 @@ export const MainContainer = css`
   gap: 40px 30px;
   min-height: calc(100vh - 65px);
   width: 1040px;
-  margin: 80px 200px 100px 200px;
+  padding: 80px 0px 100px 0px;
+  margin: 0 auto;
 `;
 
 export const Container = css`
@@ -58,22 +59,22 @@ export const ActivePageButton = css`
   cursor: pointer;
 `;
 
-export const ChatListContainerLoadingError = css `
- display: 'flex', 
-  justifyContent: 'center', 
-  alignItems: 'center', 
-  minHeight: '200px',
-  fontSize: '18px',
-  color: '#666'
-`
+export const ChatListContainerLoadingError = css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 18px;
+  color: #666;
+`;
 
 export const ChatListContainerError = css`
-display: 'flex', 
-flexDirection: 'column',
-justifyContent: 'center', 
-alignItems: 'center', 
-minHeight: '200px',
-gap: '16px'
-fontSize: '18px' 
-color: '#e74c3c'
-` 
+  display: flex;
+  flex-direction: columns;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  gap: 16px;
+  font-size: 18px;
+  color: #e74c3c;
+`;

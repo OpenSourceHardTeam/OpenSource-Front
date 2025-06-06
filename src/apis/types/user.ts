@@ -41,3 +41,8 @@ export interface postSendEmailParams {
 export interface postEmailExistParams {
   email: string;
 }
+
+export interface patchProfileParams {
+  newName?: string | null;
+  newPassword?: string | null;
+}
