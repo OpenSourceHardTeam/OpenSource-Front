@@ -21,7 +21,6 @@ const Header: React.FC = () => {
     };
 
     window.addEventListener("storage", handleStorageChange);
-
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
@@ -35,6 +34,13 @@ const Header: React.FC = () => {
   };
   const handleLoginClick = () => {
     navigate(routes.login);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    setIsLoggedIn(false);
+    setIsDropdownOpen(false);
+    navigate("/");
   };
 
   useEffect(() => {
@@ -68,7 +74,12 @@ const Header: React.FC = () => {
           </div>
         </div>
       )}
-      {isDropdownOpen && <Dropdown onClose={() => setIsDropdownOpen(false)} />}{" "}
+      {isDropdownOpen && (
+        <Dropdown
+          onClose={() => setIsDropdownOpen(false)}
+          onLogout={handleLogout}
+        />
+      )}{" "}
     </div>
   );
 };
