@@ -40,7 +40,7 @@ export const useBookDetail = (bookId: string | null | undefined) => {
       const authToken = localStorage.getItem("accessToken"); // ✅ 변경됨
 
       const response = await fetch(
-        `${baseUrl}api/v1/book/get-book?bookId=${bookId}`,
+        `${baseUrl}/api/v1/book/get-book?bookId=${bookId}`,
         {
           method: "GET",
           headers: {
