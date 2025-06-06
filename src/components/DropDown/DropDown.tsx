@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import routes from "@constants/routes";
 interface ProfileDropdownProps {
   onClose: () => void;
+  onLogout: () => void;
 }
-const Dropdown: React.FC<ProfileDropdownProps> = ({ onClose }) => {
+const Dropdown: React.FC<ProfileDropdownProps> = ({ onClose, onLogout }) => {
   const handleLogout = () => {
-    onClose();
+    onLogout();
   };
 
   return (

@@ -5,7 +5,7 @@ import { line, PlusBtn } from "@assets/index";
 import { Modal } from "@components/index";
 import { useState } from "react";
 import { useBookDetail } from "apis/hooks/BookDetail/useBookDetail";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useVoteList from "apis/hooks/vote/useGetVoteList";
 
 const VoteSection: React.FC = () => {
@@ -13,6 +13,7 @@ const VoteSection: React.FC = () => {
 
   const { bookId } = useParams<{ bookId: string }>();
   const { bookDetail } = useBookDetail(bookId);
+  const navigate = useNavigate();
 
   const {
     data: voteResponse,
@@ -24,7 +25,18 @@ const VoteSection: React.FC = () => {
   });
   const votes = voteResponse?.data ?? [];
 
-  const handleOpenModal = () => setIsModalOpen(true);
+  const isLoggedIn = !!localStorage.getItem("accessToken");
+
+  const handleOpenModal = () => {
+    if (!isLoggedIn) {
+      alert("로그인 후에 투표를 등록할 수 있어요.");
+      navigate("/login");
+      window.scrollTo(0, 0);
+
+      return;
+    }
+    setIsModalOpen(true);
+  };
   const handleCloseModal = () => setIsModalOpen(false);
 
   return (
