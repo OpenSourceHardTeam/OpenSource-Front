@@ -25,7 +25,7 @@ export interface postVoteRequest {
   answered: boolean;
 }
 
-export type GetUserVoteAnsweredData = boolean | null;
+export type UserVoteAnswer = boolean | null;
 
 export interface getAllVoteListResponse {
   voteId: number;
@@ -35,4 +35,5 @@ export interface getAllVoteListResponse {
   agreeCount: number;
   disagreeCount: number;
   voteCount: number;
+  bookImageUrl: string;
 }

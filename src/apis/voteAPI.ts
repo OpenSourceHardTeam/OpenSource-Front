@@ -7,6 +7,7 @@ import {
   getVoteListResponse,
   postAddVoteRequest,
   postVoteRequest,
+  UserVoteAnswer,
 } from "./types/vote";
 
 export const postAddVote = async (data: postAddVoteRequest) => {
@@ -38,5 +39,14 @@ export const getAllVoteList = async (): Promise<
   return await authApiGet<getAllVoteListResponse[], { sortBy: string }>(
     "/api/v1/vote/votes",
     { sortBy: "voteCount" }
+  );
+};
+
+export const getUserVoteAnswer = async (
+  voteId: number
+): Promise<ApiResponse<UserVoteAnswer>> => {
+  return await authApiGet<UserVoteAnswer, { voteId: number }>(
+    "/api/v1/vote/user-answered",
+    { voteId }
   );
 };

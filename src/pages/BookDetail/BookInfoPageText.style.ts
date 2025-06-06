@@ -94,7 +94,7 @@ export const chatRoomDesc = css`
 
 // 규칙 타이틀
 export const rulesTitle = css`
-  ${FontStyles.pretendardRegular};
+  font-weight: 600;
   color: ${Colors.normalText};
   font-size: 16px;
   line-height: normal;
@@ -103,7 +103,7 @@ export const rulesTitle = css`
 
 // 규칙 설명
 export const rulesDesc = css`
-  ${FontStyles.pretendardLight};
+  font-weight: 400;
   color: ${Colors.normalText};
   font-size: 14px;
   line-height: normal;
@@ -139,20 +139,21 @@ export const sectionTitle = css`
 
 // 책 설명 텍스트
 export const descriptionText = css`
-  ${FontStyles.pretendardRegular};
-  color: ${Colors.normalText};
+  font-weight: 400;
+  color: #333;
   font-size: 16px;
-  line-height: 20px;
+  line-height: 27px;
   width: 1000px;
 `;
 
 // 출판사 서평 텍스트
 export const reviewText = css`
-  ${FontStyles.pretendardRegular};
-  color: ${Colors.normalText};
-  font-size: 14px;
-  line-height: 20px;
+  font-weight: 400;
+  color: #333;
+  font-size: 16px;
+  line-height: 27px;
   max-width: 981px;
+  white-space: pre-line;
 `;
 
 // 버튼 텍스트

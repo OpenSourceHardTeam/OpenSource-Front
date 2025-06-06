@@ -57,3 +57,8 @@ export const voteOverlapGroupWrapper = css`
   margin-right: -2px;
   position: relative;
 `;
+
+export const selectedVoteButton = css`
+  background-color: #7b9acc99;
+  pointer-events: none;
+`;

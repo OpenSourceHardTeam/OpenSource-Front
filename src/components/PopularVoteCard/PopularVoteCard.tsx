@@ -4,7 +4,6 @@ import {
   ContentHeader,
   ImageStyle,
 } from "./PopularVoteCard.style";
-import book from "../../assets/img/book.png";
 import Button from "@components/Button/Button";
 import VoteBar from "@components/VoteBar/VoteBar";
 import { getAllVoteListResponse } from "apis/types/vote";
@@ -21,7 +20,7 @@ const PopularVoteCard: React.FC<Props> = ({ vote }) => {
 
   return (
     <div css={Container}>
-      <img src={book} alt="book" css={ImageStyle} />
+      <img src={vote.bookImageUrl} alt="book" css={ImageStyle} />
       <div css={ContentContainer}>
         <div css={ContentHeader}>
           <p>{vote.title}</p>

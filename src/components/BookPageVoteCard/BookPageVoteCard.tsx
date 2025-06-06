@@ -8,8 +8,10 @@ import {
   voteFrame2,
   voteOverlapGroupWrapper,
   mainContainer,
+  selectedVoteButton,
 } from "./BookPageVoteCard.style";
 import usePostVote from "apis/hooks/vote/usePostVote";
+import useGetUserVoteAnswer from "apis/hooks/vote/useGetUserVoteAnswer";
 
 interface BookPageVoteCardProps {
   vote: getVoteListResponse;
@@ -25,16 +27,19 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   const agreePercent = total === 0 ? 0 : Math.round((agreeCount / total) * 100);
   const disagreePercent = total === 0 ? 0 : 100 - agreePercent;
 
+  const { data: userVoteData, refetch: refetchUserVoteAnswer } =
+    useGetUserVoteAnswer(voteId);
+  const userAnswered = userVoteData?.data ?? null;
+
   const { mutate: submitVote } = usePostVote();
 
   const handleVote = (answered: boolean) => {
-    console.log("보내는 voteId:", voteId, typeof voteId);
-
     submitVote(
       { voteId: Number(voteId), answered },
       {
         onSuccess: () => {
           alert("투표가 완료되었습니다.");
+          refetchUserVoteAnswer();
           refetchVotes?.();
         },
         onError: () => {
@@ -57,6 +62,8 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
               text={"찬성"}
               type="voteOption"
               onClick={() => handleVote(true)}
+              disabled={userAnswered === true}
+              css={userAnswered === true ? selectedVoteButton : undefined}
             />
           </div>
           <div css={voteOverlapGroupWrapper}>
@@ -64,6 +71,8 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
               text={"반대"}
               type="voteOption"
               onClick={() => handleVote(false)}
+              disabled={userAnswered === false}
+              css={userAnswered === false ? selectedVoteButton : undefined}
             />
           </div>
         </div>
