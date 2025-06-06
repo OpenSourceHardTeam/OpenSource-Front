@@ -33,7 +33,7 @@ export const useBooks = () => {
       const baseUrl = import.meta.env.VITE_BASE_URL;
       const authToken = localStorage.getItem("accessToken");
 
-      const response = await fetch(`${baseUrl}api/v1/book/get-all-book`, {
+      const response = await fetch(`${baseUrl}/api/v1/book/get-all-book`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
