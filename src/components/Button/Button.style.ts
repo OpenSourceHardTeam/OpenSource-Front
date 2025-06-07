@@ -55,8 +55,9 @@ export const voteOptionButton = css`
   width: 250px;
   height: 38px;
   border-radius: 20px;
-  background-color: #7b9acc;
-  color: #f8f6f2;
+  background-color: white;
+  border: 1px solid #7b9acc;
+  color: #7b9acc;
   font-size: 14px;
 `;
 

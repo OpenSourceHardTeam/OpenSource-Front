@@ -3,29 +3,32 @@ import { css } from "@emotion/react";
 export const loginframe = css`
   display: flex;
   flex-direction: column;
-  width: 1440px;
-  height: 100%;
+  gap: 80px;
+  min-height: calc(100vh - 65px);
+  width: 1040px;
+  margin: 0 auto;
+  padding-top: 150px;
   align-items: center;
   gap: 30px;
-  position: relative;
-  top: 216px;
 `;
-
+export const contentStyle = css`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+`;
 export const logintext = css`
-  position: relative;
-  align-self: stretch;
   height: 52px;
-  margin-top: -1px;
+  padding-bottom: 80px;
   color: #7b9acc;
-  font-size: 26px;
+  font-size: 40px;
   font-weight: 700;
   text-align: center;
-  letter-spacing: 0;
-  line-height: normal;
 `;
 
 export const loginid = css`
   position: relative;
+  padding: 12px;
+
   width: 370px;
   height: 60px;
   background-color: #ffffff;
@@ -45,6 +48,8 @@ export const logincheck = css`
 
 export const loginpw = css`
   position: relative;
+  padding: 12px;
+
   width: 500px;
   height: 60px;
   background-color: #ffffff;

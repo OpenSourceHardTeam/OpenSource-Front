@@ -1,5 +1,6 @@
 import "./BookListPage.style";
 import BookCard from "../../components/BookCard/BookCard";
+import "./BookListPage.style";
 import {
   ActivePageButton,
   ChatListContainer,
@@ -9,10 +10,10 @@ import {
   PaginationContainer,
   TitleContainer,
   ChatListContainerLoadingError,
-  ChatListContainerError
+  ChatListContainerError,
 } from "./BookListPage.style";
 import { useState } from "react";
-import { useBooks} from "../../apis/hooks/Books/useBooks"
+import { useBooks } from "../../apis/hooks/Books/useBooks";
 
 const CARDS_PER_PAGE = 9;
 
@@ -30,42 +31,36 @@ const BookListPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-    // 로딩 상태 렌더링
+  // 로딩 상태 렌더링
   const renderLoading = () => (
-    <div css={ChatListContainerLoadingError}>
-        책 목록을 불러오는 중...
-    </div>
+    <div css={ChatListContainerLoadingError}>책 목록을 불러오는 중...</div>
   );
 
   // 에러 상태 렌더링
   const renderError = () => (
     <div css={ChatListContainerError}>
-          오류: {error}
-        <button 
-          onClick={refetch}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#3498db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          다시 시도
-        </button>
-      </div>
+      오류: {error}
+      <button
+        onClick={refetch}
+        style={{
+          padding: "8px 16px",
+          backgroundColor: "#3498db",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        다시 시도
+      </button>
+    </div>
   );
 
-   // 책 목록 렌더링
   const renderBookList = () => (
     <>
       <div css={ChatListContainer}>
         {currentBooks.map((book) => (
-          <BookCard 
-            key={book.bookId} 
-            bookData={book}
-          />
+          <BookCard key={book.bookId} bookData={book} />
         ))}
       </div>
 
@@ -95,7 +90,7 @@ const BookListPage: React.FC = () => {
         <div css={TitleContainer}>
           <p>책에 대한 상세정보를 확인하세요.</p>
         </div>
-        
+
         {loading && renderLoading()}
         {error && renderError()}
         {!loading && !error && renderBookList()}
