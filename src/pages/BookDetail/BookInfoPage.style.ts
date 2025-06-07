@@ -146,8 +146,3 @@ export const iconStyle = css`
   height: 30px;
 
 `;
-
-export const iconStyle = css`
-  width: 30px;
-  height: 30px;
-`;

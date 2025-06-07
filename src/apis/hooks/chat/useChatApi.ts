@@ -172,12 +172,6 @@ export const getChatRoomUsersWithFallback = async (chatroomId: number) => {
     } catch (error) {
         console.error('사용자 목록 조회 실패:', error);
         
-        // 500 에러나 기타 에러 시 빈 배열 반환
-        if (error.response?.status === 500) {
-            console.log('서버 에러로 인해 빈 사용자 목록 반환');
-            return [];
-        }
-        
         throw error; // 다른 에러는 다시 던지기
     }
 };

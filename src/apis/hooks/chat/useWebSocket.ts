@@ -169,7 +169,7 @@ export const useWebSocket = ({
 }: UseWebSocketProps): UseWebSocketReturn => {
   const [status, setStatus] = useState<WebSocketStatus>('disconnected');
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttempts = useRef<number>(0);
   const maxReconnectAttempts = 5;
   
@@ -261,8 +261,7 @@ export const useWebSocket = ({
                       chatroomId: wsMessage.chatroomId,
                       senderId: wsMessage.data.senderId || wsMessage.data.userId,
                       content: wsMessage.data.content || wsMessage.data.message,
-                      createdAt: wsMessage.data.createdAt || new Date().toISOString(),
-                      senderName: wsMessage.data.senderName || wsMessage.data.userName || '알 수 없음'
+                      timestamp: wsMessage.data.createdAt || new Date().toISOString(),
                     };
                     console.log('💬 [내부 처리] 메시지 콜백 호출:', realtimeMessage);
                     messageCallbackRef.current(realtimeMessage);

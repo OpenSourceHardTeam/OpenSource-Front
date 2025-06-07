@@ -8,18 +8,18 @@ interface BookHeaderProps {
   publishDate: string;
 }
 
-const formatDate = (dateString: string) => {
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch {
-    return dateString;
-  }
-};
+// const formatDate = (dateString: string) => {
+//   try {
+//     const date = new Date(dateString);
+//     return date.toLocaleDateString("ko-KR", {
+//       year: "numeric",
+//       month: "long",
+//       day: "numeric",
+//     });
+//   } catch {
+//     return dateString;
+//   }
+// };
 
 const BookHeader: React.FC<BookHeaderProps> = ({
   title,
