@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
@@ -21,7 +22,7 @@ export default defineConfig({
       include: "**/*.svg?react",
     }),
   ],
-     
+        
   // 단순화된 WebSocket 프록시 설정
   server: {
     port: 5173,
@@ -38,7 +39,7 @@ export default defineConfig({
             if (authToken) {
               proxyReq.setHeader('Authorization', `Bearer ${authToken}`);
             }
-            
+                         
             // Content-Type 확인 및 설정
             if (!proxyReq.getHeader('Content-Type')) {
               proxyReq.setHeader('Content-Type', 'application/json');
@@ -46,7 +47,7 @@ export default defineConfig({
           });
         },
       },
-
+       
       // 기존 WebSocket 프록시 유지
       '/ws-proxy': {
         target: 'http://52.78.192.251:8080',
@@ -60,13 +61,14 @@ export default defineConfig({
             try {
               const urlStr = req.url || '';
               const baseUrl = 'http://localhost';
-              const fullUrl = new globalThis.URL(urlStr, baseUrl);
-              
+              // ✅ globalThis.URL을 URL로 변경
+              const fullUrl = new URL(urlStr, baseUrl);
+                             
               const token = fullUrl.searchParams.get('token');
               const userId = fullUrl.searchParams.get('userId');
               const chatRoomId = fullUrl.searchParams.get('chatRoomId');
               const name = fullUrl.searchParams.get('name');
-                             
+                                            
               if (token) {
                 proxyReq.setHeader('Authorization', `Bearer ${token}`);
               }
@@ -85,7 +87,7 @@ export default defineConfig({
           });
         }
       },
-             
+                    
       // 기존 HTTP API 프록시 유지
       '/api': {
         target: 'http://52.78.192.251:8080',

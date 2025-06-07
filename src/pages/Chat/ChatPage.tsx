@@ -14,7 +14,6 @@ import {
   getChatRoomUsers,
   leaveChatRoom,
   JoinChatRoom,
-  getUserChatRoom,
   ChatRoom,
   Message,
   User,
@@ -38,10 +37,7 @@ interface ChatRoomWithParticipants extends ChatRoom {
   actualParticipants?: number;
 }
 
-// 🔥 에러 타입 가드 함수
-const isErrorWithResponse = (error: unknown): error is { response?: { status?: number } } => {
-  return typeof error === 'object' && error !== null && 'response' in error;
-};
+
 
 // 🔥 getChatRoomUsers용 Fallback 함수
 const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]> => {
@@ -58,35 +54,7 @@ const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]>
   }
 };
 
-const isWebSocketSystemMessage = (content: string): boolean => {
-  if (!content || typeof content !== 'string') return false;
-  
-  const trimmed = content.trim();
-  
-  // JSON 구조인지 확인
-  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-    try {
-      const parsed = JSON.parse(trimmed);
-      
-      // type이 있고 MESSAGE가 아니면 시스템 메시지로 차단
-      if (parsed.type && parsed.type !== 'MESSAGE') {
-        return true;
-      }
-      
-      // type이 MESSAGE면 허용
-      if (parsed.type === 'MESSAGE') {
-        return false;
-      }
-      
-    } catch (e) {
-      // JSON 파싱 실패하면 일반 텍스트로 처리
-      return false;
-    }
-  }
-  
-  // JSON이 아닌 일반 텍스트는 모두 허용
-  return false;
-};
+
 
 // 토큰에서 추출한 userId
 const currentUserId = 2; // JWT 토큰에 포함된 userId
@@ -192,9 +160,6 @@ const ChatPage: React.FC = () => {
   const [roomUsers, setRoomUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // ✅ 실제 사용자 닉네임 상태 추가
-  const [userRealName, setUserRealName] = useState<string>("테스트유저");
-
   // 로딩 상태
   const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
   const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(false);
@@ -208,32 +173,21 @@ const ChatPage: React.FC = () => {
   // useBooks 훅 사용
   const { bookList, loading: isLoadingBooks, error: booksError, refetch: refetchBooks } = useBooks();
 
-  // ✅ 웹소켓 연결용 안전한 이름 (연결 안정성을 위해)
+  // ✅ 웹소켓 연결용 안전한 이름 (단순화)
   const getWebSocketSafeName = (): string => {
-    // 한글 이름이면 User{ID}로 변환 (연결 안정성)
-    if (userRealName && userRealName !== "테스트유저" && /[가-힣]/.test(userRealName)) {
-      const safeName = `User${currentUserId}`;
-      return safeName;
-    }
-    // 영어 이름이면 그대로
-    if (userRealName && userRealName !== "테스트유저") {
-      return userRealName;
-    }
-    // 기본값
-    const defaultName = `User${currentUserId}`;
-    return defaultName;
+    return `User${currentUserId}`;
   };
 
-  // ✅ UI 표시용 실제 닉네임
+  // ✅ UI 표시용 실제 닉네임 (단순화)
   const getDisplayUserName = (): string => {
-    return userRealName || "테스트유저";
+    return currentUser?.name || "테스트유저";
   };
 
-  // ✅ 에러 시 최소 폴백 데이터 (수정됨)
+  // ✅ 에러 시 최소 폴백 데이터 (단순화)
   const createFallbackUser = (id: number): User => ({
     id,
     email: `user${id}@example.com`,
-    name: id === currentUserId ? getDisplayUserName() : `사용자${id}`
+    name: id === currentUserId ? "테스트유저" : `사용자${id}`
   });
 
   // 동적 사용자 이름 가져오기 (웹소켓용으로 수정)
@@ -263,19 +217,15 @@ const ChatPage: React.FC = () => {
     }
   }, []);
 
-  // 현재 사용자 정보 초기화 (수정됨)
+  // 현재 사용자 정보 초기화 (단순화)
   useEffect(() => {
-    const initCurrentUser = () => {
-      const defaultUser: User = {
-        id: currentUserId,
-        email: "user@example.com",
-        name: getDisplayUserName() // 실제 닉네임 사용
-      };
-      setCurrentUser(defaultUser);
+    const defaultUser: User = {
+      id: currentUserId,
+      email: "user@example.com",
+      name: "테스트유저"
     };
-
-    initCurrentUser();
-  }, [userRealName]); // userRealName이 변경될 때마다 업데이트
+    setCurrentUser(defaultUser);
+  }, []); // 의존성 제거
 
   // 메시지 목록 자동 스크롤
   const scrollToBottom = () => {
@@ -357,10 +307,8 @@ const ChatPage: React.FC = () => {
       
       // ✅ 정상 메시지만 처리
       if (realtimeMessage.chatroomId === activeRoomId) {
-        const currentUsers = roomUsers.length > 0 ? roomUsers : [createFallbackUser(currentUserId)];
-        
         try {
-          const receivedMessage = convertToMessage(realtimeMessage, currentUsers);
+          const receivedMessage = convertToMessage(realtimeMessage);
           if (!receivedMessage) {
             return;
           }
@@ -430,11 +378,10 @@ const ChatPage: React.FC = () => {
         // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
-          senderId: 'system',
+          senderId: -1, // 시스템 메시지는 -1로 처리
           chatroomId: activeRoomId,
           content: `${event.userName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
-          timestamp: new Date().toISOString(),
-          isSystemMessage: true
+          timestamp: new Date().toISOString()
         };
         
         setMessages(prev => [...prev, systemMessage]);
@@ -456,11 +403,10 @@ const ChatPage: React.FC = () => {
       if (activeRoomId) {
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
-          senderId: 'system',
+          senderId: -1, // 시스템 메시지는 -1로 처리
           chatroomId: activeRoomId,
           content: messageText.trim(),
-          timestamp: new Date().toISOString(),
-          isSystemMessage: true
+          timestamp: new Date().toISOString()
         };
         
         setMessages(prev => [...prev, systemMessage]);
@@ -485,48 +431,30 @@ const ChatPage: React.FC = () => {
           userId: currentUserId,
           chatroomId: chatroomId
         });
-      } catch (joinError) {
+      } catch (_) {
         // 모든 에러 무시하고 웹소켓 연결 계속 진행
       }
       
-      // ✅ 3. 사용자 정보 가져오기 (새로 추가!)
-      try {
-        const userChatRoomData = await getUserChatRoom(currentUserId, chatroomId);
-        
-        if (userChatRoomData && 'user' in userChatRoomData && userChatRoomData.user?.name) {
-          setUserRealName(userChatRoomData.user.name);
-          
-          // currentUser 업데이트
-          setCurrentUser({
-            id: currentUserId,
-            email: userChatRoomData.user.email || "user@example.com",
-            name: userChatRoomData.user.name
-          });
-        }
-      } catch (userError) {
-        // 실패해도 웹소켓 연결은 계속
-      }
-      
-      // 4. 웹소켓 연결을 위한 채팅방 설정 (가장 중요!)
+      // 3. 웹소켓 연결을 위한 채팅방 설정 (가장 중요!)
       setActiveRoomId(chatroomId);
       
       // 기존 메시지 초기화 (새로운 방으로 이동할 때)
       setMessages([]);
       
-      // 5. 메시지와 사용자 목록은 실패해도 웹소켓은 작동
-      fetchRoomMessages(chatroomId).catch(error => {
+      // 4. 메시지와 사용자 목록은 실패해도 웹소켓은 작동
+      fetchRoomMessages(chatroomId).catch(_ => {
         // 빈 메시지로 시작
         setMessages([]);
         setRoomMessages(prev => ({ ...prev, [chatroomId]: [] }));
       });
       
-      fetchRoomUsers(chatroomId).catch(error => {
+      fetchRoomUsers(chatroomId).catch(_ => {
         // 기본 사용자로 시작
         setRoomUsers([createFallbackUser(currentUserId)]);
       });
       
-      // 6. 채팅방 목록 갱신 (선택사항, 실패해도 무시)
-      fetchChatRoomsWithParticipants().catch(error => {
+      // 5. 채팅방 목록 갱신 (선택사항, 실패해도 무시)
+      fetchChatRoomsWithParticipants().catch(_ => {
         // 무시
       });
       
@@ -536,10 +464,9 @@ const ChatPage: React.FC = () => {
   };
 
   // MessageDocumentDto를 Message로 변환하는 함수 (수정됨)
-  const convertToMessage = (dto: MessageDocumentDto | RealtimeMessage, users: User[]): Message | null => {
+  const convertToMessage = (dto: MessageDocumentDto | RealtimeMessage): Message | null => {
     let actualContent = dto.content;
     let actualSenderId = dto.senderId;
-    let actualSenderName = "";
     
     // 🔍 JSON 형태인지 확인하고 data.content 추출
     if (dto.content && typeof dto.content === 'string' && dto.content.trim().startsWith('{')) {
@@ -550,7 +477,6 @@ const ChatPage: React.FC = () => {
         if (parsed.type === 'MESSAGE' && parsed.data && parsed.data.content) {
           actualContent = parsed.data.content; // 🎯 실제 메시지 내용만 추출
           actualSenderId = parsed.data.senderId || dto.senderId; // senderId도 업데이트
-          actualSenderName = parsed.data.senderName || ""; // senderName도 추출
         } else if (parsed.type && parsed.type !== 'MESSAGE') {
           // USER_JOIN, USER_LEAVE 등 시스템 메시지는 차단
           return null;
@@ -565,60 +491,14 @@ const ChatPage: React.FC = () => {
       return null;
     }
     
-    // 사용자 정보 찾기 (업데이트된 senderId 사용)
-    const sender = users.find(user => user.id === actualSenderId);
-    
-    // 현재 사용자인 경우 실제 닉네임 사용
-    let displaySenderName = sender?.name || actualSenderName || `사용자${actualSenderId}`;
-    if (actualSenderId === currentUserId) {
-      const realName = getDisplayUserName();
-      if (realName && realName !== "테스트유저") {
-        displaySenderName = realName;
-      }
-    }
-    
-    // 🔥 dto.timestamp 사용으로 수정
-    let messageTime = "방금";
-    try {
-      // timestamp 우선, 없으면 현재 시간
-      const timeSource = 'timestamp' in dto ? dto.timestamp : new Date().toISOString();
-      
-      if (timeSource) {
-        const date = new Date(timeSource);
-        
-        // Date가 유효한지 확인
-        if (!isNaN(date.getTime())) {
-          messageTime = date.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        } else {
-          messageTime = new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        }
-      } else {
-        // timestamp가 없으면 현재 시간 사용
-        messageTime = new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      }
-    } catch (timeError) {
-      messageTime = new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    }
+    // 사용자 정보는 UI에서 별도 처리
     
     return {
       id: 'id' in dto ? dto.id : Date.now() + Math.random(),
       senderId: actualSenderId,
       chatroomId: 'chatroomId' in dto ? dto.chatroomId : activeRoomId || 0,
       content: actualContent.trim(), // 🎯 추출된 실제 내용만 표시
-      timestamp: 'timestamp' in dto ? dto.timestamp : new Date().toISOString(),
-      isSystemMessage: actualSenderId === 'system'
+      timestamp: 'timestamp' in dto ? dto.timestamp : new Date().toISOString()
     };
   };
 
@@ -683,10 +563,10 @@ const ChatPage: React.FC = () => {
       
       // MessageDocumentDto를 Message로 변환
       const convertedMessages = messageDtos
-        .map((dto, index) => {
+        .map((dto) => {
           try {
-            return convertToMessage(dto, currentUsers);
-          } catch (convertError) {
+            return convertToMessage(dto);
+          } catch (_) {
             return null;
           }
         })
@@ -736,7 +616,7 @@ const ChatPage: React.FC = () => {
         
         // 🎯 현재 사용자 정보 업데이트 (roomUsers에서 찾은 경우)
         const currentUserInRoom = users.find(user => user.id === currentUserId);
-        if (currentUserInRoom && (!currentUser || !currentUser.name || currentUser.name === "사용자")) {
+        if (currentUserInRoom) {
           setCurrentUser(currentUserInRoom);
         }
       } else {
@@ -815,8 +695,7 @@ const ChatPage: React.FC = () => {
         senderId: currentUserId,
         chatroomId: activeRoomId,
         content: filteredMessage,
-        timestamp: new Date().toISOString(),
-        isSystemMessage: false
+        timestamp: new Date().toISOString()
       };
       
       // 즉시 messages 배열에 추가
@@ -845,8 +724,7 @@ const ChatPage: React.FC = () => {
         senderId: currentUserId,
         chatroomId: activeRoomId,
         content: originalMessage, // 원본 메시지 사용
-        timestamp: new Date().toISOString(),
-        isSystemMessage: false
+        timestamp: new Date().toISOString()
       };
 
       setMessages(prevMessages => {
@@ -880,7 +758,7 @@ const ChatPage: React.FC = () => {
 
   // Message 표시용 헬퍼 함수들
   const getMessageSender = (msg: Message): string => {
-    if (msg.isSystemMessage) return "시스템";
+    if (msg.senderId === -1) return "시스템"; // 시스템 메시지는 -1
     if (msg.senderId === currentUserId) return "나";
     
     const user = roomUsers.find(u => u.id === msg.senderId);
@@ -897,7 +775,7 @@ const ChatPage: React.FC = () => {
   };
 
   const isMyMessage = (msg: Message): boolean => {
-    return msg.senderId === currentUserId && !msg.isSystemMessage;
+    return msg.senderId === currentUserId; // 단순하게 내 ID와 같은지만 확인
   };
 
   // ===== 책 목록 컴포넌트 =====
@@ -981,12 +859,12 @@ const ChatPage: React.FC = () => {
               }
             </span>
             {activeRoomId && (
-              <div css={styles.ConnectionStatus || {}}>
-                {wsStatus === 'connected' && <span css={styles.StatusConnected || {}}>● 연결됨</span>}
-                {wsStatus === 'connecting' && <span css={styles.StatusConnecting || {}}>● 연결 중...</span>}
-                {wsStatus === 'disconnected' && <span css={styles.StatusDisconnected || {}}>● 연결 끊김</span>}
-                {wsStatus === 'error' && <span css={styles.StatusError || {}}>● 연결 오류</span>}
-                <span css={styles.UserInfo || {}}>({getDisplayUserName()})</span>
+              <div>
+                {wsStatus === 'connected' && <span>● 연결됨</span>}
+                {wsStatus === 'connecting' && <span>● 연결 중...</span>}
+                {wsStatus === 'disconnected' && <span>● 연결 끊김</span>}
+                {wsStatus === 'error' && <span>● 연결 오류</span>}
+                <span>({getDisplayUserName()})</span>
               </div>
             )}
           </div>
@@ -999,7 +877,7 @@ const ChatPage: React.FC = () => {
               : "왼쪽에서 책을 선택하거나 채팅방을 클릭해주세요"
             }
             {activeRoomId && wsStatus !== 'connected' && (
-              <div css={styles.ConnectionWarning || {}}>
+              <div>
                 📡 연결 상태: {wsStatus} - 연결 중이므로 잠시 기다려주세요
               </div>
             )}
@@ -1012,7 +890,7 @@ const ChatPage: React.FC = () => {
               <div css={styles.EmptyMessages}>
                 아직 메시지가 없습니다. 첫 메시지를 보내보세요! 💬
                 {activeRoomId && wsStatus === 'connected' && (
-                  <div css={styles.RealtimeReady || {}}>실시간 채팅이 준비되었습니다 ✨</div>
+                  <div>실시간 채팅이 준비되었습니다 ✨</div>
                 )}
               </div>
             ) : (
@@ -1086,7 +964,7 @@ const ChatPage: React.FC = () => {
           <div css={styles.ParticipantList}>
             <h3 css={styles.HeaderText}>
               참여자 ({(roomUsers || []).length})
-              {wsStatus === 'connected' && <span css={styles.OnlineIndicator || {}}>🟢</span>}
+              {wsStatus === 'connected' && <span>🟢</span>}
             </h3>
             <img css={styles.lineStyle} src={Line} alt="구분선" />
             
