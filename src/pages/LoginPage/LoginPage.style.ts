@@ -27,6 +27,8 @@ export const logintext = css`
 
 export const loginid = css`
   position: relative;
+  padding: 12px;
+
   width: 370px;
   height: 60px;
   background-color: #ffffff;
@@ -46,6 +48,8 @@ export const logincheck = css`
 
 export const loginpw = css`
   position: relative;
+  padding: 12px;
+
   width: 500px;
   height: 60px;
   background-color: #ffffff;

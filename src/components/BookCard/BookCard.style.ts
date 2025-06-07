@@ -7,7 +7,8 @@ export const bookCardContainer = css`
   align-items: center;
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 25px 30px;
+  padding: 15px 20px;
+  cursor: pointer;
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -15,16 +16,16 @@ export const bookCardContainer = css`
 `;
 
 export const imageContainer = css`
-  min-width: 120px;
-  width: 120px;
-  height: 160px;
+  min-width: 130px;
+  width: 130px;
+  height: 170px;
   margin-right: 20px;
   overflow: hidden;
 `;
 
 export const bookImage = css`
-  width: 120px;
-  height: 174px;
+  width: 150px;
+  height: 204px;
 
   border-radius: 8px;
 `;
@@ -39,7 +40,7 @@ export const contentContainer = css`
 `;
 
 export const bookTitle = css`
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
 
   color: #333;
@@ -52,7 +53,7 @@ export const titleContainer = css`
 `;
 
 export const bookAuthor = css`
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
 
   color: #666;

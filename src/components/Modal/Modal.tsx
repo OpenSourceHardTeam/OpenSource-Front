@@ -66,7 +66,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, bookId, refetchVotes }) => {
           <CloseBtn css={iconStyle} onClick={onClose} />
         </div>
         <p css={titleStyle}>투표</p>
-        <p>최대 30자까지 작성하실 수 있습니다.</p>
+        <p>최대50자까지 작성하실 수 있습니다.</p>
         <TextField
           value={title}
           onChange={(e) => setTitle(e.target.value)}

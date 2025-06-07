@@ -33,6 +33,7 @@ const LoginPage = () => {
           />
         </div>
         <input
+          type="password"
           css={styles.loginpw}
           placeholder="비밀번호"
           value={password}

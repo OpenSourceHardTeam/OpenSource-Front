@@ -12,7 +12,7 @@ const TextField: React.FC<TextFieldProps> = ({
   value,
   onChange,
   placeholder,
-  maxLength = 30,
+  maxLength = 50,
 }) => {
   return (
     <StyledTextarea
