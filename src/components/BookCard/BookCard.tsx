@@ -14,7 +14,6 @@ const BookCard: React.FC<BookCardProps> = ({ bookData, onClick }) => {
 
   const handleDetailClick = () => {
     // 책 상세 페이지로 이동
-
     console.log("책 상세보기 클릭 - bookId:", bookId);
     navigate(`/bookinfo/${bookId}`);
   };

@@ -33,6 +33,7 @@ export interface Message {
  senderId: number;
  content: string;
  timestamp: string; // ISO date-time string
+
 }
 
 // 채팅방 참여 요청 파라미터
@@ -82,6 +83,7 @@ export interface CreateChatRoomParams {
     topic: string;
     bookId: number;
     bookArgumentId?: number;
+
 }
 
 export interface CreateChatRoomResponse {
@@ -153,6 +155,7 @@ export const leaveChatRoom = async (userId: number, chatroomId: number) => {
 export const checkUserInChatRoom = async (chatroomId: number, userId: number) => {
     return authApiGet<ExistsResponse, null> (
         `/api/v1/user-chatroom/chatrooms/${chatroomId}/users/${userId}/exists`, // 따옴표 제거
+
         null
     );
 };
@@ -178,7 +181,6 @@ export const getChatRoomUsersWithFallback = async (chatroomId: number) => {
         throw error; // 다른 에러는 다시 던지기
     }
 };
-
 // 특정 채팅방의 사용자 목록 조회
 export const getChatRoomUsers = async ( chatroomId: number) => {
     return authApiGet<ChatRoomUsersResponse, null> (
@@ -217,4 +219,6 @@ export const deleteChatRoom = async ( chatroomId: number) => {
         `/api/v1/chatroom/${chatroomId}`,
         null
     );
+
 };
+

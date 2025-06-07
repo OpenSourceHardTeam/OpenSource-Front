@@ -126,6 +126,7 @@ export const contentSection = css`
   margin-bottom: 50px;
 `;
 
+
 // 투표 컨테이너
 export const voteContainer = css``;
 
@@ -138,6 +139,12 @@ export const titleContainer = css`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+`;
+
+export const iconStyle = css`
+  width: 30px;
+  height: 30px;
+
 `;
 
 export const iconStyle = css`

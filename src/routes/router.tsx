@@ -10,6 +10,7 @@ import BookListPage from "pages/BookListPage/BookListPage";
 import Setting from "pages/Setting/Setting";
 import ChatPage from "pages/Chat/ChatPage";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -25,7 +26,6 @@ const router = createBrowserRouter([
         path: routes.chat,
         element: <ChatPage />,
       },
-
       {
         path: routes.login,
         element: <LoginPage />,

@@ -32,6 +32,7 @@ const BookHeader: React.FC<BookHeaderProps> = ({
     <h2 css={textStyles.bookAuthor}>{author}</h2>
     <p css={textStyles.bookPublisher}>
       {publisher} | {publishDate}
+
     </p>
   </div>
 );
