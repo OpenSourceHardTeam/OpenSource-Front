@@ -12,7 +12,6 @@ import messageComponents from "../../assets/svg/messageClickButton.svg?url"
 import {
   getUserChatRooms,
   getChatRoomUsers,
-  getChatRoomUsersWithFallback, // 🔥 추가
   leaveChatRoom,
   JoinChatRoom,
   getUserChatRoom,
@@ -29,12 +28,36 @@ import {
 } from "../../apis/hooks/chat/useMessage";
 
 // 웹소켓 훅 임포트
-import { useWebSocket, RealtimeMessage, UserEvent, WebSocketStatus } from "../../apis/hooks/chat/useWebSocket";
+import { useWebSocket, RealtimeMessage, UserEvent } from "../../apis/hooks/chat/useWebSocket";
 
 // 책 관련 훅 임포트
 import { useBooks, BookData } from "../../apis/hooks/Books/useBooks";
 
-// import 문들 다음에 이 두 함수를 추가하세요:
+// 🔥 확장된 ChatRoom 타입 정의
+interface ChatRoomWithParticipants extends ChatRoom {
+  actualParticipants?: number;
+}
+
+// 🔥 에러 타입 가드 함수
+const isErrorWithResponse = (error: unknown): error is { response?: { status?: number } } => {
+  return typeof error === 'object' && error !== null && 'response' in error;
+};
+
+// 🔥 getChatRoomUsers용 Fallback 함수
+const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]> => {
+  try {
+    const response = await getChatRoomUsers(chatroomId);
+    if (Array.isArray(response)) {
+      return response;
+    } else if (response && typeof response === 'object') {
+      return Object.values(response) as User[];
+    }
+    return [];
+  } catch (error) {
+    console.error(`getChatRoomUsers 실패 (채팅방 ${chatroomId}):`, error);
+    return [];
+  }
+};
 
 const isWebSocketSystemMessage = (content: string): boolean => {
   if (!content || typeof content !== 'string') return false;
@@ -69,26 +92,10 @@ const isWebSocketSystemMessage = (content: string): boolean => {
   return false;
 };
 
-const isValidUserMessage = (content: string): boolean => {
-  if (!content || typeof content !== 'string') return false;
-  
-  const trimmed = content.trim();
-  
-  // 빈 메시지 차단
-  if (trimmed.length === 0) return false;
-  
-  // 시스템 메시지(type이 MESSAGE가 아닌 JSON) 차단
-  if (isWebSocketSystemMessage(trimmed)) return false;
-  
-  // 나머지는 모두 허용
-  return true;
-};
-
 // 토큰에서 추출한 userId
 const currentUserId = 2; // JWT 토큰에 포함된 userId
 
 // ======= 책 배열 인덱스 → 채팅방 ID 매핑 (110-159) =======
-// 각 책마다 고유한 채팅방 ID를 할당 (배열 순서 기반, 110부터 시작)
 const getBookChatRoomId = (book: BookData, bookList: BookData[]): number => {
   const bookIndex = bookList.findIndex(b => b.bookId === book.bookId);
   const chatroomId = bookIndex + 110; // 110부터 시작
@@ -109,20 +116,19 @@ const getBookChatRoomId = (book: BookData, bookList: BookData[]): number => {
 
 // 🔥 새로 추가: 실제 참여자 수를 가져오는 훅
 const useChatRoomsWithParticipants = (userId: number) => {
-  const [chatRoomsWithParticipants, setChatRoomsWithParticipants] = useState<ChatRoom[]>([]);
+  const [chatRoomsWithParticipants, setChatRoomsWithParticipants] = useState<ChatRoomWithParticipants[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const participantsCache = useRef(new Map()); // 캐싱
+  const participantsCache = useRef(new Map<number, number>()); // 캐싱
 
-  const fetchParticipantCount = async (chatroomId: number) => {
+  const fetchParticipantCount = async (chatroomId: number): Promise<number> => {
     // 캐시에서 먼저 확인
     if (participantsCache.current.has(chatroomId)) {
-      return participantsCache.current.get(chatroomId);
+      return participantsCache.current.get(chatroomId) || 0;
     }
 
     try {
       const users = await getChatRoomUsersWithFallback(chatroomId);
-      const count = Array.isArray(users) ? users.length : 
-                   (users && typeof users === 'object' ? Object.keys(users).length : 0);
+      const count = users.length;
       
       console.log(`[참여자 수] 채팅방 ${chatroomId}: ${count}명`);
       
@@ -150,7 +156,7 @@ const useChatRoomsWithParticipants = (userId: number) => {
         console.log("[성공] 채팅방", chatRoomsResponse.length, "개 로드됨");
         
         // 초기값으로 먼저 설정 (빠른 렌더링)
-        const initialRooms = chatRoomsResponse.map(room => ({
+        const initialRooms: ChatRoomWithParticipants[] = chatRoomsResponse.map(room => ({
           ...room,
           actualParticipants: room?.currentParticipants || 0 // 초기값
         }));
@@ -176,10 +182,12 @@ const useChatRoomsWithParticipants = (userId: number) => {
       console.error("[에러] 채팅방 목록 조회 실패:", error);
       setChatRoomsWithParticipants([]);
       
-      if (error.response?.status === 500) {
-        console.log("[500 에러] 서버 내부 오류로 채팅방 목록을 불러올 수 없음");
-      } else if (error.response?.status === 404) {
-        console.log("[404 에러] 사용자 또는 채팅방 정보를 찾을 수 없음");
+      if (isErrorWithResponse(error)) {
+        if (error.response?.status === 500) {
+          console.log("[500 에러] 서버 내부 오류로 채팅방 목록을 불러올 수 없음");
+        } else if (error.response?.status === 404) {
+          console.log("[404 에러] 사용자 또는 채팅방 정보를 찾을 수 없음");
+        }
       }
     } finally {
       setIsLoading(false);
@@ -199,7 +207,7 @@ const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   // 🔥 기존 chatRooms 상태를 새로운 훅으로 대체
-  const { chatRoomsWithParticipants, isLoadingRooms, fetchChatRoomsWithParticipants } = 
+  const { chatRoomsWithParticipants, isLoading: isLoadingRooms, fetchChatRoomsWithParticipants } = 
     useChatRoomsWithParticipants(currentUserId);
 
   // 채팅방 상태 관리
@@ -402,6 +410,11 @@ const ChatPage: React.FC = () => {
         
         try {
           const receivedMessage = convertToMessage(realtimeMessage, currentUsers);
+          if (!receivedMessage) {
+            console.log('[⚠️ 실시간] 메시지 변환 결과가 null');
+            return;
+          }
+          
           console.log('[🔥 실시간] 변환된 메시지:', receivedMessage);
           
           // 내가 방금 보낸 메시지인지 확인 (시간 기반 중복 방지)
@@ -410,7 +423,7 @@ const ChatPage: React.FC = () => {
           setMessages(prevMessages => {
             // 중복 방지 로직
             const isDuplicate = prevMessages.some(msg => {
-              return msg.message === receivedMessage.message && 
+              return msg.content === receivedMessage.content && 
                      msg.senderId === receivedMessage.senderId;
             });
             
@@ -480,11 +493,11 @@ const ChatPage: React.FC = () => {
         // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
-          sender: "시스템",
-          message: `${event.userName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isMine: false,
-          senderId: "system"
+          senderId: 'system',
+          chatroomId: activeRoomId,
+          content: `${event.userName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
+          timestamp: new Date().toISOString(),
+          isSystemMessage: true
         };
         
         console.log('[🔥 실시간] 시스템 메시지 추가:', systemMessage);
@@ -511,11 +524,11 @@ const ChatPage: React.FC = () => {
       if (activeRoomId) {
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
-          sender: "시스템",
-          message: messageText.trim(),
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          isMine: false,
-          senderId: "system"
+          senderId: 'system',
+          chatroomId: activeRoomId,
+          content: messageText.trim(),
+          timestamp: new Date().toISOString(),
+          isSystemMessage: true
         };
         
         setMessages(prev => [...prev, systemMessage]);
@@ -545,17 +558,19 @@ const ChatPage: React.FC = () => {
         });
         console.log(`[참여 성공] 채팅방 ${chatroomId}에 참여 완료`);
       } catch (joinError) {
-        console.log(`[참여 에러] 채팅방 ${chatroomId} 참여 API 실패:`, joinError.response?.status);
+        console.log(`[참여 에러] 채팅방 ${chatroomId} 참여 API 실패:`, isErrorWithResponse(joinError) ? joinError.response?.status : 'Unknown');
         
         // 다양한 에러 상황 처리
-        if (joinError.response?.status === 409) {
-          console.log(`[이미 참여 중] 채팅방 ${chatroomId}에 이미 참여된 상태`);
-        } else if (joinError.response?.status === 500) {
-          console.log(`[서버 에러] 채팅방 ${chatroomId} 서버 문제로 참여 실패`);
-        } else if (joinError.response?.status === 404) {
-          console.log(`[채팅방 없음] 채팅방 ${chatroomId}를 찾을 수 없음`);
-        } else {
-          console.log(`[기타 에러] 채팅방 ${chatroomId} 참여 중 알 수 없는 에러`);
+        if (isErrorWithResponse(joinError)) {
+          if (joinError.response?.status === 409) {
+            console.log(`[이미 참여 중] 채팅방 ${chatroomId}에 이미 참여된 상태`);
+          } else if (joinError.response?.status === 500) {
+            console.log(`[서버 에러] 채팅방 ${chatroomId} 서버 문제로 참여 실패`);
+          } else if (joinError.response?.status === 404) {
+            console.log(`[채팅방 없음] 채팅방 ${chatroomId}를 찾을 수 없음`);
+          } else {
+            console.log(`[기타 에러] 채팅방 ${chatroomId} 참여 중 알 수 없는 에러`);
+          }
         }
         
         // 모든 에러 무시하고 웹소켓 연결 계속 진행
@@ -566,7 +581,7 @@ const ChatPage: React.FC = () => {
         console.log(`[사용자 정보] 조회 시작 - userId: ${currentUserId}, chatroomId: ${chatroomId}`);
         const userChatRoomData = await getUserChatRoom(currentUserId, chatroomId);
         
-        if (userChatRoomData?.user?.name) {
+        if (userChatRoomData && 'user' in userChatRoomData && userChatRoomData.user?.name) {
           setUserRealName(userChatRoomData.user.name);
           console.log(`[사용자 정보] 실제 닉네임 로드 성공: ${userChatRoomData.user.name}`);
           
@@ -580,7 +595,7 @@ const ChatPage: React.FC = () => {
           console.log('[사용자 정보] API 응답에 user.name이 없음, 기본값 유지');
         }
       } catch (userError) {
-        console.log('[사용자 정보] 조회 실패, 기본값 사용:', userError.response?.status);
+        console.log('[사용자 정보] 조회 실패, 기본값 사용:', isErrorWithResponse(userError) ? userError.response?.status : 'Unknown');
         // 실패해도 웹소켓 연결은 계속
       }
       
@@ -593,21 +608,21 @@ const ChatPage: React.FC = () => {
       
       // 5. 메시지와 사용자 목록은 실패해도 웹소켓은 작동
       fetchRoomMessages(chatroomId).catch(error => {
-        console.log('[메시지 로드 실패] 실시간 메시지만 사용:', error.response?.status);
+        console.log('[메시지 로드 실패] 실시간 메시지만 사용:', isErrorWithResponse(error) ? error.response?.status : 'Unknown');
         // 빈 메시지로 시작
         setMessages([]);
         setRoomMessages(prev => ({ ...prev, [chatroomId]: [] }));
       });
       
       fetchRoomUsers(chatroomId).catch(error => {
-        console.log('[사용자 로드 실패] 기본 사용자만 표시:', error.response?.status);
+        console.log('[사용자 로드 실패] 기본 사용자만 표시:', isErrorWithResponse(error) ? error.response?.status : 'Unknown');
         // 기본 사용자로 시작
         setRoomUsers([createFallbackUser(currentUserId)]);
       });
       
       // 6. 채팅방 목록 갱신 (선택사항, 실패해도 무시)
       fetchChatRoomsWithParticipants().catch(error => 
-        console.log('[채팅방 목록 갱신 실패]:', error.response?.status)
+        console.log('[채팅방 목록 갱신 실패]:', isErrorWithResponse(error) ? error.response?.status : 'Unknown')
       );
       
       console.log(`✅ [연결 완료] "${book.bookTitle}" 전용 채팅방 ${chatroomId}에 입장`);
@@ -621,108 +636,108 @@ const ChatPage: React.FC = () => {
   };
 
   // MessageDocumentDto를 Message로 변환하는 함수 (수정됨)
-const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | null => {
-  let actualContent = dto.content;
-  let actualSenderId = dto.senderId;
-  let actualSenderName = "";
-  
-  // 🔍 JSON 형태인지 확인하고 data.content 추출
-  if (dto.content && typeof dto.content === 'string' && dto.content.trim().startsWith('{')) {
-    try {
-      const parsed = JSON.parse(dto.content.trim());
-      
-      // type이 MESSAGE인 경우에만 처리
-      if (parsed.type === 'MESSAGE' && parsed.data && parsed.data.content) {
-        actualContent = parsed.data.content; // 🎯 실제 메시지 내용만 추출
-        actualSenderId = parsed.data.senderId || dto.senderId; // senderId도 업데이트
-        actualSenderName = parsed.data.senderName || ""; // senderName도 추출
-        
-        console.log('[✅ JSON 파싱] 실제 내용 추출:', {
-          원본: dto.content.substring(0, 50) + '...',
-          추출된내용: actualContent,
-          senderId: actualSenderId,
-          senderName: actualSenderName
-        });
-      } else if (parsed.type && parsed.type !== 'MESSAGE') {
-        // USER_JOIN, USER_LEAVE 등 시스템 메시지는 차단
-        console.log('[🚫 차단] 시스템 메시지:', parsed.type);
-        return null;
-      }
-    } catch (e) {
-      // JSON 파싱 실패하면 원본 그대로 사용
-      console.log('[일반 텍스트] JSON 파싱 실패, 원본 사용:', dto.content.substring(0, 30));
-    }
-  }
-  
-  // 빈 내용이면 차단
-  if (!actualContent || actualContent.trim().length === 0) {
-    console.log('[🚫 차단] 빈 내용');
-    return null;
-  }
-  
-  console.log('[✅ 변환] 최종 메시지:', actualContent);
-  
-  // 사용자 정보 찾기 (업데이트된 senderId 사용)
-  const sender = users.find(user => user.id === actualSenderId);
-  
-  // 현재 사용자인 경우 실제 닉네임 사용
-  let displaySenderName = sender?.name || actualSenderName || `사용자${actualSenderId}`;
-  if (actualSenderId === currentUserId) {
-    const realName = getDisplayUserName();
-    if (realName && realName !== "테스트유저") {
-      displaySenderName = realName;
-    }
-  }
-  
-  // 🔥 dto.timestamp 사용으로 수정
-  let messageTime = "방금";
-  try {
-    // dto.createdAt 대신 dto.timestamp 사용
-    const timeSource = dto.timestamp || dto.createdAt; // timestamp 우선, 없으면 createdAt
+  const convertToMessage = (dto: MessageDocumentDto | RealtimeMessage, users: User[]): Message | null => {
+    let actualContent = dto.content;
+    let actualSenderId = dto.senderId;
+    let actualSenderName = "";
     
-    if (timeSource) {
-      console.log('[시간 처리] 원본 timestamp:', timeSource);
-      const date = new Date(timeSource);
+    // 🔍 JSON 형태인지 확인하고 data.content 추출
+    if (dto.content && typeof dto.content === 'string' && dto.content.trim().startsWith('{')) {
+      try {
+        const parsed = JSON.parse(dto.content.trim());
+        
+        // type이 MESSAGE인 경우에만 처리
+        if (parsed.type === 'MESSAGE' && parsed.data && parsed.data.content) {
+          actualContent = parsed.data.content; // 🎯 실제 메시지 내용만 추출
+          actualSenderId = parsed.data.senderId || dto.senderId; // senderId도 업데이트
+          actualSenderName = parsed.data.senderName || ""; // senderName도 추출
+          
+          console.log('[✅ JSON 파싱] 실제 내용 추출:', {
+            원본: dto.content.substring(0, 50) + '...',
+            추출된내용: actualContent,
+            senderId: actualSenderId,
+            senderName: actualSenderName
+          });
+        } else if (parsed.type && parsed.type !== 'MESSAGE') {
+          // USER_JOIN, USER_LEAVE 등 시스템 메시지는 차단
+          console.log('[🚫 차단] 시스템 메시지:', parsed.type);
+          return null;
+        }
+      } catch (e) {
+        // JSON 파싱 실패하면 원본 그대로 사용
+        console.log('[일반 텍스트] JSON 파싱 실패, 원본 사용:', dto.content.substring(0, 30));
+      }
+    }
+    
+    // 빈 내용이면 차단
+    if (!actualContent || actualContent.trim().length === 0) {
+      console.log('[🚫 차단] 빈 내용');
+      return null;
+    }
+    
+    console.log('[✅ 변환] 최종 메시지:', actualContent);
+    
+    // 사용자 정보 찾기 (업데이트된 senderId 사용)
+    const sender = users.find(user => user.id === actualSenderId);
+    
+    // 현재 사용자인 경우 실제 닉네임 사용
+    let displaySenderName = sender?.name || actualSenderName || `사용자${actualSenderId}`;
+    if (actualSenderId === currentUserId) {
+      const realName = getDisplayUserName();
+      if (realName && realName !== "테스트유저") {
+        displaySenderName = realName;
+      }
+    }
+    
+    // 🔥 dto.timestamp 사용으로 수정
+    let messageTime = "방금";
+    try {
+      // timestamp 우선, 없으면 현재 시간
+      const timeSource = 'timestamp' in dto ? dto.timestamp : new Date().toISOString();
       
-      // Date가 유효한지 확인
-      if (!isNaN(date.getTime())) {
-        messageTime = date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        console.log('[✅ 시간 변환] 성공:', messageTime);
+      if (timeSource) {
+        console.log('[시간 처리] 원본 timestamp:', timeSource);
+        const date = new Date(timeSource);
+        
+        // Date가 유효한지 확인
+        if (!isNaN(date.getTime())) {
+          messageTime = date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          console.log('[✅ 시간 변환] 성공:', messageTime);
+        } else {
+          console.warn('[시간 경고] 유효하지 않은 날짜:', timeSource);
+          messageTime = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        }
       } else {
-        console.warn('[시간 경고] 유효하지 않은 날짜:', timeSource);
+        // timestamp가 없으면 현재 시간 사용
+        console.warn('[시간 경고] timestamp 없음, 현재 시간 사용');
         messageTime = new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         });
       }
-    } else {
-      // timestamp도 createdAt도 없으면 현재 시간 사용
-      console.warn('[시간 경고] timestamp와 createdAt 모두 없음, 현재 시간 사용');
+    } catch (timeError) {
+      console.error('[시간 에러] 시간 처리 실패:', timeError);
       messageTime = new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });
     }
-  } catch (timeError) {
-    console.error('[시간 에러] 시간 처리 실패:', timeError, '원본:', dto.timestamp || dto.createdAt);
-    messageTime = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-  
-  return {
-    id: dto.id,
-    sender: actualSenderId === currentUserId ? "나" : displaySenderName,
-    message: actualContent.trim(), // 🎯 추출된 실제 내용만 표시
-    time: messageTime, // 🔥 dto.timestamp 기반으로 처리된 시간
-    isMine: actualSenderId === currentUserId,
-    senderId: actualSenderId.toString(),
+    
+    return {
+      id: 'id' in dto ? dto.id : Date.now() + Math.random(),
+      senderId: actualSenderId,
+      chatroomId: 'chatroomId' in dto ? dto.chatroomId : activeRoomId || 0,
+      content: actualContent.trim(), // 🎯 추출된 실제 내용만 표시
+      timestamp: 'timestamp' in dto ? dto.timestamp : new Date().toISOString(),
+      isSystemMessage: actualSenderId === 'system'
+    };
   };
-};
 
   // 유효성 검사를 포함한 책 선택 함수
   const handleSelectBookWithValidation = async (book: BookData) => {
@@ -799,16 +814,16 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
       }
       
       // MessageDocumentDto를 Message로 변환
-     const convertedMessages = messageDtos
-  .map((dto, index) => {
-    try {
-      return convertToMessage(dto, currentUsers);
-    } catch (convertError) {
-      console.error(`[에러] ${index}번째 메시지 변환 실패:`, convertError);
-      return null; // 🔥 이 부분을 변경: 기본값 대신 null 반환
-    }
-  })
-  .filter(message => message !== null);
+      const convertedMessages = messageDtos
+        .map((dto, index) => {
+          try {
+            return convertToMessage(dto, currentUsers);
+          } catch (convertError) {
+            console.error(`[에러] ${index}번째 메시지 변환 실패:`, convertError);
+            return null;
+          }
+        })
+        .filter((message): message is Message => message !== null);
       
       setMessages(convertedMessages);
       setRoomMessages(prev => ({
@@ -822,12 +837,14 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
       console.error(`[API 에러] 메시지 조회 실패:`, error);
       
       // 다양한 에러 상황에 대한 처리
-      if (error.response?.status === 500) {
-        console.log("[500 에러] 서버 내부 오류로 메시지를 불러올 수 없음");
-      } else if (error.response?.status === 404) {
-        console.log("[404 에러] 채팅방을 찾을 수 없거나 메시지가 없음");
-      } else if (error.response?.status === 403) {
-        console.log("[403 에러] 채팅방 접근 권한이 없음");
+      if (isErrorWithResponse(error)) {
+        if (error.response?.status === 500) {
+          console.log("[500 에러] 서버 내부 오류로 메시지를 불러올 수 없음");
+        } else if (error.response?.status === 404) {
+          console.log("[404 에러] 채팅방을 찾을 수 없거나 메시지가 없음");
+        } else if (error.response?.status === 403) {
+          console.log("[403 에러] 채팅방 접근 권한이 없음");
+        }
       }
       
       // 에러 시 빈 메시지 배열 (웹소켓으로는 계속 동작)
@@ -885,14 +902,16 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
       console.error("[에러] 사용자 목록 조회 실패:", error);
       
       // 500 에러나 기타 API 에러 시에도 웹소켓 기능은 계속 작동하도록
-      if (error.response?.status === 500) {
-        console.log("[500 에러] 서버 문제로 기본 사용자만 표시");
-      } else if (error.response?.status === 404) {
-        console.log("[404 에러] 채팅방을 찾을 수 없음");
-      } else if (error.response?.status === 403) {
-        console.log("[403 에러] 사용자 목록 접근 권한 없음");
-      } else {
-        console.log("[기타 에러] 네트워크 또는 기타 문제");
+      if (isErrorWithResponse(error)) {
+        if (error.response?.status === 500) {
+          console.log("[500 에러] 서버 문제로 기본 사용자만 표시");
+        } else if (error.response?.status === 404) {
+          console.log("[404 에러] 채팅방을 찾을 수 없음");
+        } else if (error.response?.status === 403) {
+          console.log("[403 에러] 사용자 목록 접근 권한 없음");
+        } else {
+          console.log("[기타 에러] 네트워크 또는 기타 문제");
+        }
       }
       
       // 어떤 에러든 기본 사용자로 설정 (웹소켓은 계속 작동)
@@ -972,93 +991,79 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
       console.log("[욕설 필터링 결과 : ", filterResult);
 
       const filteredMessage = filterResult.masked;
-    const wasFiltered = filterResult.original !== filterResult.masked;
-    
-    if (wasFiltered) {
-      console.log('[🛡️ 욕설 필터링] 메시지가 필터링됨:', filterResult.original, '→', filteredMessage);
-    } else {
-      console.log('[✅ 욕설 필터링] 클린한 메시지');
-    }
-     // 1. 즉시 UI에 메시지 표시 (Optimistic Update)
-    const newMessage: Message = {
-      id: Date.now() + Math.random(), // 임시 ID
-      sender: "나",
-      message: filteredMessage,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isMine: true,
-      senderId: currentUserId.toString(),
-    };
-
-    console.log('[✨ 즉시 표시] 새 메시지 UI에 추가:', newMessage);
-    
-    // 즉시 messages 배열에 추가
-    setMessages(prevMessages => {
-      const updatedMessages = [...prevMessages, newMessage];
-      console.log('[✨ 즉시 표시] 업데이트된 메시지 배열 길이:', updatedMessages.length);
+      const wasFiltered = filterResult.original !== filterResult.masked;
       
-      // 방별 메시지 저장소에도 저장
-      setRoomMessages(prev => ({
-        ...prev,
-        [activeRoomId!]: updatedMessages
-      }));
+      if (wasFiltered) {
+        console.log('[🛡️ 욕설 필터링] 메시지가 필터링됨:', filterResult.original, '→', filteredMessage);
+      } else {
+        console.log('[✅ 욕설 필터링] 클린한 메시지');
+      }
       
-      return updatedMessages;
-    });
-    // ✅ 4. 웹소켓으로 필터링된 메시지 서버에 전송
-    if (wsStatus === 'connected') {
-      console.log('[📤 웹소켓] 필터링된 메시지를 서버로 전송 시도');
-      wsSendMessage(filteredMessage); // 🔥 필터링된 메시지 전송
-      console.log('[📤 웹소켓] 필터링된 메시지 전송 완료');
-    } else {
-      console.warn(`[❌ 웹소켓] 연결되지 않음 (상태: ${wsStatus})`);
-      
-      // 연결이 안 되어 있으면 일단 로컬에만 표시하고 사용자에게 알림
-      const statusMessages = {
-        'connecting': "연결 중입니다. 메시지가 전송되지 않을 수 있습니다.",
-        'disconnected': "연결이 끊어졌습니다. 메시지가 전송되지 않았습니다.",
-        'error': "연결 오류입니다. 메시지가 전송되지 않았습니다."
+      // 1. 즉시 UI에 메시지 표시 (Optimistic Update)
+      const newMessage: Message = {
+        id: Date.now() + Math.random(),
+        senderId: currentUserId,
+        chatroomId: activeRoomId,
+        content: filteredMessage,
+        timestamp: new Date().toISOString(),
+        isSystemMessage: false
       };
+
+      console.log('[✨ 즉시 표시] 새 메시지 UI에 추가:', newMessage);
       
-      // 사용자에게 알림 (옵션)
-      // alert(statusMessages[wsStatus] || "채팅방에 연결되지 않았습니다.");
-     }
+      // 즉시 messages 배열에 추가
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages, newMessage];
+        console.log('[✨ 즉시 표시] 업데이트된 메시지 배열 길이:', updatedMessages.length);
+        
+        // 방별 메시지 저장소에도 저장
+        setRoomMessages(prev => ({
+          ...prev,
+          [activeRoomId!]: updatedMessages
+        }));
+        
+        return updatedMessages;
+      });
+      
+      // ✅ 4. 웹소켓으로 필터링된 메시지 서버에 전송
+      if (wsStatus === 'connected') {
+        console.log('[📤 웹소켓] 필터링된 메시지를 서버로 전송 시도');
+        wsSendMessage(filteredMessage); // 🔥 필터링된 메시지 전송
+        console.log('[📤 웹소켓] 필터링된 메시지 전송 완료');
+      } else {
+        console.warn(`[❌ 웹소켓] 연결되지 않음 (상태: ${wsStatus})`);
+      }
     } catch (filterError) {
       console.error('[❌ 욕설 필터링] API 호출 실패:', filterError);
     
-    // ✅ 욕설 필터링 실패 시 원본 메시지 그대로 처리 (fallback)
-    console.log('[🔄 Fallback] 욕설 필터링 실패, 원본 메시지로 처리');
-    
-    // 즉시 UI에 원본 메시지 표시
-    const fallbackMessage: Message = {
-      id: Date.now() + Math.random(),
-      sender: "나",
-      message: originalMessage, // 원본 메시지 사용
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isMine: true,
-      senderId: currentUserId.toString(),
-    };
+      // ✅ 욕설 필터링 실패 시 원본 메시지 그대로 처리 (fallback)
+      console.log('[🔄 Fallback] 욕설 필터링 실패, 원본 메시지로 처리');
+      
+      // 즉시 UI에 원본 메시지 표시
+      const fallbackMessage: Message = {
+        id: Date.now() + Math.random(),
+        senderId: currentUserId,
+        chatroomId: activeRoomId,
+        content: originalMessage, // 원본 메시지 사용
+        timestamp: new Date().toISOString(),
+        isSystemMessage: false
+      };
 
-    setMessages(prevMessages => {
-      const updatedMessages = [...prevMessages, fallbackMessage];
-      setRoomMessages(prev => ({
-        ...prev,
-        [activeRoomId!]: updatedMessages
-      }));
-      return updatedMessages;
-    });
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages, fallbackMessage];
+        setRoomMessages(prev => ({
+          ...prev,
+          [activeRoomId!]: updatedMessages
+        }));
+        return updatedMessages;
+      });
 
-    // 웹소켓으로 원본 메시지 전송
-    if (wsStatus === 'connected') {
-      console.log('[📤 Fallback] 원본 메시지를 서버로 전송');
-      wsSendMessage(originalMessage);
+      // 웹소켓으로 원본 메시지 전송
+      if (wsStatus === 'connected') {
+        console.log('[📤 Fallback] 원본 메시지를 서버로 전송');
+        wsSendMessage(originalMessage);
+      }
     }
-  }
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>): void => {
@@ -1074,11 +1079,32 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
   // 🔥 수정된 활성화된 방 정보 가져오기
   const activeRoom = chatRoomsWithParticipants.find((room) => room.id === activeRoomId);
 
+  // Message 표시용 헬퍼 함수들
+  const getMessageSender = (msg: Message): string => {
+    if (msg.isSystemMessage) return "시스템";
+    if (msg.senderId === currentUserId) return "나";
+    
+    const user = roomUsers.find(u => u.id === msg.senderId);
+    return user?.name || `사용자${msg.senderId}`;
+  };
+
+  const getMessageTime = (msg: Message): string => {
+    try {
+      const date = new Date(msg.timestamp);
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return "방금";
+    }
+  };
+
+  const isMyMessage = (msg: Message): boolean => {
+    return msg.senderId === currentUserId && !msg.isSystemMessage;
+  };
+
   // ===== 책 목록 컴포넌트 =====
   const BookList: React.FC = () => (
     <div css={styles.BookListContainer}>
       <h3 css={styles.HeaderText}>
-        {/* <img css={styles.arrowStyle} src="/assets/img/book-info-link.svg" alt="화살표" /> */}
         도서 목록
       </h3>
       <img css={styles.lineStyle} src={Line} alt="구분선" />
@@ -1156,12 +1182,12 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
               }
             </span>
             {activeRoomId && (
-              <div css={styles.ConnectionStatus}>
-                {wsStatus === 'connected' && <span css={styles.StatusConnected}>● 연결됨</span>}
-                {wsStatus === 'connecting' && <span css={styles.StatusConnecting}>● 연결 중...</span>}
-                {wsStatus === 'disconnected' && <span css={styles.StatusDisconnected}>● 연결 끊김</span>}
-                {wsStatus === 'error' && <span css={styles.StatusError}>● 연결 오류</span>}
-                <span css={styles.UserInfo}>({getDisplayUserName()})</span>
+              <div css={styles.ConnectionStatus || {}}>
+                {wsStatus === 'connected' && <span css={styles.StatusConnected || {}}>● 연결됨</span>}
+                {wsStatus === 'connecting' && <span css={styles.StatusConnecting || {}}>● 연결 중...</span>}
+                {wsStatus === 'disconnected' && <span css={styles.StatusDisconnected || {}}>● 연결 끊김</span>}
+                {wsStatus === 'error' && <span css={styles.StatusError || {}}>● 연결 오류</span>}
+                <span css={styles.UserInfo || {}}>({getDisplayUserName()})</span>
               </div>
             )}
           </div>
@@ -1174,7 +1200,7 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
               : "왼쪽에서 책을 선택하거나 채팅방을 클릭해주세요"
             }
             {activeRoomId && wsStatus !== 'connected' && (
-              <div css={styles.ConnectionWarning}>
+              <div css={styles.ConnectionWarning || {}}>
                 📡 연결 상태: {wsStatus} - 연결 중이므로 잠시 기다려주세요
               </div>
             )}
@@ -1187,7 +1213,7 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
               <div css={styles.EmptyMessages}>
                 아직 메시지가 없습니다. 첫 메시지를 보내보세요! 💬
                 {activeRoomId && wsStatus === 'connected' && (
-                  <div css={styles.RealtimeReady}>실시간 채팅이 준비되었습니다 ✨</div>
+                  <div css={styles.RealtimeReady || {}}>실시간 채팅이 준비되었습니다 ✨</div>
                 )}
               </div>
             ) : (
@@ -1196,23 +1222,23 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
                   <div css={styles.MessageHeader}>
                     <span
                       css={
-                        msg?.isMine
+                        isMyMessage(msg)
                           ? styles.MessageSenderMine
                           : styles.MessageSender
                       }
                     >
-                      {msg?.sender || "알 수 없음"}
+                      {getMessageSender(msg)}
                     </span>
-                    <span css={styles.MessageTime}>{msg?.time || ""}</span>
+                    <span css={styles.MessageTime}>{getMessageTime(msg)}</span>
                   </div>
                   <div
                     css={
-                      msg?.isMine
+                      isMyMessage(msg)
                         ? styles.MessageBubbleMine
                         : styles.MessageBubble
                     }
                   >
-                    {msg?.message || ""}
+                    {msg?.content || ""}
                   </div>
                 </div>
               ))
@@ -1242,8 +1268,8 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
               disabled={!activeRoomId || wsStatus !== 'connected'}
             >
               <img 
-              src={messageComponents} 
-              alt="전송" 
+                src={messageComponents} 
+                alt="전송" 
               />
             </button>
           </div>
@@ -1260,9 +1286,8 @@ const convertToMessage = (dto: MessageDocumentDto, users: User[]): Message | nul
 
           <div css={styles.ParticipantList}>
             <h3 css={styles.HeaderText}>
-              {/* <img css={styles.arrowStyle} src="/assets/img/book-info-link.svg" alt="화살표" /> */}
               참여자 ({(roomUsers || []).length})
-              {wsStatus === 'connected' && <span css={styles.OnlineIndicator}>🟢</span>}
+              {wsStatus === 'connected' && <span css={styles.OnlineIndicator || {}}>🟢</span>}
             </h3>
             <img css={styles.lineStyle} src={Line} alt="구분선" />
             
