@@ -40,7 +40,7 @@ export const contentContainer = css`
 `;
 
 export const bookTitle = css`
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
 
   color: #333;
@@ -53,7 +53,7 @@ export const titleContainer = css`
 `;
 
 export const bookAuthor = css`
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
 
   color: #666;
