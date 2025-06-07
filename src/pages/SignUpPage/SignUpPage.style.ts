@@ -14,6 +14,7 @@ export const signupframe = css`
 export const signuptext = css`
   height: 52px;
   padding-bottom: 80px;
+
   color: #7b9acc;
   font-size: 40px;
   font-weight: 700;
@@ -25,6 +26,8 @@ export const signuptext = css`
 export const signupnickname = css`
   width: 370px;
   height: 60px;
+  padding: 12px;
+
   background-color: #ffffff;
   border-radius: 10px;
   border: 1px solid #d9d9d9;
@@ -43,6 +46,8 @@ export const signupContainer = css`
 export const signupid = css`
   width: 370px;
   height: 60px;
+  padding: 12px;
+
   background-color: #ffffff;
   border-radius: 10px;
   border: 1px solid #d9d9d9;
@@ -59,12 +64,14 @@ export const signupcheck = css`
 
 export const signuppw = css`
   position: relative;
+  padding: 12px;
   width: 500px;
   height: 60px;
   background-color: #ffffff;
   border-radius: 10px;
   border: 1px solid;
   border-color: #d9d9d9;
+
   &::placeholder {
     padding-left: 5px;
     color: #d9d9d9;

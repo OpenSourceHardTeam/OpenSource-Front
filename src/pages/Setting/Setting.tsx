@@ -131,7 +131,7 @@ const Setting: React.FC = () => {
             />
             <div css={passwordBox}>
               <Button
-                text={"가입하기"}
+                text={"수정하기"}
                 type={"login"}
                 className={!isFormValid ? "disabled" : ""}
                 onClick={handleProfileUpdate}

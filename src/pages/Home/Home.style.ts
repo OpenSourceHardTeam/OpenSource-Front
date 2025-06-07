@@ -69,6 +69,7 @@ export const BookListContainer = css`
 `;
 
 export const BookContainer = css`
+  cursor: pointer;
   width: 165px;
   height: 310px;
   display: flex;

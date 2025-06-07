@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 
 export const mainContainer = css`
   width: 950px;
-  height: 150px;
+  height: 190px;
   display: flex;
   width: 100%;
   background-color: white;
@@ -30,16 +30,16 @@ export const voteDiv = css`
 `;
 
 export const voteTextWrapper = css`
-  align-self: stretch;
-  height: 22px;
-  margin-top: -1px;
   font-weight: 700;
   color: #3f4756;
   font-size: 20px;
-  white-space: nowrap;
-  letter-spacing: 0;
-  line-height: normal;
-  position: relative;
+  line-height: 1.4;
+  word-break: break-word;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 export const voteFrame2 = css`

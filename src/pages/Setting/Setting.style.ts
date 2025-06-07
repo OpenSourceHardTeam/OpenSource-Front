@@ -62,9 +62,11 @@ export const titleStyle = css`
 export const signupnickname = css`
   width: 370px;
   height: 60px;
+  padding: 12px;
   background-color: #ffffff;
   border-radius: 10px;
   border: 1px solid #d9d9d9;
+
   &::placeholder {
     padding-left: 5px;
     color: #d9d9d9;

@@ -34,20 +34,16 @@ export const bookInfoSection = css`
 // 책 커버
 export const bookCover = css`
   display: flex;
-  width: 310px;
-  height: 400px;
   align-items: center;
   justify-content: center;
   background-color: #ffffff;
   border-radius: 20px;
-  border: 2px solid ${Colors.borderColor};
-  padding: 50px 51px;
 `;
 
 export const bookImage = css`
-  width: 214px;
-  height: 308px;
-  object-fit: cover;
+  width: 254px;
+  height: 348px;
+  border-radius: 5px;
 `;
 
 // 책 정보 헤더

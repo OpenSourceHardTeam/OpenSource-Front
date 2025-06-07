@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import * as styles from "./BookInfoPage.style.ts";
 import * as textStyles from "./BookInfoPageText.style.ts";
 import { line } from "@assets/index.ts";
@@ -72,6 +72,20 @@ const BookInfoPage = () => {
   const [activeTab, setActiveTab] = useState<string>("bookdes");
 
   const { bookDetail, loading, error, refetch } = useBookDetail(bookId || null);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (bookDetail && location.hash) {
+      const elementId = location.hash.replace("#", "");
+      const element = document.getElementById(elementId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+  }, [bookDetail, location]);
 
   // 클릭 이벤트 핸들러
   const handleTabClick = (tabId: string) => {
