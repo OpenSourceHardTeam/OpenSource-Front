@@ -8,6 +8,8 @@ import LoginPage from "pages/LoginPage/LoginPage";
 import SignUpPage from "pages/SignUpPage/SignUpPage";
 import BookListPage from "pages/BookListPage/BookListPage";
 import Setting from "pages/Setting/Setting";
+import ChatPage from "pages/Chat/ChatPage";
+
 
 const router = createBrowserRouter([
   {
@@ -20,11 +22,10 @@ const router = createBrowserRouter([
         path: routes.bookinfo,
         element: <BookInfoPage />,
       },
-      // {
-      //   path: routes.chat,
-      //   element: <ChatPage />,
-      // },
-
+      {
+        path: routes.chat,
+        element: <ChatPage />,
+      },
       {
         path: routes.login,
         element: <LoginPage />,

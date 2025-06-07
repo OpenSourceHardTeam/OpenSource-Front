@@ -28,12 +28,12 @@ export interface ChatRoom {
 
 // 메시지 인터페이스
 export interface Message {
-  id: number;
-  sender: string;
-  message: string;
-  time: string;
-  isMine?: boolean; // 클라이언트에서 계산하는 속성
-  senderId?: string;
+ id: number;
+ chatroomId: number;
+ senderId: number;
+ content: string;
+ timestamp: string; // ISO date-time string
+
 }
 
 // 채팅방 참여 요청 파라미터
@@ -82,7 +82,8 @@ export interface EmptyResponse {success: true}
 export interface CreateChatRoomParams {
     topic: string;
     bookId: number;
-    bookArgumentId: number;
+    bookArgumentId?: number;
+
 }
 
 export interface CreateChatRoomResponse {
@@ -153,11 +154,27 @@ export const leaveChatRoom = async (userId: number, chatroomId: number) => {
 // 사용자의 채팅방 존재 여부 확인
 export const checkUserInChatRoom = async (chatroomId: number, userId: number) => {
     return authApiGet<ExistsResponse, null> (
-        `'/api/v1/user-chatroom/chatrooms/${chatroomId}/users/${userId}/exists`,
+        `/api/v1/user-chatroom/chatrooms/${chatroomId}/users/${userId}/exists`, // 따옴표 제거
+
         null
     );
 };
 
+// API 호출 시 에러 처리 강화
+export const getChatRoomUsersWithFallback = async (chatroomId: number) => {
+    try {
+        const response = await authApiGet<ChatRoomUsersResponse, null>(
+            `/api/v1/user-chatroom/chatroom/${chatroomId}/users`,
+            null
+        );
+        console.log('사용자 목록 API 응답:', response);
+        return response;
+    } catch (error) {
+        console.error('사용자 목록 조회 실패:', error);
+        
+        throw error; // 다른 에러는 다시 던지기
+    }
+};
 // 특정 채팅방의 사용자 목록 조회
 export const getChatRoomUsers = async ( chatroomId: number) => {
     return authApiGet<ChatRoomUsersResponse, null> (
@@ -196,5 +213,6 @@ export const deleteChatRoom = async ( chatroomId: number) => {
         `/api/v1/chatroom/${chatroomId}`,
         null
     );
+
 };
 
