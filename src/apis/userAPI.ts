@@ -1,4 +1,4 @@
-import { apiPost, authApiPatch } from "./apiUtils";
+import { apiPost, authApiGet, authApiPatch } from "./apiUtils";
 import { ApiResponse } from "./types/response";
 import {
   logInResponse,
@@ -10,6 +10,7 @@ import {
   postSignUpParams,
   postValidationEmailParams,
   signUpResponse,
+  UserInfo,
 } from "./types/user";
 
 export const postSignUp = async (data: postSignUpParams) => {
@@ -60,4 +61,8 @@ export const patchProfile = async (data: patchProfileParams) => {
     undefined,
     data
   );
+};
+
+export const getUserInfo = async (): Promise<ApiResponse<UserInfo>> => {
+  return await authApiGet<UserInfo, undefined>("/api/v1/user/get-user-info");
 };

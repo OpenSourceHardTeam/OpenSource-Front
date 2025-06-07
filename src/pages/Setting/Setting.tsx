@@ -9,7 +9,7 @@ import {
   signupnickname,
   titleStyle,
 } from "./Setting.style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@components/index";
 import {
   instruction,
@@ -19,6 +19,7 @@ import {
 import usePostNameExist from "apis/hooks/users/userPostNameExist";
 import { useNavigate } from "react-router-dom";
 import usePatchProfile from "apis/hooks/users/usePatchProfile";
+import useGetUserInfo from "apis/hooks/users/useGetUserInfo";
 
 const Setting: React.FC = () => {
   const navigate = useNavigate();
@@ -27,12 +28,23 @@ const Setting: React.FC = () => {
 
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+
   const [passwordCheck, setPasswordCheck] = useState("");
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
 
   const isFormValid =
     nickname && password && passwordCheck && isNicknameChecked;
 
+  const { data: userInfo } = useGetUserInfo();
+
+  useEffect(() => {
+    if (userInfo) {
+      setNickname(userInfo.name);
+      setEmail(userInfo.email);
+      setIsNicknameChecked(true);
+    }
+  }, [userInfo]);
   const handleProfileUpdate = () => {
     if (!isFormValid) {
       alert("모든 항목을 입력해주세요.");
@@ -92,7 +104,7 @@ const Setting: React.FC = () => {
           <img src={ProfileImage} css={imageStyle} />
           <div css={profileContent}>
             <div css={titleStyle}>
-              <p>stacycho0728@naver.com</p>
+              <p>{email}</p>
             </div>
             <div css={signupcheck}>
               <input
@@ -100,8 +112,9 @@ const Setting: React.FC = () => {
                 placeholder="닉네임"
                 value={nickname}
                 onChange={(e) => {
-                  setNickname(e.target.value);
-                  setIsNicknameChecked(false);
+                  const value = e.target.value;
+                  setNickname(value);
+                  setIsNicknameChecked(value === userInfo?.name);
                 }}
               />
               <Button

@@ -46,3 +46,8 @@ export interface patchProfileParams {
   newName?: string | null;
   newPassword?: string | null;
 }
+
+export interface UserInfo {
+  name: string;
+  email: string;
+}
