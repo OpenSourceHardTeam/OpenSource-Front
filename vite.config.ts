@@ -31,20 +31,12 @@ export default defineConfig({
         target: 'http://3.34.186.27:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/profanity/, '/mask'),
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('🚨 [욕설 필터링 프록시 에러]', err.message);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('📤 [욕설 필터링 프록시 요청]', req.method, req.url);
-            
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
             // 🔑 기존 VITE_AUTH_TOKEN을 프록시 요청에 자동 추가
             const authToken = process.env.VITE_AUTH_TOKEN;
             if (authToken) {
               proxyReq.setHeader('Authorization', `Bearer ${authToken}`);
-              console.log('🔑 [욕설 필터링] Authorization 헤더 추가됨');
-            } else {
-              console.warn('⚠️ [욕설 필터링] VITE_AUTH_TOKEN이 없음');
             }
             
             // Content-Type 확인 및 설정
@@ -52,43 +44,28 @@ export default defineConfig({
               proxyReq.setHeader('Content-Type', 'application/json');
             }
           });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('📥 [욕설 필터링 프록시 응답]', proxyRes.statusCode, req.url);
-            if (proxyRes.statusCode !== 200) {
-              console.log('🚨 [욕설 필터링 응답 에러]', {
-                status: proxyRes.statusCode,
-                statusMessage: proxyRes.statusMessage,
-                headers: proxyRes.headers
-              });
-            }
-          });
         },
       },
 
       // 기존 WebSocket 프록시 유지
       '/ws-proxy': {
-        target: 'http://52.78.192.251:8080', // http로 시작
+        target: 'http://52.78.192.251:8080',
         ws: true,
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => {
-          const newPath = path.replace(/^\/ws-proxy/, '/ws-booking-messaging');
-          console.log('🔄 프록시 경로 변환:', path, '→', newPath);
-          return newPath;
-        },
-        configure: (proxy, options) => {
-          proxy.on('proxyReqWs', (proxyReq, req, socket, head) => {
-            console.log('📡 WebSocket 프록시 요청 수신:', req.url);
-                         
+        rewrite: (path) => path.replace(/^\/ws-proxy/, '/ws-booking-messaging'),
+        configure: (proxy) => {
+          proxy.on('proxyReqWs', (proxyReq, req) => {
             // 간단한 헤더 설정
             try {
-              const url = new URL(req.url || '', 'http://localhost');
-              const token = url.searchParams.get('token');
-              const userId = url.searchParams.get('userId');
-              const chatRoomId = url.searchParams.get('chatRoomId');
-              const name = url.searchParams.get('name');
-                             
-              console.log('📋 파라미터 추출:', { userId, chatRoomId, name, tokenExists: !!token });
+              const urlStr = req.url || '';
+              const baseUrl = 'http://localhost';
+              const fullUrl = new globalThis.URL(urlStr, baseUrl);
+              
+              const token = fullUrl.searchParams.get('token');
+              const userId = fullUrl.searchParams.get('userId');
+              const chatRoomId = fullUrl.searchParams.get('chatRoomId');
+              const name = fullUrl.searchParams.get('name');
                              
               if (token) {
                 proxyReq.setHeader('Authorization', `Bearer ${token}`);
@@ -102,22 +79,9 @@ export default defineConfig({
               if (name) {
                 proxyReq.setHeader('name', name);
               }
-                                          
             } catch (error) {
-              console.error('❌ 헤더 설정 실패:', error);
+              // 헤더 설정 실패 시 무시
             }
-          });
-                     
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('📡 HTTP 프록시:', req.url);
-          });
-                     
-          proxy.on('error', (err, req, res) => {
-            console.error('❌ 프록시 에러:', err.message);
-          });
-                     
-          proxy.on('proxyReqWs', (proxyReq, req, socket, head) => {
-            console.log('🔗 WebSocket 프록시 연결 시도');
           });
         }
       },
