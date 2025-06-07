@@ -1,5 +1,6 @@
-import { Outlet, useLocation } from "react-router-dom";
+// ===== App.tsx 수정 - ChatPage에서만 Footer 숨기기 =====
 
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "@components/Header/Header";
 import Footer from "@components/Footer/Footer";
 import "./App.css";
@@ -21,9 +22,10 @@ const queryClient = new QueryClient({
 function App() {
   const location = useLocation();
   const isHome = location.pathname === "/";
-
+  const isChatPage = location.pathname === routes.chat; // ✅ ChatPage 확인
+  
   const excludedPaths = [routes.chat];
-
+  
   const isSidebarVisible = !excludedPaths.includes(
     location.pathname as (typeof excludedPaths)[number]
   );
@@ -34,8 +36,9 @@ function App() {
         <Global styles={globalStyles} />
         <Header />
         {isSidebarVisible && <SideBar />}
-        {!isHome && <div style={{ height: "65px" }} />} <Outlet />
-        <Footer />
+        {!isHome && <div style={{ height: "65px" }} />}
+        <Outlet />
+        {!isChatPage && <Footer />}
       </QueryClientProvider>
     </>
   );

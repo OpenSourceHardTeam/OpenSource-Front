@@ -6,7 +6,7 @@ export const PageContainer = css`
   display: flex;
   flex-direction: column;
   height: 100vh;
-`;
+  `;
 
 export const ContentContainer = css`
   display: flex;
@@ -431,4 +431,238 @@ export const Announcement = css`
   text-align: center;
   font-size: 14px;
   color: #666;
+`;
+
+// 연결 상태 스타일
+// export const ConnectionStatus = css`
+//   display: flex;
+//   align-items: center;
+//   font-size: 12px;
+//   margin-left: 10px;
+// `;
+
+export const StatusConnected = css`
+  color: #22c55e;
+`;
+
+export const StatusConnecting = css`
+  color: #f59e0b;
+`;
+
+export const StatusDisconnected = css`
+  color: #ef4444;
+`;
+
+export const StatusError = css`
+  color: #dc2626;
+`;
+
+export const BookListContainer = css`
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+export const BookItems = css`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+`;
+
+export const BookItem = css`
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+  }
+`;
+
+export const BookItemSelected = css`
+  background-color: #e8f4f8;
+  border-color: #3498db;
+`;
+
+export const BookImage = css`
+  width: 48px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+`;
+
+export const BookInfo = css`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+export const BookTitle = css`
+  font-weight: 600;
+  font-size: 14px;
+  color: #2c3e50;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+`;
+
+export const BookAuthor = css`
+  font-size: 12px;
+  color: #7f8c8d;
+`;
+
+export const BookRank = css`
+  font-size: 11px;
+  color: #e67e22;
+  font-weight: 500;
+`;
+
+export const LoadingBooks = css`
+  text-align: center;
+  padding: 20px;
+  color: #7f8c8d;
+`;
+
+export const EmptyBooks = css`
+  text-align: center;
+  padding: 20px;
+  color: #95a5a6;
+  font-size: 14px;
+`;
+
+export const ErrorBooks = css`
+  text-align: center;
+  padding: 20px;
+  color: #e74c3c;
+  font-size: 14px;
+`;
+
+export const RetryButton = css`
+  display: block;
+  margin: 8px auto 0;
+  padding: 6px 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  
+  &:hover {
+    background-color: #2980b9;
+  }
+`;
+
+
+export const ArgumentSelectorOverlay = css`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const ArgumentSelectorModal = css`
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+export const ArgumentSelectorTitle = css`
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  text-align: center;
+`;
+
+export const ArgumentSelectorSubtitle = css`
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 24px;
+`;
+
+export const ArgumentList = css`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+`;
+
+export const ArgumentItem = css`
+  padding: 16px;
+  border: 2px solid #ecf0f1;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #3498db;
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+  }
+`;
+
+export const ArgumentCategory = css`
+  font-size: 12px;
+  color: #e67e22;
+  font-weight: 600;
+  margin-bottom: 4px;
+`;
+
+export const ArgumentTitle = css`
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+`;
+
+export const ArgumentDescription = css`
+  font-size: 14px;
+  color: #7f8c8d;
+  line-height: 1.4;
+`;
+
+export const ArgumentSelectorButtons = css`
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+`;
+
+export const CancelButton = css`
+  padding: 10px 20px;
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  
+  &:hover {
+    background-color: #7f8c8d;
+  }
 `;

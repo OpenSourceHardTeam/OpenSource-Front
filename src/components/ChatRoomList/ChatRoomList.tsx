@@ -55,7 +55,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
           >
             <div css={styles.BookingContent}>
               <div css={styles.BookingLabel}>{room.title}</div>
-              <div css={styles.BookingInfo}>{room.category}토론주제----</div>
+              <div css={styles.BookingInfo}>{room.category}토론주제:</div>
               <div css={styles.BookingInfo}>참여:{room.participants}명</div>
             </div>
           </div>
