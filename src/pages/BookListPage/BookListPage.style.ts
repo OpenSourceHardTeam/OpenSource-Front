@@ -77,4 +77,6 @@ export const ChatListContainerError = css`
   gap: 16px;
   font-size: 18px;
   color: #e74c3c;
+
 `;
+

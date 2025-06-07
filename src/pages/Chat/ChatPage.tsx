@@ -1,3 +1,4 @@
+
 import React, { useState, KeyboardEvent, ChangeEvent, useEffect, useRef } from "react";
 import * as styles from "./ChatPage.style";
 import Button from "../../components/Button/Button";
@@ -1332,3 +1333,4 @@ const ChatPage: React.FC = () => {
 };
 
 export default ChatPage;
+
