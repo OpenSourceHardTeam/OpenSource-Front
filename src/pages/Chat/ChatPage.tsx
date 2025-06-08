@@ -3,12 +3,15 @@ import * as styles from "./ChatPage.style";
 import Button from "../../components/Button/Button";
 import ChatRoomList from "../../components/ChatRoomList/ChatRoomList";
 import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
+import { useLocation } from "react-router-dom";
 
-// import Arrow from "../../assets/svg/book-info-link.svg";
+// 🔥 기존 API와 타입 직접 import
+import { getUserInfo } from "../../apis/userAPI";
+import { UserInfo } from "../../apis/types/user";
+
 import Line from "../../assets/img/Line.png";
 import messageComponents from "../../assets/svg/messageClickButton.svg?url"
 
-// API 함수들과 타입 임포트
 import {
   getUserChatRooms,
   getChatRoomUsers,
@@ -19,25 +22,47 @@ import {
   User,
 } from "../../apis/hooks/chat/useChatApi";
 
-// 새로운 메시지 API 임포트
 import {
   getMessagesByChatroom,
   MessageDocumentDto,
   filterProfanity,
 } from "../../apis/hooks/chat/useMessage";
 
-// 웹소켓 훅 임포트
 import { useWebSocket, RealtimeMessage, UserEvent } from "../../apis/hooks/chat/useWebSocket";
-
-// 책 관련 훅 임포트
 import { useBooks, BookData } from "../../apis/hooks/Books/useBooks";
+
+// 🔥 JWT 토큰에서 userId 추출하는 함수
+const getUserIdFromToken = (token: string): number | null => {
+  try {
+    // JWT는 보통 header.payload.signature 형태
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+    
+    // Base64 디코딩
+    const decodedPayload = atob(payload);
+    const parsedPayload = JSON.parse(decodedPayload);
+    
+    // 토큰에서 userId 추출 (다양한 필드명 시도)
+    return parsedPayload.userId || 
+           parsedPayload.sub || 
+           parsedPayload.id || 
+           parseInt(parsedPayload.userId) || 
+           null;
+  } catch (error) {
+    console.error('JWT 토큰에서 userId 추출 실패:', error);
+    return null;
+  }
+};
+
+// 🔥 ChatPage에서 필요한 사용자 정보 (기존 UserInfo + userId)
+interface ChatUserInfo extends UserInfo {
+  userId: number;
+}
 
 // 🔥 확장된 ChatRoom 타입 정의
 interface ChatRoomWithParticipants extends ChatRoom {
   actualParticipants?: number;
 }
-
-
 
 // 🔥 getChatRoomUsers용 Fallback 함수
 const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]> => {
@@ -53,11 +78,6 @@ const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]>
     return [];
   }
 };
-
-
-
-// 토큰에서 추출한 userId
-const currentUserId = 2; // JWT 토큰에 포함된 userId
 
 // ======= 책 배열 인덱스 → 채팅방 ID 매핑 (110-159) =======
 const getBookChatRoomId = (book: BookData, bookList: BookData[]): number => {
@@ -142,13 +162,23 @@ const useChatRoomsWithParticipants = (userId: number) => {
 };
 
 const ChatPage: React.FC = () => {
+  const location = useLocation();
+
+  // 🔥 실제 사용자 정보 관리 (하드코딩 제거)
+  const [currentUserInfo, setCurrentUserInfo] = useState<ChatUserInfo | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  // const [authError, setAuthError] = useState<string | null>(null);
+
+  // 🔥 자동 참여 중복 방지를 위한 ref 추가
+  const autoJoinProcessed = useRef<boolean>(false);
+
   // 메시지 상태 관리
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // 🔥 기존 chatRooms 상태를 새로운 훅으로 대체
+  // 🔥 실제 userId 사용 (하드코딩 제거)
   const { chatRoomsWithParticipants, isLoading: isLoadingRooms, fetchChatRoomsWithParticipants } = 
-    useChatRoomsWithParticipants(currentUserId);
+    useChatRoomsWithParticipants(currentUserInfo?.userId || 0);
 
   // 채팅방 상태 관리
   const [activeRoomId, setActiveRoomId] = useState<number | null>(null);
@@ -173,29 +203,158 @@ const ChatPage: React.FC = () => {
   // useBooks 훅 사용
   const { bookList, loading: isLoadingBooks, error: booksError, refetch: refetchBooks } = useBooks();
 
-  // ✅ 웹소켓 연결용 안전한 이름 (단순화)
-  const getWebSocketSafeName = (): string => {
-    return `User${currentUserId}`;
+  // 🔥 간단하게 JWT 토큰에서 userId 추출해서 사용자 정보 가져오기
+  useEffect(() => {
+    const initializeUserInfo = async () => {
+      setIsAuthLoading(true);
+      // setAuthError(null);
+
+      try {
+        console.log("🔍 사용자 정보 가져오기 시작...");
+
+        // 1. 환경 변수 토큰을 localStorage에 저장 (기존 로직 유지)
+        const envToken = import.meta.env.VITE_AUTH_TOKEN;
+        if (envToken) {
+          console.log("🔍 환경변수 토큰 발견");
+          localStorage.setItem("accessToken", envToken);
+        }
+
+        // 2. 🔥 JWT 토큰에서 userId 추출
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          throw new Error("토큰이 없습니다.");
+        }
+
+        const userId = getUserIdFromToken(token);
+        if (!userId) {
+          throw new Error("토큰에서 사용자 ID를 추출할 수 없습니다.");
+        }
+
+        console.log("✅ 토큰에서 userId 추출 성공:", userId);
+
+        // 3. 🔥 기존 getUserInfo API 호출
+        const userInfoResponse = await getUserInfo();
+        
+        if (userInfoResponse && userInfoResponse.data) {
+          console.log("✅ 서버에서 사용자 정보 가져오기 성공:", userInfoResponse.data);
+          
+          // ChatPage에서 필요한 형태로 변환
+          const chatUserInfo: ChatUserInfo = {
+            ...userInfoResponse.data,
+            userId: userId // JWT 토큰에서 추출한 userId 사용
+          };
+          
+          setCurrentUserInfo(chatUserInfo);
+          
+          // currentUser 상태도 업데이트 (기존 User 타입에 맞게)
+          setCurrentUser({
+            id: userId,
+            email: userInfoResponse.data.email,
+            name: userInfoResponse.data.name
+          });
+
+          console.log("✅ 사용자 정보 설정 완료:", chatUserInfo);
+        } else {
+          throw new Error("서버에서 사용자 정보를 가져올 수 없습니다.");
+        }
+
+      } catch (error) {
+        
+        // 🔄 개발용 폴백 (기존 하드코딩된 값 사용)
+        const fallbackUser: ChatUserInfo = {
+          userId: 6,
+          name: "개발용 사용자",
+          email: "dev@example.com"
+        };
+        
+        setCurrentUserInfo(fallbackUser);
+        setCurrentUser({
+          id: 6,
+          email: "dev@example.com",
+          name: "개발용 사용자"
+        });
+      } finally {
+        setIsAuthLoading(false);
+      }
+    };
+
+    initializeUserInfo();
+  }, []);
+
+  // 🔥 사용자 정보가 로드된 후 자동 참여 처리
+  useEffect(() => {
+    // 인증 로딩 중이거나 사용자 정보가 없으면 대기
+    if (isAuthLoading || !currentUserInfo) {
+      return;
+    }
+
+    // 이미 처리했으면 무시
+    if (autoJoinProcessed.current) {
+      return;
+    }
+
+    // ChatingCard나 ChatRoomSection에서 전달받은 책 정보와 자동 참여 플래그 확인
+    const state = location.state as { 
+      selectedBook?: BookData; 
+      autoJoin?: boolean 
+    } | null;
+    
+    console.log("🔍 자동 참여 체크:", {
+      hasState: !!state,
+      hasSelectedBook: !!state?.selectedBook,
+      hasAutoJoin: !!state?.autoJoin,
+      bookListLength: bookList.length,
+      alreadyProcessed: autoJoinProcessed.current,
+      currentUserId: currentUserInfo.userId
+    });
+    
+    // 조건: 책 정보 있음 + 자동 참여 플래그 있음 + 책 목록 로드 완료 + 아직 처리 안함
+    if (state?.selectedBook && state?.autoJoin && bookList.length > 0) {
+      console.log("✅ 자동 채팅방 참여 시작:", state.selectedBook.bookTitle);
+      
+      // 🚨 중복 방지: 처리했음을 표시
+      autoJoinProcessed.current = true;
+      
+      // 자동으로 해당 책의 채팅방에 참여
+      handleSelectBookWithValidation(state.selectedBook);
+      
+      // 한 번 처리한 후 state 초기화 (뒤로가기 시 중복 처리 방지)
+      window.history.replaceState({}, document.title);
+      
+      console.log("✅ 자동 참여 처리 완료");
+    }
+  }, [bookList.length, currentUserInfo, isAuthLoading]);
+
+  // 🔥 사용자 정보가 로드된 후 채팅방 목록 가져오기
+  useEffect(() => {
+    if (currentUserInfo?.userId) {
+      fetchChatRoomsWithParticipants();
+    }
+  }, [currentUserInfo]);
+
+  // ✅ 웹소켓 연결용 실제 사용자 이름 (입장 메시지에 표시될 이름)
+  const getWebSocketUserName = (): string => {
+    return currentUserInfo?.name || currentUser?.name || `User${currentUserInfo?.userId || 0}`;
   };
 
-  // ✅ UI 표시용 실제 닉네임 (단순화)
+  // ✅ UI 표시용 실제 닉네임
   const getDisplayUserName = (): string => {
-    return currentUser?.name || "테스트유저";
+    return currentUser?.name || currentUserInfo?.name || "사용자";
   };
 
-  // ✅ 에러 시 최소 폴백 데이터 (단순화)
+  // ✅ 에러 시 최소 폴백 데이터 (실제 사용자 정보 기반)
   const createFallbackUser = (id: number): User => ({
     id,
     email: `user${id}@example.com`,
-    name: id === currentUserId ? "테스트유저" : `사용자${id}`
+    name: id === (currentUserInfo?.userId || 0) ? getDisplayUserName() : `사용자${id}`
   });
 
   // 동적 사용자 이름 가져오기 (웹소켓용으로 수정)
   const getCurrentUserName = (): string => {
-    return getWebSocketSafeName(); // 웹소켓용 안전한 이름 사용
+    return getWebSocketUserName(); // 🔥 실제 사용자 이름 사용
   };
 
-  // 웹소켓 연결 (동적 사용자 이름 사용)
+  // 웹소켓 연결 (실제 사용자 정보 사용)
   const {
     status: wsStatus,
     sendMessage: wsSendMessage,
@@ -204,28 +363,23 @@ const ChatPage: React.FC = () => {
     onSystemMessage: onWsSystemMessage,
   } = useWebSocket({
     chatroomId: activeRoomId,
-    userId: currentUserId,
+    userId: currentUserInfo?.userId || 0, // 🔥 실제 userId 사용
     userName: getCurrentUserName(),
-    enabled: !!activeRoomId
+    enabled: !!activeRoomId && !!currentUserInfo // 🔥 사용자 정보가 있을 때만 웹소켓 연결
   });
 
-  // 환경 변수에서 가져온 액세스 토큰을 localStorage에 저장
+  // 🔥 웹소켓 연결 시 전달되는 사용자 이름 디버깅
   useEffect(() => {
-    const token = import.meta.env.VITE_AUTH_TOKEN;
-    if (token) {
-      localStorage.setItem("accessToken", token);
+    if (currentUserInfo && activeRoomId) {
+      const userName = getCurrentUserName();
+      console.log("🔍 웹소켓에 전달되는 사용자 이름:", {
+        userName,
+        currentUserInfo: currentUserInfo,
+        currentUser: currentUser,
+        userId: currentUserInfo.userId
+      });
     }
-  }, []);
-
-  // 현재 사용자 정보 초기화 (단순화)
-  useEffect(() => {
-    const defaultUser: User = {
-      id: currentUserId,
-      email: "user@example.com",
-      name: "테스트유저"
-    };
-    setCurrentUser(defaultUser);
-  }, []); // 의존성 제거
+  }, [currentUserInfo, currentUser, activeRoomId]);
 
   // 메시지 목록 자동 스크롤
   const scrollToBottom = () => {
@@ -314,7 +468,7 @@ const ChatPage: React.FC = () => {
           }
           
           // 내가 방금 보낸 메시지인지 확인 (시간 기반 중복 방지)
-          const isRecentMyMessage = realtimeMessage.senderId === currentUserId;
+          const isRecentMyMessage = realtimeMessage.senderId === (currentUserInfo?.userId || 0); // 🔥 변경
           
           setMessages(prevMessages => {
             // 중복 방지 로직
@@ -371,8 +525,18 @@ const ChatPage: React.FC = () => {
         fetchChatRoomsWithParticipants(); // 채팅방 목록의 참여자 수도 업데이트
         
         // 자신의 입장/퇴장은 시스템 메시지 표시 안함
-        if (event.userId === currentUserId) {
+        if (event.userId === (currentUserInfo?.userId || 0)) { // 🔥 변경
           return;
+        }
+        
+        // 🔥 URL 디코딩된 사용자 이름 사용
+        let decodedUserName = event.userName;
+        try {
+          // URL 인코딩된 한글 이름을 디코딩
+          decodedUserName = decodeURIComponent(event.userName);
+        } catch (error) {
+          // 디코딩 실패 시 원본 사용
+          decodedUserName = event.userName;
         }
         
         // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
@@ -380,7 +544,7 @@ const ChatPage: React.FC = () => {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리
           chatroomId: activeRoomId,
-          content: `${event.userName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
+          content: `${decodedUserName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
           timestamp: new Date().toISOString()
         };
         
@@ -401,11 +565,21 @@ const ChatPage: React.FC = () => {
       }
       
       if (activeRoomId) {
+        // 🔥 URL 디코딩된 메시지 내용 사용
+        let decodedMessage = messageText.trim();
+        try {
+          // URL 인코딩된 한글을 디코딩
+          decodedMessage = decodeURIComponent(messageText.trim());
+        } catch (error) {
+          // 디코딩 실패 시 원본 사용
+          decodedMessage = messageText.trim();
+        }
+        
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리
           chatroomId: activeRoomId,
-          content: messageText.trim(),
+          content: decodedMessage,
           timestamp: new Date().toISOString()
         };
         
@@ -413,7 +587,7 @@ const ChatPage: React.FC = () => {
       }
     });
 
-  }, [activeRoomId, roomUsers, onWsMessage, onWsUserEvent, onWsSystemMessage, fetchChatRoomsWithParticipants]);
+  }, [activeRoomId, roomUsers, onWsMessage, onWsUserEvent, onWsSystemMessage, fetchChatRoomsWithParticipants, currentUserInfo?.userId]);
 
   // ===== 책 선택 및 채팅방 연결 (사용자 정보 가져오기 추가) =====
   
@@ -428,7 +602,7 @@ const ChatPage: React.FC = () => {
       // 2. 해당 채팅방에 참여 시도 (실패해도 웹소켓 연결은 계속 진행)
       try {
         await JoinChatRoom({
-          userId: currentUserId,
+          userId: currentUserInfo?.userId || 0, // 🔥 실제 userId 사용
           chatroomId: chatroomId
         });
       } catch (_) {
@@ -450,7 +624,7 @@ const ChatPage: React.FC = () => {
       
       fetchRoomUsers(chatroomId).catch(_ => {
         // 기본 사용자로 시작
-        setRoomUsers([createFallbackUser(currentUserId)]);
+        setRoomUsers([createFallbackUser(currentUserInfo?.userId || 0)]); // 🔥 변경
       });
       
       // 5. 채팅방 목록 갱신 (선택사항, 실패해도 무시)
@@ -504,6 +678,12 @@ const ChatPage: React.FC = () => {
 
   // 유효성 검사를 포함한 책 선택 함수
   const handleSelectBookWithValidation = async (book: BookData) => {
+    // 사용자 정보 확인
+    if (!currentUserInfo?.userId) {
+      alert("사용자 정보가 없습니다. 페이지를 새로고침해주세요.");
+      return;
+    }
+
     // 토큰 확인
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -520,11 +700,6 @@ const ChatPage: React.FC = () => {
     // 실제 처리 함수 호출
     await handleSelectBook(book);
   };
-
-  // 🔥 수정된 useEffect - 새로운 훅 사용
-  useEffect(() => {
-    fetchChatRoomsWithParticipants();
-  }, []);
 
   // ====== 메시지 가져오기 함수 (에러 처리 강화) ======
   const fetchRoomMessages = async (roomId: number) => {
@@ -557,7 +732,7 @@ const ChatPage: React.FC = () => {
           const usersResponse = await getChatRoomUsers(roomId);
           currentUsers = Array.isArray(usersResponse) ? usersResponse : Object.values(usersResponse || {});
         } catch (userError) {
-          currentUsers = [createFallbackUser(currentUserId)];
+          currentUsers = [createFallbackUser(currentUserInfo?.userId || 0)]; // 🔥 변경
         }
       }
       
@@ -608,23 +783,23 @@ const ChatPage: React.FC = () => {
       } else if (response && typeof response === 'object') {
         users = Object.values(response);
       } else {
-        users = [createFallbackUser(currentUserId)];
+        users = [createFallbackUser(currentUserInfo?.userId || 0)]; // 🔥 변경
       }
       
       if (users && users.length > 0) {
         setRoomUsers(users);
         
         // 🎯 현재 사용자 정보 업데이트 (roomUsers에서 찾은 경우)
-        const currentUserInRoom = users.find(user => user.id === currentUserId);
+        const currentUserInRoom = users.find(user => user.id === (currentUserInfo?.userId || 0)); // 🔥 변경
         if (currentUserInRoom) {
           setCurrentUser(currentUserInRoom);
         }
       } else {
-        setRoomUsers([createFallbackUser(currentUserId)]);
+        setRoomUsers([createFallbackUser(currentUserInfo?.userId || 0)]); // 🔥 변경
       }
     } catch (error) {
       // 어떤 에러든 기본 사용자로 설정 (웹소켓은 계속 작동)
-      setRoomUsers([createFallbackUser(currentUserId)]);
+      setRoomUsers([createFallbackUser(currentUserInfo?.userId || 0)]); // 🔥 변경
     } finally {
       setIsLoadingUsers(false);
     }
@@ -649,7 +824,7 @@ const ChatPage: React.FC = () => {
     }
     
     try {
-      await leaveChatRoom(currentUserId, activeRoomId);
+      await leaveChatRoom(currentUserInfo?.userId || 0, activeRoomId); // 🔥 변경
       
       // 🔥 채팅방 목록 새로고침
       await fetchChatRoomsWithParticipants();
@@ -692,7 +867,7 @@ const ChatPage: React.FC = () => {
       // 1. 즉시 UI에 메시지 표시 (Optimistic Update)
       const newMessage: Message = {
         id: Date.now() + Math.random(),
-        senderId: currentUserId,
+        senderId: currentUserInfo?.userId || 0, // 🔥 변경
         chatroomId: activeRoomId,
         content: filteredMessage,
         timestamp: new Date().toISOString()
@@ -721,7 +896,7 @@ const ChatPage: React.FC = () => {
       // 즉시 UI에 원본 메시지 표시
       const fallbackMessage: Message = {
         id: Date.now() + Math.random(),
-        senderId: currentUserId,
+        senderId: currentUserInfo?.userId || 0, // 🔥 변경
         chatroomId: activeRoomId,
         content: originalMessage, // 원본 메시지 사용
         timestamp: new Date().toISOString()
@@ -759,7 +934,7 @@ const ChatPage: React.FC = () => {
   // Message 표시용 헬퍼 함수들
   const getMessageSender = (msg: Message): string => {
     if (msg.senderId === -1) return "시스템"; // 시스템 메시지는 -1
-    if (msg.senderId === currentUserId) return "나";
+    if (msg.senderId === (currentUserInfo?.userId || 0)) return "나"; // 🔥 변경
     
     const user = roomUsers.find(u => u.id === msg.senderId);
     return user?.name || `사용자${msg.senderId}`;
@@ -775,7 +950,7 @@ const ChatPage: React.FC = () => {
   };
 
   const isMyMessage = (msg: Message): boolean => {
-    return msg.senderId === currentUserId; // 단순하게 내 ID와 같은지만 확인
+    return msg.senderId === (currentUserInfo?.userId || 0); // 🔥 변경
   };
 
   // ===== 책 목록 컴포넌트 =====
@@ -830,6 +1005,31 @@ const ChatPage: React.FC = () => {
     </div>
   );
 
+  // 🔥 로딩 중일 때 UI
+  if (isAuthLoading) {
+    return (
+      <div css={styles.PageContainer}>
+        <div css={styles.ContentContainer}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            minHeight: '400px',
+            fontSize: '18px',
+            color: '#666'
+          }}>
+            <div>
+              <div>사용자 정보를 확인하는 중...</div>
+              <div style={{ fontSize: '14px', marginTop: '10px' }}>
+                JWT 토큰에서 사용자 정보를 추출하고 있습니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div css={styles.PageContainer}>
       <div css={styles.ContentContainer}>
@@ -858,7 +1058,7 @@ const ChatPage: React.FC = () => {
                 : activeRoom?.topic || "채팅방을 선택해주세요"
               }
             </span>
-            {activeRoomId && (
+            {activeRoomId && currentUserInfo && (
               <div>
                 {wsStatus === 'connected' && <span>● 연결됨</span>}
                 {wsStatus === 'connecting' && <span>● 연결 중...</span>}
@@ -974,7 +1174,7 @@ const ChatPage: React.FC = () => {
               (roomUsers || []).map(user => (
                 <div key={user?.id || Math.random()} css={styles.ParticipantItem}>
                   <div css={styles.ParticipantDot}></div> 
-                  {user?.id === currentUserId ? `${getDisplayUserName()} (나)` : (user?.name || "알 수 없음")}
+                  {user?.id === (currentUserInfo?.userId || 0) ? `${getDisplayUserName()} (나)` : (user?.name || "알 수 없음")} {/* 🔥 변경 */}
                 </div>
               ))
             ) : (

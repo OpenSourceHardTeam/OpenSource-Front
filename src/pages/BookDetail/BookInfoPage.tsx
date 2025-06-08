@@ -4,6 +4,7 @@ import * as styles from "./BookInfoPage.style.ts";
 import * as textStyles from "./BookInfoPageText.style.ts";
 import { line } from "@assets/index.ts";
 import { useBookDetail } from "../../apis/hooks/BookDetail/useBookDetail.ts";
+import { BookData } from "../../apis/hooks/Books/useBooks"; // BookData 타입 import
 import ErrorState from "@components/ErrorState/ErrorState.tsx";
 import PublisherReview from "./component/PublisherReview.tsx";
 import BookCover from "./component/BookCoverProps.tsx";
@@ -75,6 +76,23 @@ const BookInfoPage = () => {
 
   const location = useLocation();
 
+  // 🔥 bookDetail을 BookData 형식으로 변환하는 함수
+  const convertToBookData = (detail: any): BookData | null => {
+    if (!detail) return null;
+    
+    return {
+      bookId: detail.bookId || parseInt(bookId || '0'),
+      bookTitle: detail.bookTitle || '',
+      bookAuthor: detail.bookAuthor || '',
+      bookImageUrl: detail.bookImageUrl || '',
+      bookRank: detail.bookRank || 0,
+      publisherName: detail.publisherName || '',
+      publishDate: detail.publishDate || '',
+      publisherReview: detail.publisherReview || '',
+      bookDescription: detail.bookDescription || '',
+    };
+  };
+
   useEffect(() => {
     if (bookDetail && location.hash) {
       const elementId = location.hash.replace("#", "");
@@ -128,6 +146,9 @@ const BookInfoPage = () => {
     );
   }
 
+  // 🎯 bookDetail을 BookData로 변환
+  const bookData = convertToBookData(bookDetail);
+
   return (
     <div css={styles.MainContainer}>
       <main css={styles.container}>
@@ -148,7 +169,15 @@ const BookInfoPage = () => {
             />
           </div>
         </section>
-        <ChatRoomSection bookTitle={bookDetail.bookTitle} />
+        
+        {/* 🔥 수정: bookData가 null이 아닐 때만 ChatRoomSection 렌더링 */}
+        {bookData && (
+          <ChatRoomSection 
+            bookTitle={bookDetail.bookTitle} 
+            bookData={bookData}
+          />
+        )}
+        
         <section css={styles.contentContainer}>
           <TabNavigation activeTab={activeTab} onTabClick={handleTabClick} />
           <BookDescription description={bookDetail.bookDescription} />
@@ -161,4 +190,3 @@ const BookInfoPage = () => {
 };
 
 export default BookInfoPage;
-
