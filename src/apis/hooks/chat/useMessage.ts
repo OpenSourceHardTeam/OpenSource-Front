@@ -31,6 +31,7 @@ export interface ProfanityFilterResponse {
   masked: string;
 }
 
+
 // ✅ HTTPS 욕설 필터링 API 함수 (업데이트됨)
 export const filterProfanity = async (text: string): Promise<ProfanityFilterResponse> => {
   try {
@@ -100,6 +101,7 @@ export const filterProfanity = async (text: string): Promise<ProfanityFilterResp
 };
 
 // 🛡️ 대체용 클라이언트 사이드 필터링 (API 오류 시 사용)
+
 const advancedClientSideFilter = (text: string): string => {
   const profanityPatterns = [
     // 한국어 욕설

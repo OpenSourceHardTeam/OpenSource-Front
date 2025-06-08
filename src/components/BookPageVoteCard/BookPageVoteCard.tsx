@@ -9,19 +9,28 @@ import {
   voteOverlapGroupWrapper,
   mainContainer,
   selectedVoteButton,
+  dropdownWrapper,
+  vectorWrapper,
+  vectorIconStyle,
 } from "./BookPageVoteCard.style";
 import usePostVote from "apis/hooks/vote/usePostVote";
 import useGetUserVoteAnswer from "apis/hooks/vote/useGetUserVoteAnswer";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import VoteDropDown from "@components/VoteDropDown/VoteDropDown";
+import { Vector } from "@assets/index";
+import useDeleteVote from "apis/hooks/vote/useDeleteVote";
 
 interface BookPageVoteCardProps {
   vote: getVoteListResponse;
   refetchVotes?: () => void;
+  isMine?: boolean;
 }
 
 const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   vote,
   refetchVotes,
+  isMine,
 }) => {
   const { voteId, title, agreeCount, disagreeCount } = vote;
   const total = agreeCount + disagreeCount;
@@ -36,6 +45,23 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   const userAnswered = userVoteData?.data ?? null;
 
   const { mutate: submitVote } = usePostVote();
+  const { mutate: deleteVote } = useDeleteVote();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleToggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsDropdownOpen(false);
+    }
+  };
 
   const handleVote = (answered: boolean) => {
     if (!isLoggedIn) {
@@ -60,8 +86,46 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
     );
   };
 
+  const handleDelete = () => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      deleteVote(vote.voteId, {
+        onSuccess: () => {
+          alert("삭제되었습니다.");
+          refetchVotes?.();
+        },
+        onError: () => {
+          alert("삭제에 실패했습니다.");
+        },
+      });
+    }
+
+    setIsDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   return (
     <div css={mainContainer}>
+      {isMine && (
+        <div css={vectorWrapper} ref={dropdownRef}>
+          <div onClick={handleToggleDropdown}>
+            <Vector css={vectorIconStyle} />
+          </div>
+          {isDropdownOpen && (
+            <div css={dropdownWrapper}>
+              <VoteDropDown onDelete={handleDelete} />
+            </div>
+          )}
+        </div>
+      )}
       <div css={voteFrame}>
         <div css={voteDiv}>
           <p css={voteTextWrapper}>{title}</p>
