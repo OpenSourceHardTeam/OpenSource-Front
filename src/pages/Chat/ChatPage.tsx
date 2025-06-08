@@ -1193,15 +1193,7 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
-          {activeRoomId && selectedBook && (
-            <InfoBoxWithTimers
-              title="현재 토론"
-              discussionTitle={`📚 ${selectedBook.bookTitle}`}
-              initialMinutes={15}
-              initialSeconds={0}
-              lineImage={Line}
-            />
-          )}
+          
         </div>
       </div>
     </div>
