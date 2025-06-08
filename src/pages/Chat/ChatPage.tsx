@@ -11,7 +11,6 @@ import { UserInfo } from "../../apis/types/user";
 
 import Line from "../../assets/img/Line.png";
 import messageComponents from "../../assets/svg/messageClickButton.svg?url"
-
 import {
   getUserChatRooms,
   getChatRoomUsers,
@@ -171,7 +170,6 @@ const ChatPage: React.FC = () => {
 
   // 🔥 자동 참여 중복 방지를 위한 ref 추가
   const autoJoinProcessed = useRef<boolean>(false);
-
   // 메시지 상태 관리
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -574,7 +572,6 @@ const ChatPage: React.FC = () => {
           // 디코딩 실패 시 원본 사용
           decodedMessage = messageText.trim();
         }
-        
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리
@@ -683,7 +680,6 @@ const ChatPage: React.FC = () => {
       alert("사용자 정보가 없습니다. 페이지를 새로고침해주세요.");
       return;
     }
-
     // 토큰 확인
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -1058,7 +1054,6 @@ const ChatPage: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div css={styles.PageContainer}>
       <div css={styles.ContentContainer}>
@@ -1246,8 +1241,6 @@ const ChatPage: React.FC = () => {
               )
             )}
           </div>
-
-          
         </div>
       </div>
     </div>
