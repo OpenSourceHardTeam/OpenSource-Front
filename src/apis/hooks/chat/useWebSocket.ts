@@ -15,12 +15,12 @@ export interface RealtimeMessage extends MessageDocumentDto {
 }
 
 // 사용자 입장/퇴장 이벤트 데이터
-export interface UserEvent {
-  userId: number;
-  userName: string;
-  chatroomId: number;
-  action: 'join' | 'leave';
-}
+// export interface UserEvent {
+//   userId: number;
+//   userName: string;
+//   chatroomId: number;
+//   action: 'join' | 'leave';
+// }
 
 // 웹소켓 연결 상태
 export type WebSocketStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
@@ -221,17 +221,17 @@ export const useWebSocket = ({
         reconnectAttempts.current = 0;
         
         // 연결 성공 후 입장 메시지 전송
-        const joinMessage: WebSocketMessage = {
-          type: 'USER_JOIN',
-          chatroomId,
-          data: { 
-            userId,
-            userName
-          }
-        };
+        // const joinMessage: WebSocketMessage = {
+        //   type: 'USER_JOIN',
+        //   chatroomId,
+        //   data: { 
+        //     userId,
+        //     userName
+        //   }
+        // };
         
-        console.log('📤 입장 메시지 전송:', joinMessage);
-        ws.send(JSON.stringify(joinMessage));
+        // console.log('📤 입장 메시지 전송:', joinMessage);
+        // ws.send(JSON.stringify(joinMessage));
       };
 
       ws.onmessage = (event) => {
@@ -265,26 +265,26 @@ export const useWebSocket = ({
                   
                 case 'USER_JOIN':
                 case 'USER_LEAVE':
-                  if (userEventCallbackRef.current && wsMessage.data) {
-                    const userEvent: UserEvent = {
-                      userId: wsMessage.data.userId,
-                      userName: wsMessage.data.userName || wsMessage.data.name || '알 수 없음',
-                      chatroomId: wsMessage.chatroomId,
-                      action: wsMessage.type === 'USER_JOIN' ? 'join' : 'leave'
-                    };
-                    console.log('👤 [내부 처리] 사용자 이벤트 콜백 호출:', userEvent);
-                    userEventCallbackRef.current(userEvent);
-                  }
-                  break;
+                  // if (userEventCallbackRef.current && wsMessage.data) {
+                  //   const userEvent: UserEvent = {
+                  //     userId: wsMessage.data.userId,
+                  //     userName: wsMessage.data.userName || wsMessage.data.name || '알 수 없음',
+                  //     chatroomId: wsMessage.chatroomId,
+                  //     action: wsMessage.type === 'USER_JOIN' ? 'join' : 'leave'
+                  //   };
+                  //   console.log('👤 [내부 처리] 사용자 이벤트 콜백 호출:', userEvent);
+                  //   userEventCallbackRef.current(userEvent);
+                  // }
+                  // break;
                   
-                case 'SYSTEM':
-                  // 시스템 메시지도 JSON 형태라면 내부 처리만
-                  console.log('🔧 [내부 처리] 시스템 메시지 (JSON 형태) 처리됨, UI 전달 안함');
-                  break;
+                // case 'SYSTEM':
+                //   // 시스템 메시지도 JSON 형태라면 내부 처리만
+                //   console.log('🔧 [내부 처리] 시스템 메시지 (JSON 형태) 처리됨, UI 전달 안함');
+                //   break;
                   
-                case 'ERROR':
-                  console.error('[WebSocket] 서버 에러:', wsMessage.data);
-                  break;
+                // case 'ERROR':
+                //   console.error('[WebSocket] 서버 에러:', wsMessage.data);
+                //   break;
               }
             } catch (parseError) {
               console.warn('[WebSocket] JSON 파싱 실패 (내부 처리 건너뜀):', parseError);
@@ -373,17 +373,17 @@ export const useWebSocket = ({
     
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       // 퇴장 메시지 전송
-      const leaveMessage: WebSocketMessage = {
-        type: 'USER_LEAVE',
-        chatroomId: chatroomId || 0,
-        data: { 
-          userId,
-          userName
-        }
-      };
+      // const leaveMessage: WebSocketMessage = {
+      //   type: 'USER_LEAVE',
+      //   chatroomId: chatroomId || 0,
+      //   data: { 
+      //     userId,
+      //     userName
+      //   }
+      // };
       
-      console.log('📤 퇴장 메시지 전송:', leaveMessage);
-      wsRef.current.send(JSON.stringify(leaveMessage));
+      // console.log('📤 퇴장 메시지 전송:', leaveMessage);
+      // wsRef.current.send(JSON.stringify(leaveMessage));
       
       // 정상 종료 코드로 연결 해제
       wsRef.current.close(1000, 'User disconnected');
