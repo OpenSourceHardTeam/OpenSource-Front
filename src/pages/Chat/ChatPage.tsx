@@ -521,31 +521,33 @@ const ChatPage: React.FC = () => {
         fetchRoomUsers(activeRoomId);
         fetchChatRoomsWithParticipants(); // 채팅방 목록의 참여자 수도 업데이트
         
-        // 자신의 입장/퇴장은 시스템 메시지 표시 안함
-        if (event.userId === (currentUserInfo?.userId || 0)) { // 🔥 변경
-          return;
-        }
+
+        // // 자신의 입장/퇴장은 시스템 메시지 표시 안함
+        // if (event.userId === (currentUserInfo?.userId || 0)) { // 🔥 변경
+        //   return;
+        // }
         
-        // 🔥 URL 디코딩된 사용자 이름 사용
-        let decodedUserName = event.userName;
-        try {
-          // URL 인코딩된 한글 이름을 디코딩
-          decodedUserName = decodeURIComponent(event.userName);
-        } catch (error) {
-          // 디코딩 실패 시 원본 사용
-          decodedUserName = event.userName;
-        }
+        // // 🔥 URL 디코딩된 사용자 이름 사용
+        // let decodedUserName = event.userName;
+        // try {
+        //   // URL 인코딩된 한글 이름을 디코딩
+        //   decodedUserName = decodeURIComponent(event.userName);
+        // } catch (error) {
+        //   // 디코딩 실패 시 원본 사용
+        //   decodedUserName = event.userName;
+        // }
         
-        // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
-        const systemMessage: Message = {
-          id: Date.now() + Math.random(),
-          senderId: -1, // 시스템 메시지는 -1로 처리
-          chatroomId: activeRoomId,
-          content: `${decodedUserName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
-          timestamp: new Date().toISOString()
-        };
+        // // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
+        // const systemMessage: Message = {
+        //   id: Date.now() + Math.random(),
+        //   senderId: -1, // 시스템 메시지는 -1로 처리
+        //   chatroomId: activeRoomId,
+        //   content: `${decodedUserName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
+        //   timestamp: new Date().toISOString()
+        // };
         
-        setMessages(prev => [...prev, systemMessage]);
+        // setMessages(prev => [...prev, systemMessage]);
+
       }
     });
 
@@ -1122,7 +1124,6 @@ const ChatPage: React.FC = () => {
                   // 5. 기본 메시지
                   return "채팅방에 입장하신 것을 환영합니다! 🎉";
                 })()
-
               : "왼쪽에서 책을 선택하거나 채팅방을 클릭해주세요"
             }
             {activeRoomId && wsStatus !== 'connected' && (
