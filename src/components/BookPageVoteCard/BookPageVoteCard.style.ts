@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 
 export const mainContainer = css`
+  position: relative;
   width: 950px;
   height: 190px;
   display: flex;
@@ -10,6 +11,7 @@ export const mainContainer = css`
   outline: 1px solid #d4d4d4;
   padding: 22px 30px;
   margin-top: 20px;
+  justify-content: flex-end;
 `;
 
 export const voteFrame = css`
@@ -61,4 +63,18 @@ export const voteOverlapGroupWrapper = css`
 export const selectedVoteButton = css`
   background-color: #7b9acc99;
   pointer-events: none;
+`;
+
+export const dropdownWrapper = css`
+  position: absolute;
+  right: 30px; // 수정
+  top: 50px; // 추가: vector 아래로 떨어지게
+  z-index: 10;
+`;
+
+export const vectorWrapper = css`
+  position: absolute;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
 `;

@@ -9,19 +9,26 @@ import {
   voteOverlapGroupWrapper,
   mainContainer,
   selectedVoteButton,
+  dropdownWrapper,
+  vectorWrapper,
 } from "./BookPageVoteCard.style";
 import usePostVote from "apis/hooks/vote/usePostVote";
 import useGetUserVoteAnswer from "apis/hooks/vote/useGetUserVoteAnswer";
 import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import VoteDropDown from "@components/VoteDropDown/VoteDropDown";
+import { Vector } from "@assets/index";
 
 interface BookPageVoteCardProps {
   vote: getVoteListResponse;
   refetchVotes?: () => void;
+  isMine?: boolean;
 }
 
 const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   vote,
   refetchVotes,
+  isMine,
 }) => {
   const { voteId, title, agreeCount, disagreeCount } = vote;
   const total = agreeCount + disagreeCount;
@@ -36,6 +43,22 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   const userAnswered = userVoteData?.data ?? null;
 
   const { mutate: submitVote } = usePostVote();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleToggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsDropdownOpen(false);
+    }
+  };
 
   const handleVote = (answered: boolean) => {
     if (!isLoggedIn) {
@@ -60,8 +83,27 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
     );
   };
 
+  const handleDelete = () => {
+    console.log("삭제하기 클릭됨");
+    setIsDropdownOpen(false);
+  };
+
   return (
     <div css={mainContainer}>
+      {isMine && (
+        <div
+          onClick={handleToggleDropdown}
+          ref={dropdownRef}
+          css={vectorWrapper}
+        >
+          <Vector />
+        </div>
+      )}
+      {isDropdownOpen && (
+        <div css={dropdownWrapper}>
+          <VoteDropDown onDelete={handleDelete} />
+        </div>
+      )}
       <div css={voteFrame}>
         <div css={voteDiv}>
           <p css={voteTextWrapper}>{title}</p>
