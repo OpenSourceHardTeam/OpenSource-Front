@@ -51,31 +51,24 @@ const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): 
     token: token || '',
     userId: userId.toString(),
     chatRoomId: chatroomId.toString(),
-    name: encodeURIComponent(userName), 
+    name: encodeURIComponent(userName)
   });
-  
+
   let wsUrl: string;
   
   if (import.meta.env.DEV) {
-    // 개발 환경: 프록시 사용
+    // 개발환경: 기존 방식 유지
     wsUrl = `ws://localhost:5173/ws-proxy?${params}`;
-    console.log('🔄 [개발환경] 프록시 WebSocket URL:', wsUrl);
   } else {
-    // ✅ 운영 환경: 백엔드에서 제공한 도메인 사용
-    wsUrl = `wss://opensourcebooking.xyz/ws-booking-messaging?${params}`;
+    // ✅ 운영환경: 상대 경로로 프록시 사용
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    wsUrl = `${protocol}//${window.location.host}/ws-proxy?${params}`;
     
-    // 🔍 디버깅용 강화된 로그
-    console.log('🔗 [운영환경] 도메인 WebSocket URL:', wsUrl);
-    console.log('🔍 [환경체크] window.location.protocol:', window.location.protocol);
-    console.log('🔍 [환경체크] import.meta.env.DEV:', import.meta.env.DEV);
-    console.log('🔍 [환경체크] import.meta.env.PROD:', import.meta.env.PROD);
-    
-    // ✅ SSL 도메인 사용 확인
-    if (wsUrl.includes('opensourcebooking.xyz')) {
-      console.log('✅ 백엔드 도메인 정상 사용 - SSL 지원 예상됨');
-    }
+    // 또는 더 간단하게
+    // wsUrl = `/ws-proxy?${params}`;  // 상대경로 (브라우저가 자동으로 wss 사용)
   }
   
+  console.log('🔗 WebSocket URL:', wsUrl);
   return wsUrl;
 };
 
