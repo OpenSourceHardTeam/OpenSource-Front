@@ -10,6 +10,7 @@ import { UserInfo } from "../../apis/types/user";
 
 import Line from "../../assets/img/Line.png";
 import messageComponents from "../../assets/svg/messageClickButton.svg?url"
+
 import {
   getUserChatRooms,
   getChatRoomUsers,
@@ -169,6 +170,7 @@ const ChatPage: React.FC = () => {
 
   // 🔥 자동 참여 중복 방지를 위한 ref 추가
   const autoJoinProcessed = useRef<boolean>(false);
+
   // 메시지 상태 관리
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -522,31 +524,31 @@ const ChatPage: React.FC = () => {
         fetchChatRoomsWithParticipants(); // 채팅방 목록의 참여자 수도 업데이트
         
 
-        // // 자신의 입장/퇴장은 시스템 메시지 표시 안함
-        // if (event.userId === (currentUserInfo?.userId || 0)) { // 🔥 변경
-        //   return;
-        // }
+        // 자신의 입장/퇴장은 시스템 메시지 표시 안함
+        if (event.userId === (currentUserInfo?.userId || 0)) { // 🔥 변경
+          return;
+        }
         
-        // // 🔥 URL 디코딩된 사용자 이름 사용
-        // let decodedUserName = event.userName;
-        // try {
-        //   // URL 인코딩된 한글 이름을 디코딩
-        //   decodedUserName = decodeURIComponent(event.userName);
-        // } catch (error) {
-        //   // 디코딩 실패 시 원본 사용
-        //   decodedUserName = event.userName;
-        // }
+        // 🔥 URL 디코딩된 사용자 이름 사용
+        let decodedUserName = event.userName;
+        try {
+          // URL 인코딩된 한글 이름을 디코딩
+          decodedUserName = decodeURIComponent(event.userName);
+        } catch (error) {
+          // 디코딩 실패 시 원본 사용
+          decodedUserName = event.userName;
+        }
         
-        // // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
-        // const systemMessage: Message = {
-        //   id: Date.now() + Math.random(),
-        //   senderId: -1, // 시스템 메시지는 -1로 처리
-        //   chatroomId: activeRoomId,
-        //   content: `${decodedUserName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
-        //   timestamp: new Date().toISOString()
-        // };
+        // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
+        const systemMessage: Message = {
+          id: Date.now() + Math.random(),
+          senderId: -1, // 시스템 메시지는 -1로 처리
+          chatroomId: activeRoomId,
+          content: `${decodedUserName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,
+          timestamp: new Date().toISOString()
+        };
         
-        // setMessages(prev => [...prev, systemMessage]);
+        setMessages(prev => [...prev, systemMessage]);
 
       }
     });
@@ -573,6 +575,7 @@ const ChatPage: React.FC = () => {
           // 디코딩 실패 시 원본 사용
           decodedMessage = messageText.trim();
         }
+
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리
@@ -681,6 +684,7 @@ const ChatPage: React.FC = () => {
       alert("사용자 정보가 없습니다. 페이지를 새로고침해주세요.");
       return;
     }
+
     // 토큰 확인
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -1055,6 +1059,7 @@ const ChatPage: React.FC = () => {
       </div>
     );
   }
+
   return (
     <div css={styles.PageContainer}>
       <div css={styles.ContentContainer}>
@@ -1242,6 +1247,7 @@ const ChatPage: React.FC = () => {
               )
             )}
           </div>
+
 
         </div>
       </div>

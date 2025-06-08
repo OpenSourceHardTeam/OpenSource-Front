@@ -146,6 +146,7 @@ const BookInfoPage = () => {
     );
   }
 
+
   const bookData = convertToBookData(bookDetail);
 
   return (
@@ -168,12 +169,14 @@ const BookInfoPage = () => {
             />
           </div>
         </section>
+
         {bookData && (
           <ChatRoomSection
             bookTitle={bookDetail.bookTitle}
             bookData={bookData}
           />
         )}
+
 
         <section css={styles.contentContainer}>
           <TabNavigation activeTab={activeTab} onTabClick={handleTabClick} />

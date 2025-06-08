@@ -56,14 +56,19 @@ const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): 
   let wsUrl: string;
   
   if (import.meta.env.DEV) {
-    // 개발환경: 기존 Vite 프록시 방식 유지
+    // 개발환경: 기존 방식 유지
     wsUrl = `ws://localhost:5173/ws-proxy?${params}`;
   } else {
-    // ✅ 운영환경: 백엔드가 Query Parameter 지원하므로 직접 연결
-    wsUrl = `wss://opensourcebooking.xyz/ws-booking-messaging?${params}`;
+    // ✅ 운영환경: 상대 경로로 프록시 사용
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    wsUrl = `${protocol}//${window.location.host}/ws-proxy?${params}`;
+    
+    // 또는 더 간단하게
+    // wsUrl = `/ws-proxy?${params}`;  // 상대경로 (브라우저가 자동으로 wss 사용)
   }
   
-  console.log('🔗 WebSocket URL (백엔드 수정 후):', wsUrl);
+  console.log('🔗 WebSocket URL:', wsUrl);
+
   return wsUrl;
 };
 

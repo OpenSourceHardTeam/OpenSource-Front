@@ -31,30 +31,76 @@ export interface ProfanityFilterResponse {
   masked: string;
 }
 
-// ✅ 욕설 필터링 API 함수 추가 (인증 헤더 포함)
+
+// ✅ HTTPS 욕설 필터링 API 함수 (업데이트됨)
 export const filterProfanity = async (text: string): Promise<ProfanityFilterResponse> => {
   try {
-    console.log('[욕설 필터링] 클라이언트 사이드 모드 시작:', text);
+    console.log('[욕설 필터링] HTTPS API 호출 시작:', text);
     
-    // 🔧 CORS/Mixed Content 문제 해결을 위해 임시로 클라이언트 사이드 필터링 사용
+    // 🔒 HTTPS 주소로 Mixed Content 문제 해결!
+    const apiUrl = import.meta.env.DEV 
+      ? '/api/profanity'  // 개발환경: Vite 프록시 사용
+      : 'https://filter.opensourcebooking.xyz/mask';  // 운영환경: 직접 HTTPS 호출
+    
+    console.log('[욕설 필터링] 사용할 HTTPS URL:', apiUrl);
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // 🔑 인증이 필요한 경우 토큰 추가
+    const authToken = localStorage.getItem('accessToken');
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+      console.log('[욕설 필터링] 인증 토큰 사용');
+    }
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ text }),
+    });
+
+    console.log('[욕설 필터링] HTTPS 응답 상태:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      console.error('[욕설 필터링] HTTPS API 오류 상세:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      
+      // API 오류 시 클라이언트 사이드 필터링으로 대체
+      console.log('[욕설 필터링] API 오류로 클라이언트 필터링 대체 사용');
+      const maskedText = advancedClientSideFilter(text);
+      
+      return {
+        original: text,
+        masked: maskedText
+      };
+    }
+
+    const result: ProfanityFilterResponse = await response.json();
+    console.log('[욕설 필터링] HTTPS API 응답 성공:', result);
+    
+    return result;
+    
+  } catch (error) {
+    console.error('[욕설 필터링] HTTPS API 호출 실패:', error);
+    
+    // 네트워크 오류 시 클라이언트 사이드 필터링으로 대체
+    console.log('[욕설 필터링] 네트워크 오류로 클라이언트 필터링 대체 사용');
     const maskedText = advancedClientSideFilter(text);
-    
-    console.log('[욕설 필터링] 클라이언트 사이드 완료:', maskedText);
     
     return {
       original: text,
       masked: maskedText
     };
-    
-  } catch (error) {
-    console.error('[욕설 필터링] 클라이언트 사이드 오류:', error);
-    
-    return {
-      original: text,
-      masked: text  // 오류 시 원본 그대로
-    };
   }
 };
+
+// 🛡️ 대체용 클라이언트 사이드 필터링 (API 오류 시 사용)
 
 const advancedClientSideFilter = (text: string): string => {
   const profanityPatterns = [
@@ -103,8 +149,10 @@ const advancedClientSideFilter = (text: string): string => {
     return match;
   });
   
+  console.log('[클라이언트 필터링] 대체 처리:', text, '→', filtered);
   return filtered;
 };
+
 // 사용자별 메시지 조회
 export const getMessagesBySender = async (senderId: number) => {
   return authApiGet<MessageDocumentDto[], null>(
