@@ -15,12 +15,14 @@ export interface RealtimeMessage extends MessageDocumentDto {
 }
 
 // 사용자 입장/퇴장 이벤트 데이터
+
 // export interface UserEvent {
 //   userId: number;
 //   userName: string;
 //   chatroomId: number;
 //   action: 'join' | 'leave';
 // }
+
 
 // 웹소켓 연결 상태
 export type WebSocketStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
@@ -43,7 +45,7 @@ interface UseWebSocketReturn {
 }
 
 // 프록시를 통한 WebSocket URL 생성
-// 프록시를 통한 WebSocket URL 생성
+
 const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): string => {
   const token = localStorage.getItem('accessToken');
   
@@ -221,6 +223,7 @@ export const useWebSocket = ({
         reconnectAttempts.current = 0;
         
         // 연결 성공 후 입장 메시지 전송
+
         // const joinMessage: WebSocketMessage = {
         //   type: 'USER_JOIN',
         //   chatroomId,
@@ -232,6 +235,7 @@ export const useWebSocket = ({
         
         // console.log('📤 입장 메시지 전송:', joinMessage);
         // ws.send(JSON.stringify(joinMessage));
+
       };
 
       ws.onmessage = (event) => {
@@ -265,6 +269,7 @@ export const useWebSocket = ({
                   
                 case 'USER_JOIN':
                 case 'USER_LEAVE':
+
                   // if (userEventCallbackRef.current && wsMessage.data) {
                   //   const userEvent: UserEvent = {
                   //     userId: wsMessage.data.userId,
@@ -285,6 +290,7 @@ export const useWebSocket = ({
                 // case 'ERROR':
                 //   console.error('[WebSocket] 서버 에러:', wsMessage.data);
                 //   break;
+
               }
             } catch (parseError) {
               console.warn('[WebSocket] JSON 파싱 실패 (내부 처리 건너뜀):', parseError);
@@ -372,7 +378,7 @@ export const useWebSocket = ({
     reconnectAttempts.current = 0;
     
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      // 퇴장 메시지 전송
+
       // const leaveMessage: WebSocketMessage = {
       //   type: 'USER_LEAVE',
       //   chatroomId: chatroomId || 0,
@@ -384,6 +390,7 @@ export const useWebSocket = ({
       
       // console.log('📤 퇴장 메시지 전송:', leaveMessage);
       // wsRef.current.send(JSON.stringify(leaveMessage));
+
       
       // 정상 종료 코드로 연결 해제
       wsRef.current.close(1000, 'User disconnected');
