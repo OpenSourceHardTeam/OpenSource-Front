@@ -80,6 +80,7 @@ const BookInfoPage = () => {
   const convertToBookData = (detail: any): BookData | null => {
     if (!detail) return null;
 
+
     return {
       bookId: detail.bookId || parseInt(bookId || "0"),
       bookTitle: detail.bookTitle || "",
@@ -90,6 +91,7 @@ const BookInfoPage = () => {
       publishDate: detail.publishDate || "",
       publisherReview: detail.publisherReview || "",
       bookDescription: detail.bookDescription || "",
+
     };
   };
 
@@ -146,7 +148,6 @@ const BookInfoPage = () => {
     );
   }
 
-
   const bookData = convertToBookData(bookDetail);
 
   return (
@@ -170,12 +171,14 @@ const BookInfoPage = () => {
           </div>
         </section>
 
+
         {bookData && (
           <ChatRoomSection
             bookTitle={bookDetail.bookTitle}
             bookData={bookData}
           />
         )}
+
 
 
         <section css={styles.contentContainer}>

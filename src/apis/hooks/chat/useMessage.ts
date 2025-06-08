@@ -31,7 +31,6 @@ export interface ProfanityFilterResponse {
   masked: string;
 }
 
-
 // ✅ HTTPS 욕설 필터링 API 함수 (업데이트됨)
 export const filterProfanity = async (text: string): Promise<ProfanityFilterResponse> => {
   try {
