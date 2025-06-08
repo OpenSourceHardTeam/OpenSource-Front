@@ -9,3 +9,4 @@ export { default as ProfileIcon } from "./svg/profile.svg?react";
 export { default as ProfileImage } from "./img/profile.png";
 export { default as PlusBtn } from "./svg/plusBtn.svg?react";
 export { default as CloseBtn } from "./svg/closeBtn.svg?react";
+export { default as Vector } from "./svg/vectorsvg.svg?react";

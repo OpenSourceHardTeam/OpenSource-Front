@@ -1,4 +1,4 @@
-import { authApiGet, authApiPost } from "./apiUtils";
+import { authApiDelete, authApiGet, authApiPost } from "./apiUtils";
 import { ApiResponse } from "./types/response";
 
 import {
@@ -47,6 +47,15 @@ export const getUserVoteAnswer = async (
 ): Promise<ApiResponse<UserVoteAnswer>> => {
   return await authApiGet<UserVoteAnswer, { voteId: number }>(
     "/api/v1/vote/user-answered",
+    { voteId }
+  );
+};
+
+export const deleteVote = async (
+  voteId: number
+): Promise<ApiResponse<unknown>> => {
+  return await authApiDelete<unknown, { voteId: number }>(
+    "/api/v1/vote/delete-vote",
     { voteId }
   );
 };

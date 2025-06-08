@@ -105,7 +105,6 @@ const advancedClientSideFilter = (text: string): string => {
   
   return filtered;
 };
-
 // 사용자별 메시지 조회
 export const getMessagesBySender = async (senderId: number) => {
   return authApiGet<MessageDocumentDto[], null>(
