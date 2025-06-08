@@ -11,13 +11,15 @@ import {
   selectedVoteButton,
   dropdownWrapper,
   vectorWrapper,
+  vectorIconStyle,
 } from "./BookPageVoteCard.style";
 import usePostVote from "apis/hooks/vote/usePostVote";
 import useGetUserVoteAnswer from "apis/hooks/vote/useGetUserVoteAnswer";
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import VoteDropDown from "@components/VoteDropDown/VoteDropDown";
 import { Vector } from "@assets/index";
+import useDeleteVote from "apis/hooks/vote/useDeleteVote";
 
 interface BookPageVoteCardProps {
   vote: getVoteListResponse;
@@ -43,6 +45,7 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   const userAnswered = userVoteData?.data ?? null;
 
   const { mutate: submitVote } = usePostVote();
+  const { mutate: deleteVote } = useDeleteVote();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -84,24 +87,43 @@ const BookPageVoteCard: React.FC<BookPageVoteCardProps> = ({
   };
 
   const handleDelete = () => {
-    console.log("삭제하기 클릭됨");
+    if (confirm("정말 삭제하시겠습니까?")) {
+      deleteVote(vote.voteId, {
+        onSuccess: () => {
+          alert("삭제되었습니다.");
+          refetchVotes?.();
+        },
+        onError: () => {
+          alert("삭제에 실패했습니다.");
+        },
+      });
+    }
+
     setIsDropdownOpen(false);
   };
+
+  useEffect(() => {
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <div css={mainContainer}>
       {isMine && (
-        <div
-          onClick={handleToggleDropdown}
-          ref={dropdownRef}
-          css={vectorWrapper}
-        >
-          <Vector />
-        </div>
-      )}
-      {isDropdownOpen && (
-        <div css={dropdownWrapper}>
-          <VoteDropDown onDelete={handleDelete} />
+        <div css={vectorWrapper} ref={dropdownRef}>
+          <div onClick={handleToggleDropdown}>
+            <Vector css={vectorIconStyle} />
+          </div>
+          {isDropdownOpen && (
+            <div css={dropdownWrapper}>
+              <VoteDropDown onDelete={handleDelete} />
+            </div>
+          )}
         </div>
       )}
       <div css={voteFrame}>

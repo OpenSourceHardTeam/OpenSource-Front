@@ -51,6 +51,7 @@ export const voteFrame2 = css`
   align-items: flex-start;
   gap: 20px;
   position: relative;
+  margin-top: 20px;
 `;
 
 export const voteOverlapGroupWrapper = css`
@@ -67,14 +68,20 @@ export const selectedVoteButton = css`
 
 export const dropdownWrapper = css`
   position: absolute;
-  right: 30px; // 수정
-  top: 50px; // 추가: vector 아래로 떨어지게
+  top: 20px;
+  right: -120px;
   z-index: 10;
 `;
 
 export const vectorWrapper = css`
   position: absolute;
-  display: inline-block;
-  height: 30px;
-  width: 30px;
+  top: 20px;
+  right: 30px;
+  z-index: 5;
+`;
+
+export const vectorIconStyle = css`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 `;

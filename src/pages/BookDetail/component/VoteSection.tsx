@@ -10,7 +10,8 @@ import useVoteList from "apis/hooks/vote/useGetVoteList";
 
 const VoteSection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const myUserId = Number(localStorage.getItem("userId"));
+  const userIdString = localStorage.getItem("userId");
+  const myUserId = userIdString !== null ? Number(userIdString) : null;
 
   const { bookId } = useParams<{ bookId: string }>();
   const { bookDetail } = useBookDetail(bookId);
@@ -55,7 +56,7 @@ const VoteSection: React.FC = () => {
             key={vote.voteId}
             vote={vote}
             refetchVotes={refetchVotes}
-            isMine={vote.userId === myUserId}
+            isMine={myUserId !== null && vote.userId === myUserId} // ✅ 안전하게 비교
           />
         ))
       )}
