@@ -29,7 +29,7 @@ export default defineConfig({
     proxy: {
       // ✅ 욕설 필터링 API 프록시 추가
       '/api/profanity': {
-        target: 'http://3.34.186.27:8000',
+        target: 'https://opensourcebooking.xyz',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/profanity/, '/mask'),
         configure: (proxy) => {
@@ -50,7 +50,7 @@ export default defineConfig({
        
       // 기존 WebSocket 프록시 유지
       '/ws-proxy': {
-        target: 'http://52.78.192.251:8080',
+        target: 'https://opensourcebooking.xyz',
         ws: true,
         changeOrigin: true,
         secure: false,

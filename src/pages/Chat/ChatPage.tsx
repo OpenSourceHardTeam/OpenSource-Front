@@ -2,7 +2,6 @@ import React, { useState, KeyboardEvent, ChangeEvent, useEffect, useRef } from "
 import * as styles from "./ChatPage.style";
 import Button from "../../components/Button/Button";
 import ChatRoomList from "../../components/ChatRoomList/ChatRoomList";
-import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
 import { useLocation } from "react-router-dom";
 
 // 🔥 기존 API와 타입 직접 import
@@ -801,11 +800,40 @@ const ChatPage: React.FC = () => {
     }
   };
 
-  // 방 선택 핸들러
+  // 🔥 roomId에서 해당하는 책을 찾는 헬퍼 함수 추가
+  const getBookByRoomId = (roomId: number, bookList: BookData[]): BookData | null => {
+    // roomId는 110부터 시작하므로, 110을 빼면 bookList의 인덱스가 됨
+    const bookIndex = roomId - 110;
+    
+    if (bookIndex >= 0 && bookIndex < bookList.length) {
+      return bookList[bookIndex];
+    }
+    
+    return null;
+  };
+
+  // 🔥 수정된 방 선택 핸들러
   const handleSelectRoom = (roomId: number) => {
     if (roomId === activeRoomId) return;
     
     setActiveRoomId(roomId);
+    
+    // 🔥 roomId에 해당하는 책 정보 찾아서 selectedBook 업데이트
+    const correspondingBook = getBookByRoomId(roomId, bookList);
+    if (correspondingBook) {
+      setSelectedBook(correspondingBook);
+    } else {
+      // 책 정보를 찾을 수 없는 경우, 채팅방 정보에서 책 제목 추출 시도
+      const activeRoom = chatRoomsWithParticipants.find(room => room.id === roomId);
+      if (activeRoom?.book) {
+        // chatRoom에 book 정보가 있다면 해당 정보로 selectedBook 설정
+        // 만약 book 정보가 BookData 형태가 아니라면 적절히 변환 필요
+        setSelectedBook(null); // 또는 activeRoom.book 정보를 BookData 형태로 변환
+      } else {
+        setSelectedBook(null);
+      }
+    }
+    
     setMessages([]); // 방 변경 시 메시지 초기화
     fetchRoomMessages(roomId);
     fetchRoomUsers(roomId);
@@ -1064,11 +1092,37 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
+          {/* 🔥 수정된 ChatAnnouncement 부분 */}
           <div css={styles.ChatAnnouncement}>
             {activeRoomId
-              ? selectedBook 
-                ? `"${selectedBook.bookTitle}" 토론방에 입장하신 것을 환영합니다! 🎉`
-                : "채팅방에 입장하신 것을 환영합니다"
+              ? (() => {
+                  // 1. selectedBook이 있으면 해당 책 이름 사용
+                  if (selectedBook) {
+                    return `"${selectedBook.bookTitle}" 토론방에 입장하신 것을 환영합니다! 🎉`;
+                  }
+                  
+                  // 2. activeRoom에서 책 정보 추출 시도
+                  const activeRoom = chatRoomsWithParticipants.find(room => room.id === activeRoomId);
+                  if (activeRoom?.book?.bookTitle) {
+                    return `"${activeRoom.book.bookTitle}" 토론방에 입장하신 것을 환영합니다! 🎉`;
+                  }
+                  
+                  // 3. activeRoom의 topic 사용
+                  if (activeRoom?.topic) {
+                    return `"${activeRoom.topic}" 채팅방에 입장하신 것을 환영합니다! 🎉`;
+                  }
+                  
+                  // 4. roomId에서 책 찾기 시도 (110부터 시작하는 규칙 이용)
+                  const bookIndex = activeRoomId - 110;
+                  if (bookIndex >= 0 && bookIndex < bookList.length) {
+                    const book = bookList[bookIndex];
+                    return `"${book.bookTitle}" 토론방에 입장하신 것을 환영합니다! 🎉`;
+                  }
+                  
+                  // 5. 기본 메시지
+                  return "채팅방에 입장하신 것을 환영합니다! 🎉";
+                })()
+
               : "왼쪽에서 책을 선택하거나 채팅방을 클릭해주세요"
             }
             {activeRoomId && wsStatus !== 'connected' && (
@@ -1188,15 +1242,6 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
-          {activeRoomId && selectedBook && (
-            <InfoBoxWithTimers
-              title="현재 토론"
-              discussionTitle={`📚 ${selectedBook.bookTitle}`}
-              initialMinutes={15}
-              initialSeconds={0}
-              lineImage={Line}
-            />
-          )}
         </div>
       </div>
     </div>
