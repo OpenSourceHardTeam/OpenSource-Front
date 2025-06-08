@@ -2,7 +2,7 @@ import React, { useState, KeyboardEvent, ChangeEvent, useEffect, useRef } from "
 import * as styles from "./ChatPage.style";
 import Button from "../../components/Button/Button";
 import ChatRoomList from "../../components/ChatRoomList/ChatRoomList";
-import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
+// import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
 import { useLocation } from "react-router-dom";
 
 // 🔥 기존 API와 타입 직접 import
