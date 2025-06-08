@@ -2,7 +2,6 @@ import React, { useState, KeyboardEvent, ChangeEvent, useEffect, useRef } from "
 import * as styles from "./ChatPage.style";
 import Button from "../../components/Button/Button";
 import ChatRoomList from "../../components/ChatRoomList/ChatRoomList";
-// import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
 import { useLocation } from "react-router-dom";
 
 // 🔥 기존 API와 타입 직접 import
@@ -11,7 +10,6 @@ import { UserInfo } from "../../apis/types/user";
 
 import Line from "../../assets/img/Line.png";
 import messageComponents from "../../assets/svg/messageClickButton.svg?url"
-
 import {
   getUserChatRooms,
   getChatRoomUsers,
@@ -171,7 +169,6 @@ const ChatPage: React.FC = () => {
 
   // 🔥 자동 참여 중복 방지를 위한 ref 추가
   const autoJoinProcessed = useRef<boolean>(false);
-
   // 메시지 상태 관리
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -574,7 +571,6 @@ const ChatPage: React.FC = () => {
           // 디코딩 실패 시 원본 사용
           decodedMessage = messageText.trim();
         }
-        
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리
@@ -683,7 +679,6 @@ const ChatPage: React.FC = () => {
       alert("사용자 정보가 없습니다. 페이지를 새로고침해주세요.");
       return;
     }
-
     // 토큰 확인
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -1058,7 +1053,6 @@ const ChatPage: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div css={styles.PageContainer}>
       <div css={styles.ContentContainer}>
@@ -1128,6 +1122,7 @@ const ChatPage: React.FC = () => {
                   // 5. 기본 메시지
                   return "채팅방에 입장하신 것을 환영합니다! 🎉";
                 })()
+
               : "왼쪽에서 책을 선택하거나 채팅방을 클릭해주세요"
             }
             {activeRoomId && wsStatus !== 'connected' && (
@@ -1247,7 +1242,6 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
-          
         </div>
       </div>
     </div>
