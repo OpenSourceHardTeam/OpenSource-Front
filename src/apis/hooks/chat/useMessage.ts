@@ -34,71 +34,76 @@ export interface ProfanityFilterResponse {
 // ✅ 욕설 필터링 API 함수 추가 (인증 헤더 포함)
 export const filterProfanity = async (text: string): Promise<ProfanityFilterResponse> => {
   try {
-    console.log('[욕설 필터링] API 호출 시작:', text);
+    console.log('[욕설 필터링] 클라이언트 사이드 모드 시작:', text);
     
-    // 개발 환경에서는 프록시 사용, 운영 환경에서는 직접 호출
-    const apiUrl = import.meta.env.DEV 
-      ? '/api/profanity'  // 프록시 경로
-      : 'http://3.34.186.27:8000/mask';  // 직접 경로
+    // 🔧 CORS/Mixed Content 문제 해결을 위해 임시로 클라이언트 사이드 필터링 사용
+    const maskedText = advancedClientSideFilter(text);
     
-    console.log('[욕설 필터링] 사용할 URL:', apiUrl);
+    console.log('[욕설 필터링] 클라이언트 사이드 완료:', maskedText);
     
-    // 🔑 인증 토큰 가져오기 (여러 가지 시도)
-    const authToken = localStorage.getItem('accessToken') || 
-                     import.meta.env.VITE_AUTH_TOKEN ||
-                     import.meta.env.VITE_PROFANITY_API_KEY;
-    
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    
-    // 🔑 다양한 인증 헤더 방식 시도
-    if (authToken) {
-      // Bearer 토큰 방식
-      headers['Authorization'] = `Bearer ${authToken}`;
-      // API 키 방식들도 함께 시도
-      headers['X-API-Key'] = authToken;
-      headers['API-Key'] = authToken;
-      headers['x-api-key'] = authToken;
-      
-      console.log('[욕설 필터링] 인증 토큰 사용:', authToken.substring(0, 10) + '...');
-    } else {
-      console.warn('[욕설 필터링] 인증 토큰이 없습니다');
-    }
-    
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ text }),
-    });
-
-    console.log('[욕설 필터링] 응답 상태:', response.status);
-
-    if (!response.ok) {
-      // 상세한 에러 정보 로깅
-      const errorText = await response.text().catch(() => 'Unknown error');
-      console.error('[욕설 필터링] API 오류 상세:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText
-      });
-      
-      throw new Error(`욕설 필터링 API 오류: ${response.status} - ${response.statusText}`);
-    }
-
-    const result: ProfanityFilterResponse = await response.json();
-    console.log('[욕설 필터링] API 응답 성공:', result);
-    
-    return result;
-  } catch (error) {
-    console.error('[욕설 필터링] API 호출 실패:', error);
-    
-    // 오류 발생 시 원본 텍스트 그대로 반환
     return {
       original: text,
-      masked: text
+      masked: maskedText
+    };
+    
+  } catch (error) {
+    console.error('[욕설 필터링] 클라이언트 사이드 오류:', error);
+    
+    return {
+      original: text,
+      masked: text  // 오류 시 원본 그대로
     };
   }
+};
+
+const advancedClientSideFilter = (text: string): string => {
+  const profanityPatterns = [
+    // 한국어 욕설
+    { pattern: /시발/gi, replacement: '**' },
+    { pattern: /씨발/gi, replacement: '**' },
+    { pattern: /개새끼/gi, replacement: '***' },
+    { pattern: /병신/gi, replacement: '**' },
+    { pattern: /좆/gi, replacement: '*' },
+    { pattern: /개같은/gi, replacement: '***' },
+    { pattern: /개소리/gi, replacement: '***' },
+    { pattern: /멍청이/gi, replacement: '***' },
+    { pattern: /바보/gi, replacement: '**' },
+    { pattern: /미친/gi, replacement: '**' },
+    { pattern: /또라이/gi, replacement: '***' },
+    { pattern: /새끼/gi, replacement: '**' },
+    
+    // 변형된 욕설들
+    { pattern: /ㅅㅂ/gi, replacement: '**' },
+    { pattern: /ㅂㅅ/gi, replacement: '**' },
+    { pattern: /ㄱㅅㄲ/gi, replacement: '***' },
+    { pattern: /시1발/gi, replacement: '***' },
+    { pattern: /씨1발/gi, replacement: '***' },
+    { pattern: /시@발/gi, replacement: '***' },
+    { pattern: /씨@발/gi, replacement: '***' },
+    
+    // 영어 욕설
+    { pattern: /fuck/gi, replacement: '****' },
+    { pattern: /shit/gi, replacement: '****' },
+    { pattern: /damn/gi, replacement: '****' },
+    { pattern: /bitch/gi, replacement: '*****' },
+  ];
+  
+  let filtered = text;
+  
+  profanityPatterns.forEach(({ pattern, replacement }) => {
+    filtered = filtered.replace(pattern, replacement);
+  });
+  
+  // 같은 문자 3개 이상 반복 필터링
+  filtered = filtered.replace(/(.)\1{2,}/g, (match, char) => {
+    const suspiciousChars = ['ㅅ', 'ㅂ', 'ㄱ', 'ㅆ', '!', '@', '#', '*'];
+    if (suspiciousChars.includes(char)) {
+      return '*'.repeat(Math.min(match.length, 3));
+    }
+    return match;
+  });
+  
+  return filtered;
 };
 
 // 사용자별 메시지 조회
