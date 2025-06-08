@@ -43,6 +43,7 @@ interface UseWebSocketReturn {
 }
 
 // 프록시를 통한 WebSocket URL 생성
+// 프록시를 통한 WebSocket URL 생성
 const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): string => {
   const token = localStorage.getItem('accessToken');
   
@@ -60,21 +61,18 @@ const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): 
     wsUrl = `ws://localhost:5173/ws-proxy?${params}`;
     console.log('🔄 [개발환경] 프록시 WebSocket URL:', wsUrl);
   } else {
-    // 🔥 운영 환경: 무조건 wss:// 강제 사용
-    wsUrl = `wss://52.78.192.251:8080/ws-booking-messaging?${params}`;
+    // ✅ 운영 환경: 백엔드에서 제공한 도메인 사용
+    wsUrl = `wss://opensourcebooking.xyz/ws-booking-messaging?${params}`;
     
     // 🔍 디버깅용 강화된 로그
-    console.log('🔗 [운영환경] 직접 WebSocket URL:', wsUrl);
+    console.log('🔗 [운영환경] 도메인 WebSocket URL:', wsUrl);
     console.log('🔍 [환경체크] window.location.protocol:', window.location.protocol);
     console.log('🔍 [환경체크] import.meta.env.DEV:', import.meta.env.DEV);
     console.log('🔍 [환경체크] import.meta.env.PROD:', import.meta.env.PROD);
     
-    // 🚨 wss:// 사용 확인용 알럿 (임시)
-    if (!wsUrl.startsWith('wss://')) {
-      console.error('🚨 경고: wss://를 사용하지 않음!', wsUrl);
-      alert(`WebSocket URL 확인 필요: ${wsUrl}`);
-    } else {
-      console.log('✅ wss:// 프로토콜 정상 사용');
+    // ✅ SSL 도메인 사용 확인
+    if (wsUrl.includes('opensourcebooking.xyz')) {
+      console.log('✅ 백엔드 도메인 정상 사용 - SSL 지원 예상됨');
     }
   }
   
