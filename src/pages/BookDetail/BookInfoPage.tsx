@@ -79,17 +79,19 @@ const BookInfoPage = () => {
   // 🔥 bookDetail을 BookData 형식으로 변환하는 함수
   const convertToBookData = (detail: any): BookData | null => {
     if (!detail) return null;
-    
+
+
     return {
-      bookId: detail.bookId || parseInt(bookId || '0'),
-      bookTitle: detail.bookTitle || '',
-      bookAuthor: detail.bookAuthor || '',
-      bookImageUrl: detail.bookImageUrl || '',
+      bookId: detail.bookId || parseInt(bookId || "0"),
+      bookTitle: detail.bookTitle || "",
+      bookAuthor: detail.bookAuthor || "",
+      bookImageUrl: detail.bookImageUrl || "",
       bookRank: detail.bookRank || 0,
-      publisherName: detail.publisherName || '',
-      publishDate: detail.publishDate || '',
-      publisherReview: detail.publisherReview || '',
-      bookDescription: detail.bookDescription || '',
+      publisherName: detail.publisherName || "",
+      publishDate: detail.publishDate || "",
+      publisherReview: detail.publisherReview || "",
+      bookDescription: detail.bookDescription || "",
+
     };
   };
 
@@ -146,7 +148,6 @@ const BookInfoPage = () => {
     );
   }
 
-  // 🎯 bookDetail을 BookData로 변환
   const bookData = convertToBookData(bookDetail);
 
   return (
@@ -169,15 +170,17 @@ const BookInfoPage = () => {
             />
           </div>
         </section>
-        
-        {/* 🔥 수정: bookData가 null이 아닐 때만 ChatRoomSection 렌더링 */}
+
+
         {bookData && (
-          <ChatRoomSection 
-            bookTitle={bookDetail.bookTitle} 
+          <ChatRoomSection
+            bookTitle={bookDetail.bookTitle}
             bookData={bookData}
           />
         )}
-        
+
+
+
         <section css={styles.contentContainer}>
           <TabNavigation activeTab={activeTab} onTabClick={handleTabClick} />
           <BookDescription description={bookDetail.bookDescription} />

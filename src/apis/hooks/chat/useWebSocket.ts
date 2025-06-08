@@ -43,7 +43,7 @@ interface UseWebSocketReturn {
 }
 
 // 프록시를 통한 WebSocket URL 생성
-// 프록시를 통한 WebSocket URL 생성
+
 const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): string => {
   const token = localStorage.getItem('accessToken');
   
@@ -61,10 +61,12 @@ const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): 
     wsUrl = `ws://localhost:5173/ws-proxy?${params}`;
   } else {
     // ✅ 운영환경: 상대 경로로 프록시 사용
+
     wsUrl = `wss://opensourcebooking.xyz/ws-booking-messaging?${params}`;
   }
   
   console.log('🔗 WebSocket URL:', wsUrl);
+
   return wsUrl;
 };
 

@@ -523,6 +523,7 @@ const ChatPage: React.FC = () => {
         fetchRoomUsers(activeRoomId);
         fetchChatRoomsWithParticipants(); // 채팅방 목록의 참여자 수도 업데이트
         
+
         // 자신의 입장/퇴장은 시스템 메시지 표시 안함
         if (event.userId === (currentUserInfo?.userId || 0)) { // 🔥 변경
           return;
@@ -548,6 +549,7 @@ const ChatPage: React.FC = () => {
         };
         
         setMessages(prev => [...prev, systemMessage]);
+
       }
     });
 
@@ -573,7 +575,7 @@ const ChatPage: React.FC = () => {
           // 디코딩 실패 시 원본 사용
           decodedMessage = messageText.trim();
         }
-        
+
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리
@@ -1246,7 +1248,7 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
-          
+
         </div>
       </div>
     </div>

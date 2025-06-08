@@ -29,7 +29,9 @@ export default defineConfig({
     proxy: {
       // ✅ 욕설 필터링 API 프록시 추가
       '/api/profanity': {
+<
         target: 'https://filter.opensourcebooking.xyz/mask',
+
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/profanity/, '/mask'),
         configure: (proxy) => {
