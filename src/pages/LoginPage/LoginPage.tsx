@@ -57,8 +57,11 @@ const LoginPage = () => {
                       res.data?.accessToken || ""
                     );
 
-                    window.dispatchEvent(new Event("storage"));
+                    if (res.data?.userId) {
+                      localStorage.setItem("userId", String(res.data.userId));
+                    }
 
+                    window.dispatchEvent(new Event("storage"));
                     navigate("/");
                   },
                   onError: (error) => {

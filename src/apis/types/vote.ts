@@ -17,6 +17,7 @@ export interface getVoteListResponse {
   agreeCount: number;
   disagreeCount: number;
   voteCount: number;
+  userId: number;
 }
 
 //투표하기
@@ -36,4 +37,5 @@ export interface getAllVoteListResponse {
   disagreeCount: number;
   voteCount: number;
   bookImageUrl: string;
+  userId: number;
 }
