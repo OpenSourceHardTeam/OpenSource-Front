@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 
 export const mainContainer = css`
+  position: relative;
   width: 950px;
   height: 190px;
   display: flex;
@@ -10,6 +11,7 @@ export const mainContainer = css`
   outline: 1px solid #d4d4d4;
   padding: 22px 30px;
   margin-top: 20px;
+  justify-content: flex-end;
 `;
 
 export const voteFrame = css`
@@ -49,6 +51,7 @@ export const voteFrame2 = css`
   align-items: flex-start;
   gap: 20px;
   position: relative;
+  margin-top: 20px;
 `;
 
 export const voteOverlapGroupWrapper = css`
@@ -61,4 +64,24 @@ export const voteOverlapGroupWrapper = css`
 export const selectedVoteButton = css`
   background-color: #7b9acc99;
   pointer-events: none;
+`;
+
+export const dropdownWrapper = css`
+  position: absolute;
+  top: 20px;
+  right: -120px;
+  z-index: 10;
+`;
+
+export const vectorWrapper = css`
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 5;
+`;
+
+export const vectorIconStyle = css`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 `;
