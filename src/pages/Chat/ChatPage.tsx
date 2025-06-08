@@ -62,7 +62,7 @@ interface ChatUserInfo extends UserInfo {
 interface ChatRoomWithParticipants extends ChatRoom {
   actualParticipants?: number;
 }
-  
+
 // 🔥 getChatRoomUsers용 Fallback 함수
 const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]> => {
   try {
@@ -345,7 +345,6 @@ const ChatPage: React.FC = () => {
     id,
     email: `user${id}@example.com`,
     name: id === (currentUserInfo?.userId || 0) ? getDisplayUserName() : `사용자${id}`
-
   });
 
   // 동적 사용자 이름 가져오기 (웹소켓용으로 수정)
@@ -573,7 +572,6 @@ const ChatPage: React.FC = () => {
           // 디코딩 실패 시 원본 사용
           decodedMessage = messageText.trim();
         }
-       
         const systemMessage: Message = {
           id: Date.now() + Math.random(),
           senderId: -1, // 시스템 메시지는 -1로 처리

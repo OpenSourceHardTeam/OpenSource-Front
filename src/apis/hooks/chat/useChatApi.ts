@@ -213,4 +213,5 @@ export const deleteChatRoom = async ( chatroomId: number) => {
         `/api/v1/chatroom/${chatroomId}`,
         null
     );
+
 };

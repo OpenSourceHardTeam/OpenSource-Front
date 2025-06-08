@@ -68,7 +68,8 @@ const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): 
     name: encodeURIComponent(userName),
   });
   
-  const directUrl = `ws://52.78.192.251:8080/ws-booking-messaging?${params}`;
+  const directUrl = `wss://52.78.192.251:8080/ws-booking-messaging?${params}`;
+
   console.log('🔗 직접 WebSocket URL:', directUrl);
   return directUrl;
 };
