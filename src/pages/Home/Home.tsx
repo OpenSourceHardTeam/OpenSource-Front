@@ -12,16 +12,15 @@ import {
   Container,
   imageStyle,
   MainContainer,
-  ParticipantText,
   TitleAuthorWrapper,
   TrendContainer,
 } from "./Home.style";
 import { Button, PopularVoteCard } from "components";
-import { border, book } from "@assets/index";
+import { border } from "@assets/index";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import { useEffect, useRef, useState } from "react";
-import { useBooks } from "apis/hooks/Books/useBooks";
+import { useBooks, BookData } from "apis/hooks/Books/useBooks";
 import { useNavigate } from "react-router-dom";
 import useGetAllVoteList from "apis/hooks/vote/useGetAllVoteList";
 
@@ -30,8 +29,11 @@ const Home: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  
 
   const { bookList, loading, error } = useBooks();
+
+  const [randomBook, setRandomBook] = useState<BookData | null>(null);
   const {
     data: voteData,
     isLoading: voteLoading,
@@ -60,6 +62,15 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleJoinChatRoom = () => {
+    navigate("/chat", {
+      state: {
+        selectedBook: randomBook,
+        autoJoin: true
+      }
+    });
+  };
+
   useEffect(() => {
     updateScrollButtons();
     const container = scrollRef.current;
@@ -72,6 +83,10 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (!loading && bookList.length > 0) {
       updateScrollButtons();
+
+      // 랜덤 책 선택
+      const randomIndex = Math.floor(Math.random() * Math.min(bookList.length, 50));
+      setRandomBook(bookList[randomIndex]);
     }
   }, [bookList, loading]);
 
@@ -132,22 +147,27 @@ const Home: React.FC = () => {
               .map((vote) => <PopularVoteCard key={vote.voteId} vote={vote} />)
           )}
         </div>
+        {randomBook && (
         <div css={Container}>
-          <p>TRENDING NOW</p>
+          <p>오늘의 추천 책</p>
           <div css={TrendContainer}>
-            <img src={book} css={BookImage} />
+            <img src={randomBook.bookImageUrl} css={BookImage} />
             <div css={BookInfoWrapper}>
               <div css={TitleAuthorWrapper}>
-                <div css={BookTitle}>소년이 온다</div>
-                <div css={BookAuthor}>한강</div>
+                <div css={BookTitle}>{randomBook.bookTitle}</div>
+                <div css={BookAuthor}>{randomBook.bookAuthor}</div>
               </div>
               <div css={BottomWrapper}>
-                <p css={ParticipantText}>현재 256명이 채팅방에 참여했어요</p>
-                <Button text={"채팅방 입장하기"} type={"bigChatRoomJoin"} />
-              </div>
-            </div>
-          </div>
+                <Button 
+                text={"채팅방 입장하기"} 
+                type={"bigChatRoomJoin"} 
+                onClick={handleJoinChatRoom}
+                />
         </div>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </>
   );

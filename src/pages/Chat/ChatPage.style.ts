@@ -666,3 +666,299 @@ export const CancelButton = css`
     background-color: #7f8c8d;
   }
 `;
+
+// 🆕 토론 제어 컨테이너
+export const DiscussionControlContainer = css`
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+`;
+
+// 🆕 토론 타이머 (헤더에 표시)
+export const DiscussionTimer = css`
+  margin-left: 10px;
+  color: #e53e3e;
+  font-weight: bold;
+  font-size: 0.9em;
+`;
+
+// 🆕 토론 설정 영역
+export const DiscussionSetup = css`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+// 🆕 토론 주제 입력 컨테이너
+export const DiscussionTopicInputContainer = css`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+`;
+
+// 🆕 토론 주제 입력 필드
+export const DiscussionTopicInput = css`
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: #3182ce;
+  }
+
+  &:disabled {
+    background-color: #f7fafc;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: #a0aec0;
+  }
+`;
+
+// 🆕 토론 시작 버튼
+export const StartDiscussionButton = css`
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #4299e1, #3182ce);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(45deg, #3182ce, #2c5aa0);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+// 🆕 토론 시간 설정
+export const DiscussionDuration = css`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+
+  label {
+    color: #4a5568;
+    font-weight: 500;
+  }
+
+  select {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:disabled {
+      background: #f7fafc;
+      cursor: not-allowed;
+    }
+  }
+`;
+
+// 🆕 토론 진행 중 영역
+export const DiscussionActive = css`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+// 🆕 현재 토론 정보
+export const CurrentDiscussion = css`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+// 🆕 토론 주제 표시
+export const DiscussionTopic = css`
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  padding: 10px;
+  background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+  border-radius: 8px;
+  border-left: 4px solid #3182ce;
+`;
+
+// 🆕 토론 진행 상황
+export const DiscussionProgress = css`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+// 🆕 토론 시간 정보
+export const DiscussionTimeInfo = css`
+  font-size: 14px;
+  color: #4a5568;
+  text-align: center;
+
+  strong {
+    color: #e53e3e;
+    font-size: 16px;
+  }
+`;
+
+// 🆕 토론 진행 바
+export const DiscussionProgressBar = css`
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+`;
+
+// 🆕 토론 진행 바 채우기
+export const DiscussionProgressFill = css`
+  height: 100%;
+  background: linear-gradient(90deg, #48bb78, #38a169);
+  border-radius: 4px;
+  transition: width 1s linear;
+`;
+
+// 🆕 토론 종료 버튼
+export const EndDiscussionButton = css`
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #e53e3e, #c53030);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: linear-gradient(45deg, #c53030, #9c2626);
+    transform: translateY(-1px);
+  }
+`;
+
+// 🆕 토론 종료 영역
+export const DiscussionEnded = css`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+// 🆕 종료된 토론 정보
+export const EndedDiscussion = css`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+// 🆕 토론 종료 정보
+export const DiscussionEndInfo = css`
+  font-size: 14px;
+  color: #4a5568;
+  text-align: center;
+  padding: 10px;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+`;
+
+// 🆕 새 토론 시작 버튼
+export const NewDiscussionButton = css`
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #48bb78, #38a169);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: linear-gradient(45deg, #38a169, #2f855a);
+    transform: translateY(-1px);
+  }
+`;
+
+// 🆕 채팅 헤더의 토론 정보
+export const ChatHeaderDiscussion = css`
+  margin-left: 15px;
+  color: #3182ce;
+  font-size: 0.9em;
+  font-weight: 500;
+`;
+
+// 🆕 채팅 공지의 토론 활성 상태
+export const DiscussionAnnouncementActive = css`
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #fef5e7, #fed7aa);
+  border-radius: 6px;
+  border-left: 3px solid #f6ad55;
+  font-size: 14px;
+  color: #c05621;
+  font-weight: 500;
+`;
+
+// 🆕 토론 정보 박스 (오른쪽 사이드바)
+export const DiscussionInfoBox = css`
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+`;
+
+// 🆕 토론 정보 내용
+export const DiscussionInfoContent = css`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+// 🆕 토론 정보 제목
+export const DiscussionInfoTitle = css`
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+`;
+
+// 🆕 토론 정보 주제
+export const DiscussionInfoTopic = css`
+  font-size: 14px;
+  color: #4a5568;
+  padding: 8px;
+  background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+  border-radius: 6px;
+  border-left: 3px solid #3182ce;
+`;
+
+// 🆕 토론 정보 타이머
+export const DiscussionInfoTimer = css`
+  font-size: 18px;
+  font-weight: bold;
+  color: #e53e3e;
+  text-align: center;
+  padding: 10px;
+  background: linear-gradient(135deg, #fed7d7, #feb2b2);
+  border-radius: 8px;
+  border: 1px solid #fc8181;
+`;

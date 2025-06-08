@@ -1,13 +1,28 @@
 import { Button } from "@components/index";
 import * as styles from "../BookInfoPage.style";
 import * as textStyles from "../BookInfoPageText.style";
+import { BookData } from "../../../apis/hooks/Books/useBooks";
+import { useNavigate } from "react-router-dom";
 
 interface ChatRoomSectionProps {
   bookTitle: string;
+  bookData: BookData;
 }
 
-const ChatRoomSection: React.FC<ChatRoomSectionProps> = ({ bookTitle }) => (
-  <section css={styles.chatRoomSection}>
+const ChatRoomSection: React.FC<ChatRoomSectionProps> = ({ bookTitle, bookData }) => {
+  const navigate = useNavigate();
+  // 채팅방 참여하기 버튼 클릭 핸들러
+    const handleJoinChatRoom = () => {
+      // 책 정보와 함께 채팅방 페이지로 이동
+      navigate("/chat", {
+        state: {
+          selectedBook: bookData,
+          autoJoin: true // 자동 참여 플래그
+        }
+      });
+    };
+    return(
+      <section css={styles.chatRoomSection}>
     <div css={styles.chatRoomInfo}>
       <h3 css={textStyles.chatRoomTitle}>{bookTitle} 채팅방 참여하기</h3>
       <p css={textStyles.chatRoomDesc}>
@@ -27,9 +42,12 @@ const ChatRoomSection: React.FC<ChatRoomSectionProps> = ({ bookTitle }) => (
         text={"채팅방 참여하기"}
         type={"bigChatRoomJoin"}
         css={styles.buttonStyle}
+        onClick={handleJoinChatRoom}
       />
     </div>
   </section>
-);
+    );
+  
+};
 
 export default ChatRoomSection;
