@@ -5,7 +5,7 @@ import ChatRoomList from "../../components/ChatRoomList/ChatRoomList";
 import InfoBoxWithTimers from "../../components/InfoBoxWithTimer/InfoBoxWithTimer";
 import { useLocation } from "react-router-dom";
 
-// 🔥 기존 API와 타입 직접 import
+// 기존 API와 타입 직접 import
 import { getUserInfo } from "../../apis/userAPI";
 import { UserInfo } from "../../apis/types/user";
 
@@ -27,6 +27,7 @@ import {
   MessageDocumentDto,
   filterProfanity,
 } from "../../apis/hooks/chat/useMessage";
+
 
 import { useWebSocket, RealtimeMessage, UserEvent } from "../../apis/hooks/chat/useWebSocket";
 import { useBooks, BookData } from "../../apis/hooks/Books/useBooks";
@@ -63,7 +64,7 @@ interface ChatUserInfo extends UserInfo {
 interface ChatRoomWithParticipants extends ChatRoom {
   actualParticipants?: number;
 }
-
+  
 // 🔥 getChatRoomUsers용 Fallback 함수
 const getChatRoomUsersWithFallback = async (chatroomId: number): Promise<User[]> => {
   try {
@@ -176,9 +177,10 @@ const ChatPage: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // 🔥 실제 userId 사용 (하드코딩 제거)
+  // 실제 userId 사용 (하드코딩 제거)
   const { chatRoomsWithParticipants, isLoading: isLoadingRooms, fetchChatRoomsWithParticipants } = 
     useChatRoomsWithParticipants(currentUserInfo?.userId || 0);
+
 
   // 채팅방 상태 관리
   const [activeRoomId, setActiveRoomId] = useState<number | null>(null);
@@ -203,7 +205,7 @@ const ChatPage: React.FC = () => {
   // useBooks 훅 사용
   const { bookList, loading: isLoadingBooks, error: booksError, refetch: refetchBooks } = useBooks();
 
-  // 🔥 간단하게 JWT 토큰에서 userId 추출해서 사용자 정보 가져오기
+  // 간단하게 JWT 토큰에서 userId 추출해서 사용자 정보 가져오기
   useEffect(() => {
     const initializeUserInfo = async () => {
       setIsAuthLoading(true);
@@ -468,6 +470,7 @@ const ChatPage: React.FC = () => {
           }
           
           // 내가 방금 보낸 메시지인지 확인 (시간 기반 중복 방지)
+
           const isRecentMyMessage = realtimeMessage.senderId === (currentUserInfo?.userId || 0); // 🔥 변경
           
           setMessages(prevMessages => {
@@ -683,7 +686,6 @@ const ChatPage: React.FC = () => {
       alert("사용자 정보가 없습니다. 페이지를 새로고침해주세요.");
       return;
     }
-
     // 토큰 확인
     const token = localStorage.getItem("accessToken");
     if (!token) {
