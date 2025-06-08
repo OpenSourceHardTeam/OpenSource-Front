@@ -45,32 +45,41 @@ interface UseWebSocketReturn {
 // 프록시를 통한 WebSocket URL 생성
 const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): string => {
   const token = localStorage.getItem('accessToken');
-  
-  // 개발 환경에서는 프록시 사용
-  if (import.meta.env.DEV) {
-    const params = new URLSearchParams({
-      token: token || '',
-      userId: userId.toString(),
-      chatRoomId: chatroomId.toString(),
-      name: encodeURIComponent(userName), 
-    });
-    
-    const proxyUrl = `ws://localhost:5173/ws-proxy?${params}`;
-    console.log('🔄 프록시 WebSocket URL:', proxyUrl);
-    return proxyUrl;
-  }
-  
-  // 운영 환경에서는 직접 연결
+
   const params = new URLSearchParams({
     token: token || '',
     userId: userId.toString(),
     chatRoomId: chatroomId.toString(),
-    name: encodeURIComponent(userName),
+
+    name: encodeURIComponent(userName), 
   });
   
-  const directUrl = `ws://52.78.192.251:8080/ws-booking-messaging?${params}`;
-  console.log('🔗 직접 WebSocket URL:', directUrl);
-  return directUrl;
+  let wsUrl: string;
+  
+  if (import.meta.env.DEV) {
+    // 개발 환경: 프록시 사용
+    wsUrl = `ws://localhost:5173/ws-proxy?${params}`;
+    console.log('🔄 [개발환경] 프록시 WebSocket URL:', wsUrl);
+  } else {
+    // 🔥 운영 환경: 무조건 wss:// 강제 사용
+    wsUrl = `wss://52.78.192.251:8080/ws-booking-messaging?${params}`;
+    
+    // 🔍 디버깅용 강화된 로그
+    console.log('🔗 [운영환경] 직접 WebSocket URL:', wsUrl);
+    console.log('🔍 [환경체크] window.location.protocol:', window.location.protocol);
+    console.log('🔍 [환경체크] import.meta.env.DEV:', import.meta.env.DEV);
+    console.log('🔍 [환경체크] import.meta.env.PROD:', import.meta.env.PROD);
+    
+    // 🚨 wss:// 사용 확인용 알럿 (임시)
+    if (!wsUrl.startsWith('wss://')) {
+      console.error('🚨 경고: wss://를 사용하지 않음!', wsUrl);
+      alert(`WebSocket URL 확인 필요: ${wsUrl}`);
+    } else {
+      console.log('✅ wss:// 프로토콜 정상 사용');
+    }
+  }
+  
+  return wsUrl;
 };
 
 // 🚫 개선된 JSON 메시지 완전 차단 함수
