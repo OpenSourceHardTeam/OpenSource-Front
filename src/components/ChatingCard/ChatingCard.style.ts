@@ -32,7 +32,7 @@ export const InfoContainer = css`
 `;
 
 export const BookInfo = css`
-  width: 143px;
+  width: 400px;
   display: flex;
   flex-direction: column;
   gap: 9px;
@@ -52,7 +52,7 @@ export const textStyle = (
       color: "#0E2624",
       fontSize: "30px",
       fontWeight: 600,
-      height: "35px",
+      height: "35px",  
     },
     author: {
       color: "#3F4756",
