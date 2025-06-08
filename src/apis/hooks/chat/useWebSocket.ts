@@ -45,11 +45,12 @@ interface UseWebSocketReturn {
 // 프록시를 통한 WebSocket URL 생성
 const getWebSocketUrl = (chatroomId: number, userId: number, userName: string): string => {
   const token = localStorage.getItem('accessToken');
-  
+
   const params = new URLSearchParams({
     token: token || '',
     userId: userId.toString(),
     chatRoomId: chatroomId.toString(),
+
     name: encodeURIComponent(userName), 
   });
   
