@@ -12,12 +12,16 @@ export const ContentContainer = css`
   display: flex;
   flex: 1;
   padding: 20px;
+  min-height: 0; /* 중요: flex 자식들이 부모 높이를 넘지 않도록 */
 `;
 
 export const SidebarLeft = css`
   width: 270px;
   margin-right: 56px;
   margin-left: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 중요: 높이 제한 */
 `;
 
 export const ChatContainer = css`
@@ -28,11 +32,16 @@ export const ChatContainer = css`
   flex-direction: column;
   overflow: hidden;
   margin-top: 22px;
+  min-height: 0; /* 중요: 높이 제한 */
+  max-height: calc(100vh - 64px); /* 전체 화면 높이에서 패딩/마진 제외 */
 `;
 
 export const SidebarRight = css`
   width: 288px;
   margin-left: 45px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 중요: 높이 제한 */
 `;
 
 export const HeaderText = css`
@@ -113,6 +122,7 @@ export const ChatHeader = css`
   background-color: #f9f9f9;
   border-bottom: 1px solid #e0e0e0;
   align-items: center;
+  flex-shrink: 0; /* 헤더는 크기 고정 */
 `;
 
 export const ConnectionStatus = css`
@@ -138,15 +148,37 @@ export const ChatAnnouncement = css`
   text-align: center;
   font-size: 14px;
   color: #666;
+  flex-shrink: 0; /* 공지사항은 크기 고정 */
 `;
 
 export const MessageList = css`
   flex: 1;
   padding: 15px;
-  overflow-y: auto;
+  overflow-y: auto; /* 스크롤 허용 */
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-height: 0; /* 중요: 스크롤이 제대로 동작하도록 */
+  max-height: 100%; /* 부모 컨테이너를 넘지 않도록 */
+  
+  /* 스크롤바 스타일링 */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a1a1a1;
+    }
+  }
 `;
 
 export const LoadingMessages = css`
@@ -166,12 +198,15 @@ export const EmptyMessages = css`
   color: #999;
   font-size: 14px;
   text-align: center;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 export const MessageGroup = css`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex-shrink: 0; /* 메시지 그룹은 압축되지 않도록 */
 `;
 
 export const MessageHeader = css`
@@ -224,6 +259,7 @@ export const MessageInputContainer = css`
   padding: 15px;
   border-top: 1px solid #e0e0e0;
   background-color: #fff;
+  flex-shrink: 0; /* 입력창은 크기 고정 */
 `;
 
 export const MessageInputField = css`
@@ -291,6 +327,10 @@ export const ParticipantList = css`
   border: 1px solid #d4d4d4;
   margin-bottom: 20px;
   background: #fcf6f5;
+  flex: 1;
+  min-height: 0; /* 높이 제한 */
+  display: flex;
+  flex-direction: column;
 `;
 
 export const arrowStyle = css`
@@ -400,6 +440,28 @@ export const ChatRoomListContainer = css`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1;
+  min-height: 0; /* 높이 제한 */
+  overflow-y: auto; /* 채팅방 목록도 스크롤 가능 */
+  
+  /* 스크롤바 스타일링 */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a1a1a1;
+    }
+  }
 `;
 
 export const EmptyRoomMessage = css`
@@ -433,14 +495,6 @@ export const Announcement = css`
   color: #666;
 `;
 
-// 연결 상태 스타일
-// export const ConnectionStatus = css`
-//   display: flex;
-//   align-items: center;
-//   font-size: 12px;
-//   margin-left: 10px;
-// `;
-
 export const StatusConnected = css`
   color: #22c55e;
 `;
@@ -463,6 +517,7 @@ export const BookListContainer = css`
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* 크기 고정 */
 `;
 
 export const BookItems = css`
@@ -471,6 +526,25 @@ export const BookItems = css`
   gap: 12px;
   max-height: 300px;
   overflow-y: auto;
+  
+  /* 스크롤바 스타일링 */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a1a1a1;
+    }
+  }
 `;
 
 export const BookItem = css`
@@ -481,6 +555,7 @@ export const BookItem = css`
   cursor: pointer;
   transition: all 0.2s ease;
   border: 2px solid transparent;
+  flex-shrink: 0; /* 아이템 크기 고정 */
   
   &:hover {
     background-color: #f8f9fa;
@@ -566,7 +641,6 @@ export const RetryButton = css`
     background-color: #2980b9;
   }
 `;
-
 
 export const ArgumentSelectorOverlay = css`
   position: fixed;
@@ -675,6 +749,7 @@ export const DiscussionControlContainer = css`
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
+  flex-shrink: 0; /* 크기 고정 */
 `;
 
 // 🆕 토론 타이머 (헤더에 표시)
@@ -925,6 +1000,7 @@ export const DiscussionInfoBox = css`
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
+  flex-shrink: 0; /* 크기 고정 */
 `;
 
 // 🆕 토론 정보 내용
