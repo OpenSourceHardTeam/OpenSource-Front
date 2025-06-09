@@ -70,14 +70,8 @@ export const filterProfanity = async (text: string): Promise<ProfanityFilterResp
         body: errorText
       });
       
-      // API 오류 시 클라이언트 사이드 필터링으로 대체
-      console.log('[욕설 필터링] API 오류로 클라이언트 필터링 대체 사용');
-      const maskedText = advancedClientSideFilter(text);
+     
       
-      return {
-        original: text,
-        masked: maskedText
-      };
     }
 
     const result: ProfanityFilterResponse = await response.json();
@@ -88,69 +82,67 @@ export const filterProfanity = async (text: string): Promise<ProfanityFilterResp
   } catch (error) {
     console.error('[욕설 필터링] HTTPS API 호출 실패:', error);
     
-    // 네트워크 오류 시 클라이언트 사이드 필터링으로 대체
-    console.log('[욕설 필터링] 네트워크 오류로 클라이언트 필터링 대체 사용');
-    const maskedText = advancedClientSideFilter(text);
+
     
     return {
       original: text,
-      masked: maskedText
+      masked: text,
     };
   }
 };
 
 // 🛡️ 대체용 클라이언트 사이드 필터링 (API 오류 시 사용)
 
-const advancedClientSideFilter = (text: string): string => {
-  const profanityPatterns = [
-    // 한국어 욕설
-    { pattern: /시발/gi, replacement: '**' },
-    { pattern: /씨발/gi, replacement: '**' },
-    { pattern: /개새끼/gi, replacement: '***' },
-    { pattern: /병신/gi, replacement: '**' },
-    { pattern: /좆/gi, replacement: '*' },
-    { pattern: /개같은/gi, replacement: '***' },
-    { pattern: /개소리/gi, replacement: '***' },
-    { pattern: /멍청이/gi, replacement: '***' },
-    { pattern: /바보/gi, replacement: '**' },
-    { pattern: /미친/gi, replacement: '**' },
-    { pattern: /또라이/gi, replacement: '***' },
-    { pattern: /새끼/gi, replacement: '**' },
+// const advancedClientSideFilter = (text: string): string => {
+//   const profanityPatterns = [
+//     // 한국어 욕설
+//     { pattern: /시발/gi, replacement: '**' },
+//     { pattern: /씨발/gi, replacement: '**' },
+//     { pattern: /개새끼/gi, replacement: '***' },
+//     { pattern: /병신/gi, replacement: '**' },
+//     { pattern: /좆/gi, replacement: '*' },
+//     { pattern: /개같은/gi, replacement: '***' },
+//     { pattern: /개소리/gi, replacement: '***' },
+//     { pattern: /멍청이/gi, replacement: '***' },
+//     { pattern: /바보/gi, replacement: '**' },
+//     { pattern: /미친/gi, replacement: '**' },
+//     { pattern: /또라이/gi, replacement: '***' },
+//     { pattern: /새끼/gi, replacement: '**' },
     
-    // 변형된 욕설들
-    { pattern: /ㅅㅂ/gi, replacement: '**' },
-    { pattern: /ㅂㅅ/gi, replacement: '**' },
-    { pattern: /ㄱㅅㄲ/gi, replacement: '***' },
-    { pattern: /시1발/gi, replacement: '***' },
-    { pattern: /씨1발/gi, replacement: '***' },
-    { pattern: /시@발/gi, replacement: '***' },
-    { pattern: /씨@발/gi, replacement: '***' },
+//     // 변형된 욕설들
+//     { pattern: /ㅅㅂ/gi, replacement: '**' },
+//     { pattern: /ㅂㅅ/gi, replacement: '**' },
+//     { pattern: /ㄱㅅㄲ/gi, replacement: '***' },
+//     { pattern: /시1발/gi, replacement: '***' },
+//     { pattern: /씨1발/gi, replacement: '***' },
+//     { pattern: /시@발/gi, replacement: '***' },
+//     { pattern: /씨@발/gi, replacement: '***' },
     
-    // 영어 욕설
-    { pattern: /fuck/gi, replacement: '****' },
-    { pattern: /shit/gi, replacement: '****' },
-    { pattern: /damn/gi, replacement: '****' },
-    { pattern: /bitch/gi, replacement: '*****' },
-  ];
+//     // 영어 욕설
+//     { pattern: /fuck/gi, replacement: '****' },
+//     { pattern: /shit/gi, replacement: '****' },
+//     { pattern: /damn/gi, replacement: '****' },
+//     { pattern: /bitch/gi, replacement: '*****' },
+//   ];
   
-  let filtered = text;
+//   let filtered = text;
   
-  profanityPatterns.forEach(({ pattern, replacement }) => {
-    filtered = filtered.replace(pattern, replacement);
-  });
+//   profanityPatterns.forEach(({ pattern, replacement }) => {
+//     filtered = filtered.replace(pattern, replacement);
+//   });
   
-  // 같은 문자 3개 이상 반복 필터링
-  filtered = filtered.replace(/(.)\1{2,}/g, (match, char) => {
-    const suspiciousChars = ['ㅅ', 'ㅂ', 'ㄱ', 'ㅆ', '!', '@', '#', '*'];
-    if (suspiciousChars.includes(char)) {
-      return '*'.repeat(Math.min(match.length, 3));
-    }
-    return match;
-  });
+//   // 같은 문자 3개 이상 반복 필터링
+//   filtered = filtered.replace(/(.)\1{2,}/g, (match, char) => {
+//     const suspiciousChars = ['ㅅ', 'ㅂ', 'ㄱ', 'ㅆ', '!', '@', '#', '*'];
+//     if (suspiciousChars.includes(char)) {
+//       return '*'.repeat(Math.min(match.length, 3));
+//     }
+//     return match;
+//   });
   
-  console.log('[클라이언트 필터링] 대체 처리:', text, '→', filtered);
-  return filtered;
-};
+//   console.log('[클라이언트 필터링] 대체 처리:', text, '→', filtered);
+//   return filtered;
+// };
 
 // 사용자별 메시지 조회
 export const getMessagesBySender = async (senderId: number) => {

@@ -444,17 +444,8 @@ const ChatPage: React.FC = () => {
     // 실시간 메시지 수신 처리
     onWsMessage((realtimeMessage: RealtimeMessage) => {
       // 🚫 JSON 문자열 완전 차단 - 1차 필터
-      if (isJsonMessage(realtimeMessage)) {
-        return;
-      }
-      
-      // 🚫 string 타입 메시지 차단 - 2차 필터  
-      if (typeof realtimeMessage === 'string') {
-        return;
-      }
-      
-      // 🚫 객체이지만 필수 필드가 없으면 차단 - 3차 필터
-      if (!realtimeMessage.content || !realtimeMessage.senderId) {
+      if (!realtimeMessage || !realtimeMessage.content || !realtimeMessage.senderId) {
+        console.log('필수 필드가 없는 메시지 차단:', realtimeMessage)
         return;
       }
       
@@ -504,17 +495,7 @@ const ChatPage: React.FC = () => {
     // 사용자 입장/퇴장 이벤트 처리 (강화된 필터링)
     onWsUserEvent((event: UserEvent) => {
       // 🚫 JSON 문자열 차단
-      if (isJsonMessage(event)) {
-        return;
-      }
-      
-      // 🚫 string 타입 차단
-      if (typeof event === 'string') {
-        return;
-      }
-      
-      // 🚫 필수 필드 확인
-      if (!event.userId || !event.userName || !event.action) {
+      if (!event || !event.userId || !event.userName || !event.action) {
         return;
       }
       
@@ -541,7 +522,7 @@ const ChatPage: React.FC = () => {
         
         // 다른 사용자의 입장/퇴장만 시스템 메시지로 표시
         const systemMessage: Message = {
-          id: Date.now() + Math.random(),
+          id: Date.now(),
           senderId: -1, // 시스템 메시지는 -1로 처리
           chatroomId: activeRoomId,
           content: `${decodedUserName}님이 ${event.action === 'join' ? '입장' : '퇴장'}하셨습니다.`,

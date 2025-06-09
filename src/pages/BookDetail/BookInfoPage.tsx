@@ -4,7 +4,7 @@ import * as styles from "./BookInfoPage.style.ts";
 import * as textStyles from "./BookInfoPageText.style.ts";
 import { line } from "@assets/index.ts";
 import { useBookDetail } from "../../apis/hooks/BookDetail/useBookDetail.ts";
-import { BookData } from "../../apis/hooks/Books/useBooks"; // BookData 타입 import
+import { BookData } from "../../apis/hooks/Books/useBooks.ts"; // BookData 타입 import
 import ErrorState from "@components/ErrorState/ErrorState.tsx";
 import PublisherReview from "./component/PublisherReview.tsx";
 import BookCover from "./component/BookCoverProps.tsx";

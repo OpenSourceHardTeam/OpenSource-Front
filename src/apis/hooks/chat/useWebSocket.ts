@@ -118,45 +118,45 @@ const isJsonMessage = (data: any): boolean => {
 };
 
 // 🚫 에러 메시지 차단 함수
-const isErrorMessage = (data: any): boolean => {
-  if (typeof data !== 'string') return false;
+// const isErrorMessage = (data: any): boolean => {
+//   if (typeof data !== 'string') return false;
   
-  const errorPatterns = [
-    /Error:/i,
-    /Missing required headers/i,
-    /Failed to/i,
-    /Exception/i,
-    /^\s*error\s*$/i,
-    /Connection refused/i,
-    /Timeout/i
-  ];
+//   const errorPatterns = [
+//     /Error:/i,
+//     /Missing required headers/i,
+//     /Failed to/i,
+//     /Exception/i,
+//     /^\s*error\s*$/i,
+//     /Connection refused/i,
+//     /Timeout/i
+//   ];
   
-  return errorPatterns.some(pattern => pattern.test(data));
-};
+//   return errorPatterns.some(pattern => pattern.test(data));
+// };
 
 // 🚫 의미없는 메시지 차단 함수
-const isIgnorableMessage = (data: any): boolean => {
-  if (typeof data !== 'string') return false;
+// const isIgnorableMessage = (data: any): boolean => {
+//   if (typeof data !== 'string') return false;
   
-  const trimmedData = data.trim();
+//   const trimmedData = data.trim();
   
-  // 빈 문자열이나 너무 짧은 메시지
-  if (!trimmedData || trimmedData.length < 2) {
-    return true;
-  }
+//   // 빈 문자열이나 너무 짧은 메시지
+//   if (!trimmedData || trimmedData.length < 2) {
+//     return true;
+//   }
   
-  // 숫자만 있는 메시지
-  if (/^\d+$/.test(trimmedData)) {
-    return true;
-  }
+//   // 숫자만 있는 메시지
+//   if (/^\d+$/.test(trimmedData)) {
+//     return true;
+//   }
   
-  // 특수문자만 있는 메시지
-  if (/^[^a-zA-Z0-9가-힣]+$/.test(trimmedData)) {
-    return true;
-  }
+//   // 특수문자만 있는 메시지
+//   if (/^[^a-zA-Z0-9가-힣]+$/.test(trimmedData)) {
+//     return true;
+//   }
   
-  return false;
-};
+//   return false;
+// };
 
 export const useWebSocket = ({ 
   chatroomId, 
@@ -236,88 +236,82 @@ export const useWebSocket = ({
         ws.send(JSON.stringify(joinMessage));
       };
 
-      ws.onmessage = (event) => {
-        try {
-          console.log('📥 Raw WebSocket 메시지:', event.data);
-          
-          // 🚫 강화된 1차 필터링: JSON 형태의 원본 메시지 완전 차단
-          if (isJsonMessage(event.data)) {
-            console.log('🚫 [1차 차단] JSON 메시지 내부 처리만 수행, UI 전달 차단:', event.data);
-            
-            // JSON 메시지는 내부 처리만 하고 UI에는 절대 전달하지 않음
-            try {
-              const wsMessage: WebSocketMessage = JSON.parse(event.data);
-              console.log('🔄 [내부 처리] 파싱된 메시지:', wsMessage);
-              
-              // 내부적으로만 처리 - UI에는 전달하지 않음
-              switch (wsMessage.type) {
-                case 'MESSAGE':
-                  if (messageCallbackRef.current && wsMessage.data) {
-                    const realtimeMessage: RealtimeMessage = {
-                      id: wsMessage.data.id || Date.now(),
-                      chatroomId: wsMessage.chatroomId,
-                      senderId: wsMessage.data.senderId || wsMessage.data.userId,
-                      content: wsMessage.data.content || wsMessage.data.message,
-                      timestamp: wsMessage.data.createdAt || new Date().toISOString(),
-                    };
-                    console.log('💬 [내부 처리] 메시지 콜백 호출:', realtimeMessage);
-                    messageCallbackRef.current(realtimeMessage);
-                  }
-                  break;
-                  
-                case 'USER_JOIN':
-                case 'USER_LEAVE':
-                  if (userEventCallbackRef.current && wsMessage.data) {
-                    const userEvent: UserEvent = {
-                      userId: wsMessage.data.userId,
-                      userName: wsMessage.data.userName || wsMessage.data.name || '알 수 없음',
-                      chatroomId: wsMessage.chatroomId,
-                      action: wsMessage.type === 'USER_JOIN' ? 'join' : 'leave'
-                    };
-                    console.log('👤 [내부 처리] 사용자 이벤트 콜백 호출:', userEvent);
-                    userEventCallbackRef.current(userEvent);
-                  }
-                  break;
-                  
-                case 'SYSTEM':
-                  // 시스템 메시지도 JSON 형태라면 내부 처리만
-                  console.log('🔧 [내부 처리] 시스템 메시지 (JSON 형태) 처리됨, UI 전달 안함');
-                  break;
-                  
-                case 'ERROR':
-                  console.error('[WebSocket] 서버 에러:', wsMessage.data);
-                  break;
-              }
-            } catch (parseError) {
-              console.warn('[WebSocket] JSON 파싱 실패 (내부 처리 건너뜀):', parseError);
+   ws.onmessage = (event) => {
+  try {
+    let rawData = event.data;
+
+    // 문자열이면 디코딩 시도
+    if (typeof rawData === 'string') {
+      // JSON 객체 부분만 추출하는 정규식
+      const jsonMatch = rawData.match(/\{.*\}$/s); // 문자열 끝에 있는 중괄호로 감싸진 부분 추출 (s 플래그는 줄바꿈 포함)
+      
+      if (jsonMatch && jsonMatch[0]) {
+        rawData = jsonMatch[0];
+      } else {
+        console.warn('[WebSocket] JSON 부분 추출 실패, 원본 사용:', rawData);
+      }
+    }
+
+    console.log('📥 디코딩 후 메시지:', rawData);
+
+    // JSON 메시지인지 확인
+    if (isJsonMessage(rawData)) {
+      try {
+        const wsMessage: WebSocketMessage = JSON.parse(rawData);
+        console.log('🔄 [내부 처리] 파싱된 메시지:', wsMessage);
+
+        // 메시지 타입별 처리 및 UI 콜백 호출
+        switch (wsMessage.type) {
+          case 'MESSAGE':
+            if (wsMessage.data && messageCallbackRef.current) {
+              const realtimeMessage: RealtimeMessage = {
+                id: wsMessage.data.id || Date.now(),
+                chatroomId: wsMessage.chatroomId,
+                senderId: wsMessage.data.senderId || wsMessage.data.userId,
+                content: wsMessage.data.content || wsMessage.data.message,
+                timestamp: wsMessage.data.createdAt || new Date().toISOString(),
+              };
+              console.log('💬 메시지 콜백 호출:', realtimeMessage);
+              messageCallbackRef.current(realtimeMessage);
             }
-            
-            // 🚫 JSON 메시지는 여기서 완전 차단 - UI에 절대 전달하지 않음
-            return;
-          }
-          
-          // 🚫 2차 필터링: 에러 메시지 차단
-          if (isErrorMessage(event.data)) {
-            console.log('🚫 [2차 차단] 에러 메시지 차단:', event.data);
-            return;
-          }
-          
-          // 🚫 3차 필터링: 의미없는 메시지 차단
-          if (isIgnorableMessage(event.data)) {
-            console.log('🚫 [3차 차단] 의미없는 메시지 차단:', event.data);
-            return;
-          }
-          
-          // ✅ 순수 텍스트 메시지만 시스템 메시지로 처리
-          console.log('✅ [허용] 순수 텍스트 메시지를 시스템 메시지로 처리:', event.data);
-          if (systemMessageCallbackRef.current) {
-            systemMessageCallbackRef.current(event.data.trim());
-          }
-          
-        } catch (error) {
-          console.error('[WebSocket] 메시지 처리 에러:', error);
+            break;
+
+          case 'USER_JOIN':
+          case 'USER_LEAVE':
+            if (userEventCallbackRef.current && wsMessage.data) {
+              const userEvent: UserEvent = {
+                userId: wsMessage.data.userId,
+                userName: wsMessage.data.userName || wsMessage.data.name || '알 수 없음',
+                chatroomId: wsMessage.chatroomId,
+                action: wsMessage.type === 'USER_JOIN' ? 'join' : 'leave',
+              };
+              console.log('👤 사용자 이벤트 콜백 호출:', userEvent);
+              userEventCallbackRef.current(userEvent);
+            }
+            break;
+
+          case 'SYSTEM':
+            console.log('🔧 시스템 메시지 처리됨');
+            break;
+
+          case 'ERROR':
+            console.error('[WebSocket] 서버 에러:', wsMessage.data);
+            break;
         }
-      };
+      } catch (parseError) {
+        console.warn('[WebSocket] JSON 파싱 실패:', parseError);
+      }
+    } else {
+      // JSON 아닌 순수 텍스트 메시지 처리
+      if (systemMessageCallbackRef.current) {
+        systemMessageCallbackRef.current(rawData.trim());
+      }
+    }
+  } catch (error) {
+    console.error('[WebSocket] 메시지 처리 에러:', error);
+  }
+};
+
 
       ws.onclose = (event) => {
         console.log(`🔌 [WebSocket] 연결 종료 - 코드: ${event.code}, 이유: ${event.reason}`);
