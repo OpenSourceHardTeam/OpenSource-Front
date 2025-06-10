@@ -222,7 +222,8 @@ const SignUpPage = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <div css={styles.instruction}>
-          비밀번호는 영문 대소문자, 숫자, 특수기호를 포함해야 합니다.
+          비밀번호는 영문 대소문자, 숫자, 특수문자를 포함하여 5자 이상 10자
+          이내로 설정해주세요.
         </div>
       </div>
       <input

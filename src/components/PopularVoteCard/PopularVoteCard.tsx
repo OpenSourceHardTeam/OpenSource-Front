@@ -16,9 +16,14 @@ interface Props {
 const PopularVoteCard: React.FC<Props> = ({ vote }) => {
   const navigate = useNavigate();
   const total = vote.agreeCount + vote.disagreeCount;
-  const agreePercent =
-    total === 0 ? 0 : Math.round((vote.agreeCount / total) * 100);
-  const disagreePercent = 100 - agreePercent;
+
+  let agreePercent = 0;
+  let disagreePercent = 0;
+
+  if (total > 0) {
+    agreePercent = Math.round((vote.agreeCount / total) * 100);
+    disagreePercent = 100 - agreePercent;
+  }
 
   return (
     <div css={Container}>

@@ -56,7 +56,7 @@ const VoteSection: React.FC = () => {
             key={vote.voteId}
             vote={vote}
             refetchVotes={refetchVotes}
-            isMine={myUserId !== null && vote.userId === myUserId} // ✅ 안전하게 비교
+            isMine={myUserId !== null && vote.userId === myUserId}
           />
         ))
       )}
