@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { HomeIcon, ChatIcon, BookIcon } from "@assets/index";
 import { container, iconStyle, mainContainer } from "./SideBar.style";
 import routes from "@constants/routes";
 
-const getNavLinkStyle = (isActive: boolean) => ({
-  color: isActive ? "#385B88" : "#989BA2",
-});
+// const getNavLinkStyle = (isActive: boolean) => ({
+//   color: isActive ? "#385B88" : "#989BA2",
+// });
 
 const menuItems = [
   { to: routes.main, icon: <HomeIcon css={iconStyle} /> },
@@ -22,6 +22,7 @@ const menuItems = [
 
 const SideBar: React.FC = () => {
   const [top, setTop] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAdjustedTop = () => {
@@ -54,17 +55,35 @@ const SideBar: React.FC = () => {
     };
   }, []);
 
+  const isLoggedIn = !!localStorage.getItem("accessToken");
+
+  const handleNavigate = (to: string) => {
+    if (to === routes.chatlist && !isLoggedIn) {
+      alert("로그인 후에 채팅 페이지를 이용할 수 있어요.");
+      navigate("/login");
+      window.scrollTo(0, 0);
+      return;
+    }
+    navigate(to);
+  };
+
   return (
     <div css={mainContainer(top)}>
       <div css={container}>
         {menuItems.map(({ to, icon }, index) => (
-          <NavLink
+          <button
             key={index}
-            to={to}
-            style={({ isActive }) => getNavLinkStyle(isActive)}
+            onClick={() => handleNavigate(to)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              color: window.location.pathname === to ? "#385B88" : "#989BA2",
+            }}
           >
             {icon}
-          </NavLink>
+          </button>
         ))}
       </div>
     </div>
